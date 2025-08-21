@@ -1,0 +1,85 @@
+
+R version 4.4.2 (2024-10-31) -- "Pile of Leaves"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '~/research/weather-data-collector-spain' loaded. [renv 1.1.4]
+- The project is out-of-sync -- use `renv::status()` for details.
+> #!/usr/bin/env Rscript
+> 
+> # aggregate_daily_station_data.R
+> # -------------------------------
+> # Purpose: Create daily aggregated weather data by station from hourly observations
+> #
+> # This script processes the hourly expanded weather data to create daily summaries
+> # by station. It combines historical daily data with aggregated current observations
+> # to provide a complete time series from 2013 to present.
+> #
+> # Output: Daily means, minimums, maximums, and totals by weather station
+> #
+> # Data Sources:
+> #   1. Historical daily data (2013 to T-4 days) from AEMET climatological endpoint
+> #   2. Current hourly data (T-4 days to present) aggregated to daily values
+> #
+> # Author: John Palmer
+> # Date: 2025-08-20
+> 
+> rm(list=ls())
+> 
+> # Dependencies ####
+> library(tidyverse)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.0.4     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+> library(lubridate)
+> library(data.table)
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:lubridate’:
+
+    hour, isoweek, mday, minute, month, quarter, second, wday, week,
+    yday, year
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+The following object is masked from ‘package:purrr’:
+
+    transpose
+
+> 
+> cat("=== DAILY STATION DATA AGGREGATION ===\n")
+=== DAILY STATION DATA AGGREGATION ===
+> 
+> # Check if expanded hourly data exists
+> if(!file.exists("data/spain_weather_expanded.csv.gz")) {
++   cat("ERROR: Expanded hourly weather data not found. Run get_latest_data_expanded.R first.\n")
++   quit(save="no", status=1)
++ }
+ERROR: Expanded hourly weather data not found. Run get_latest_data_expanded.R first.
+> proc.time()
+   user  system elapsed 
+  0.806   0.087   1.005 

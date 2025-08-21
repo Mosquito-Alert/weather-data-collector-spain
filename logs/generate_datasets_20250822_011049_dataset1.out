@@ -1,0 +1,255 @@
+
+R version 4.4.2 (2024-10-31) -- "Pile of Leaves"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '~/research/weather-data-collector-spain' loaded. [renv 1.1.4]
+- The project is out-of-sync -- use `renv::status()` for details.
+> #!/usr/bin/env Rscript
+> 
+> # aggregate_daily_station_data.R
+> # -------------------------------
+> # Purpose: Create daily aggregated weather data by station from hourly observations
+> #
+> # This script processes the hourly expanded weather data to create daily summaries
+> # by station. It combines historical daily data with aggregated current observations
+> # to provide a complete time series from 2013 to present.
+> #
+> # Output: Daily means, minimums, maximums, and totals by weather station
+> #
+> # Data Sources:
+> #   1. Historical daily data (2013 to T-4 days) from AEMET climatological endpoint
+> #   2. Current hourly data (T-4 days to present) aggregated to daily values
+> #
+> # Author: John Palmer
+> # Date: 2025-08-20
+> 
+> rm(list=ls())
+> 
+> # Dependencies ####
+> library(tidyverse)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.0.4     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+> library(lubridate)
+> library(data.table)
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:lubridate’:
+
+    hour, isoweek, mday, minute, month, quarter, second, wday, week,
+    yday, year
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+The following object is masked from ‘package:purrr’:
+
+    transpose
+
+> 
+> cat("=== DAILY STATION DATA AGGREGATION ===\n")
+=== DAILY STATION DATA AGGREGATION ===
+> 
+> # Check if expanded hourly data exists
+> if(!file.exists("data/output/hourly_station_ongoing.csv.gz")) {
++   cat("ERROR: Hourly weather data not found. Run get_latest_data.R first.\n")
++   quit(save="no", status=1)
++ }
+> 
+> # Load expanded hourly data
+> cat("Loading hourly weather data...\n")
+Loading hourly weather data...
+> hourly_data = fread("data/output/hourly_station_ongoing.csv.gz")
+> hourly_data$fint = as_datetime(hourly_data$fint)
+> hourly_data$date = as.Date(hourly_data$fint)
+> 
+> cat("Loaded", nrow(hourly_data), "hourly observation records.\n")
+Loaded 62722 hourly observation records.
+> cat("Date range:", min(hourly_data$date, na.rm=TRUE), "to", max(hourly_data$date, na.rm=TRUE), "\n")
+Date range: 20321 to 20321 
+> 
+> # Load historical daily data if it exists
+> historical_daily = NULL
+> if(file.exists("data/output/daily_station_historical.csv.gz")) {
++   cat("Loading historical daily data...\n")
++   historical_daily = fread("data/output/daily_station_historical.csv.gz")
++   
++   # Standardize historical data format
++   if("fecha" %in% names(historical_daily)) {
++     historical_daily$date = as.Date(historical_daily$fecha)
++   }
++   
++   # Select compatible variables and reshape to match hourly format
++   historical_compatible = historical_daily %>%
++     filter(!is.na(date)) %>%
++     select(any_of(c("date", "idema", "ta", "tamax", "tamin", "hr", "prec", "vv", "p"))) %>%
++     pivot_longer(cols = c(-date, -idema), names_to = "measure", values_to = "value") %>%
++     filter(!is.na(value)) %>%
++     mutate(source = "historical_daily") %>%
++     as.data.table()
++   
++   cat("Loaded", nrow(historical_compatible), "historical daily records.\n")
++   cat("Historical date range:", min(historical_compatible$date, na.rm=TRUE), "to", max(historical_compatible$date, na.rm=TRUE), "\n")
++ } else {
++   cat("No historical daily data found. Using only current observations.\n")
++   historical_compatible = data.table()
++ }
+No historical daily data found. Using only current observations.
+> 
+> # Aggregate hourly data to daily values
+> cat("Aggregating hourly data to daily summaries...\n")
+Aggregating hourly data to daily summaries...
+> 
+> # Define aggregation rules for each variable
+> aggregate_hourly_to_daily = function(hourly_dt) {
++   daily_aggregated = hourly_dt %>%
++     group_by(date, idema, measure) %>%
++     summarise(
++       value = case_when(
++         measure %in% c("ta", "hr", "vv", "pres") ~ mean(value, na.rm = TRUE),   # Mean for these variables
++         measure %in% c("tamax") ~ max(value, na.rm = TRUE),                     # Maximum for tamax
++         measure %in% c("tamin") ~ min(value, na.rm = TRUE),                     # Minimum for tamin  
++         measure %in% c("prec") ~ sum(value, na.rm = TRUE),                      # Sum for precipitation
++         TRUE ~ mean(value, na.rm = TRUE)                                        # Default to mean
++       ),
++       n_observations = n(),
++       source = "hourly_aggregated",
++       .groups = "drop"
++     ) %>%
++     filter(!is.na(value) & !is.infinite(value)) %>%
++     as.data.table()
++   
++   return(daily_aggregated)
++ }
+> 
+> daily_from_hourly = aggregate_hourly_to_daily(hourly_data)
+Warning message:
+Returning more (or less) than 1 row per `summarise()` group was deprecated in
+dplyr 1.1.0.
+ℹ Please use `reframe()` instead.
+ℹ When switching from `summarise()` to `reframe()`, remember that `reframe()`
+  always returns an ungrouped data frame and adjust accordingly. 
+> cat("Created", nrow(daily_from_hourly), "daily aggregated records from hourly data.\n")
+Created 62722 daily aggregated records from hourly data.
+> 
+> # Combine historical and aggregated current data
+> if(nrow(historical_compatible) > 0) {
++   # Find overlap period to avoid duplication
++   hourly_start_date = min(daily_from_hourly$date, na.rm = TRUE)
++   historical_end_date = max(historical_compatible$date, na.rm = TRUE)
++   
++   cat("Hourly data starts:", hourly_start_date, "\n")
++   cat("Historical data ends:", historical_end_date, "\n")
++   
++   # Use historical data up to the start of hourly data, then use aggregated hourly
++   if(hourly_start_date <= historical_end_date) {
++     # Overlap exists - use historical up to day before hourly starts
++     cutoff_date = hourly_start_date - days(1)
++     historical_to_use = historical_compatible[date <= cutoff_date]
++     cat("Using historical data through", cutoff_date, "\n")
++   } else {
++     # No overlap - use all historical
++     historical_to_use = historical_compatible
++     cat("No overlap - using all historical data.\n")
++   }
++   
++   # Add n_observations column to historical data
++   historical_to_use$n_observations = 1
++   
++   # Combine datasets
++   combined_daily = rbind(historical_to_use, daily_from_hourly, fill = TRUE)
++ } else {
++   combined_daily = daily_from_hourly
++ }
+> 
+> # Sort and clean the combined dataset
+> combined_daily = combined_daily[order(date, idema, measure)]
+> 
+> # Create summary statistics
+> cat("\n=== DAILY AGGREGATION SUMMARY ===\n")
+
+=== DAILY AGGREGATION SUMMARY ===
+> cat("Total daily records:", nrow(combined_daily), "\n")
+Total daily records: 62722 
+> cat("Date range:", min(combined_daily$date, na.rm=TRUE), "to", max(combined_daily$date, na.rm=TRUE), "\n")
+Date range: 20321 to 20321 
+> cat("Number of stations:", length(unique(combined_daily$idema)), "\n")
+Number of stations: 836 
+> cat("Variables included:", paste(unique(combined_daily$measure), collapse=", "), "\n")
+Variables included: hr, prec, ta, tamax, tamin, vv, pres 
+> 
+> # Summary by source
+> source_summary = combined_daily[, .(
++   records = .N,
++   stations = length(unique(idema)),
++   date_min = min(date, na.rm=TRUE),
++   date_max = max(date, na.rm=TRUE)
++ ), by = source]
+> 
+> print(source_summary)
+              source records stations   date_min   date_max
+              <char>   <int>    <int>     <Date>     <Date>
+1: hourly_aggregated   62722      836 2025-08-21 2025-08-21
+> 
+> # Check data coverage by variable
+> cat("\n=== VARIABLE COVERAGE ===\n")
+
+=== VARIABLE COVERAGE ===
+> variable_coverage = combined_daily[, .(
++   records = .N,
++   stations = length(unique(idema)),
++   date_min = min(date, na.rm=TRUE),
++   date_max = max(date, na.rm=TRUE),
++   mean_obs_per_station_day = mean(n_observations, na.rm=TRUE)
++ ), by = measure]
+> 
+> print(variable_coverage)
+   measure records stations   date_min   date_max mean_obs_per_station_day
+    <char>   <int>    <int>     <Date>     <Date>                    <num>
+1:      hr   10199      827 2025-08-21 2025-08-21                 12.44328
+2:    prec   10045      814 2025-08-21 2025-08-21                 12.45246
+3:      ta   10178      826 2025-08-21 2025-08-21                 12.43624
+4:   tamax   10178      826 2025-08-21 2025-08-21                 12.43624
+5:   tamin   10178      826 2025-08-21 2025-08-21                 12.43624
+6:      vv    9001      724 2025-08-21 2025-08-21                 12.54538
+7:    pres    2943      229 2025-08-21 2025-08-21                 12.91098
+> 
+> # Save the aggregated daily data
+> output_file = "data/output/daily_station_aggregated.csv.gz"
+> fwrite(combined_daily, output_file)
+> 
+> cat("\n=== AGGREGATION COMPLETE ===\n")
+
+=== AGGREGATION COMPLETE ===
+> cat("Daily aggregated data saved to:", output_file, "\n")
+Daily aggregated data saved to: data/output/daily_station_aggregated.csv.gz 
+> cat("File size:", round(file.size(output_file)/1024/1024, 1), "MB\n")
+File size: 0 MB
+> 
+> proc.time()
+   user  system elapsed 
+  1.891   0.117   1.784 

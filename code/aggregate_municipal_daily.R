@@ -5,11 +5,18 @@
 # Purpose: Create Dataset 2 - Daily municipal data combining station observations with forecasts
 # 
 # This script:
-# 1. Aggregates station observations to municipal level for historical/recent days
+# 1. Takes daily station data and aggregates it to municipal level
 # 2. Appends municipal forecast data for future days
 # 3. Produces a unified municipal daily dataset covering historical + forecast periods
 #
 # Output: data/output/daily_municipal_extended.csv.gz
+#
+# Dependencies: Requires daily station data and municipal forecast data
+#
+# Author: John Palmer
+# Date: 2025-08-22
+
+rm(list=ls())
 
 library(tidyverse)
 library(lubridate)
@@ -18,10 +25,273 @@ library(data.table)
 cat("=== Municipal Daily Data Aggregation ===\n")
 cat("Started at:", format(Sys.time()), "\n")
 
-# This script will be implemented to combine:
-# - Daily station data aggregated to municipal level
-# - Municipal forecast data
-# - Creating the unified Dataset 2 as specified in specs.md
+# Check required input files
+required_files <- c(
+  "data/output/hourly_station_ongoing.csv.gz",    # Recent hourly station data
+  "data/input/municipalities.csv.gz"              # Municipality reference data
+)
 
-cat("Script structure ready - implementation needed for municipal aggregation\n")
-cat("Will combine station observations + municipal forecasts\n")
+# Optional files
+optional_files <- c(
+  "data/output/daily_station_historical.csv.gz"   # Historical daily station data
+)
+
+# Check if municipal forecast file exists (most recent one)
+forecast_files <- list.files("data/output", pattern = "municipal_forecasts_.*\\.csv", full.names = TRUE)
+if(length(forecast_files) > 0) {
+  latest_forecast_file <- forecast_files[which.max(file.mtime(forecast_files))]
+  cat("Using forecast file:", basename(latest_forecast_file), "\n")
+} else {
+  cat("WARNING: No municipal forecast files found\n")
+  latest_forecast_file <- NULL
+}
+
+missing_files <- required_files[!file.exists(required_files)]
+if(length(missing_files) > 0) {
+  cat("ERROR: Missing required files:\n")
+  cat(paste("-", missing_files, collapse = "\n"))
+  cat("\nPlease run the required data collection scripts first.\n")
+  quit(save = "no", status = 1)
+}
+
+# Check optional files
+missing_optional <- optional_files[!file.exists(optional_files)]
+if(length(missing_optional) > 0) {
+  cat("WARNING: Missing optional files:\n")
+  cat(paste("-", missing_optional, collapse = "\n"))
+  cat("Dataset will be created with available data only.\n")
+}
+
+cat("All required input files found\n")
+
+# Load municipality reference data
+cat("Loading municipality reference data...\n")
+municipalities <- fread("data/input/municipalities.csv.gz")
+cat("Loaded", nrow(municipalities), "municipalities\n")
+
+# Load station data and aggregate to daily if needed
+cat("Loading and processing station data...\n")
+
+# Load historical daily station data
+if(file.exists("data/output/daily_station_historical.csv.gz")) {
+  historical_daily <- fread("data/output/daily_station_historical.csv.gz")
+  historical_daily[, date := as_date(date)]
+  cat("Loaded", nrow(historical_daily), "historical daily station records\n")
+} else {
+  historical_daily <- NULL
+  cat("No historical daily station data found\n")
+}
+
+# Load recent hourly data and aggregate to daily
+if(file.exists("data/output/hourly_station_ongoing.csv.gz")) {
+  hourly_recent <- fread("data/output/hourly_station_ongoing.csv.gz")
+  hourly_recent[, date := as_date(fint)]
+  
+  # Convert from long to wide format for easier aggregation
+  hourly_wide <- hourly_recent %>%
+    pivot_wider(names_from = measure, values_from = value) %>%
+    as.data.table()
+  
+  # Aggregate recent hourly to daily (only if we have the expected columns)
+  available_vars <- intersect(names(hourly_wide), c("ta", "tamax", "tamin", "hr", "prec", "vv", "pres"))
+  
+  if(length(available_vars) > 0) {
+    # Use a simpler aggregation approach
+    cat("Aggregating hourly to daily for variables:", paste(available_vars, collapse = ", "), "\n")
+    
+    # Create the aggregation dynamically using data.table syntax
+    hourly_for_agg <- hourly_wide[, .(date, idema, ta, tamax, tamin, hr, prec, vv, pres)]
+    
+    recent_daily <- hourly_for_agg[, .(
+      ta = mean(ta, na.rm = TRUE),
+      tamax = max(tamax, na.rm = TRUE),
+      tamin = min(tamin, na.rm = TRUE),
+      hr = mean(hr, na.rm = TRUE),
+      prec = sum(prec, na.rm = TRUE),
+      vv = mean(vv, na.rm = TRUE),
+      pres = mean(pres, na.rm = TRUE)
+    ), by = .(date, idema)]
+    
+    # Replace infinite values with NA
+    recent_daily[is.infinite(tamax), tamax := NA]
+    recent_daily[is.infinite(tamin), tamin := NA]
+    recent_daily[is.nan(ta), ta := NA]
+    recent_daily[is.nan(hr), hr := NA]
+    recent_daily[is.nan(prec), prec := NA]
+    recent_daily[is.nan(vv), vv := NA]
+    recent_daily[is.nan(pres), pres := NA]
+    
+    cat("Aggregated", nrow(recent_daily), "recent daily station records\n")
+    cat("Available variables:", paste(available_vars, collapse = ", "), "\n")
+  } else {
+    recent_daily <- NULL
+    cat("No compatible variables found in hourly data\n")
+  }
+} else {
+  recent_daily <- NULL
+  cat("No recent hourly station data found\n")
+}
+
+# Combine historical and recent daily data
+if(!is.null(historical_daily) && !is.null(recent_daily)) {
+  # Align column names - historical uses 'indicativo', recent uses 'idema'
+  if("indicativo" %in% names(historical_daily)) {
+    setnames(historical_daily, "indicativo", "idema")
+  }
+  
+  # Find overlap period and remove from historical to avoid duplicates
+  min_recent_date <- min(recent_daily$date)
+  historical_clean <- historical_daily[date < min_recent_date]
+  
+  # Combine
+  combined_daily <- rbindlist(list(historical_clean, recent_daily), fill = TRUE)
+  cat("Combined daily station data:", nrow(combined_daily), "records\n")
+  
+} else if(!is.null(historical_daily)) {
+  combined_daily <- historical_daily
+  if("indicativo" %in% names(combined_daily)) {
+    setnames(combined_daily, "indicativo", "idema")
+  }
+} else if(!is.null(recent_daily)) {
+  combined_daily <- recent_daily
+} else {
+  cat("ERROR: No station data available for aggregation\n")
+  quit(save = "no", status = 1)
+}
+
+# Simple municipal aggregation (averaging all stations)
+# Note: This is a simplified approach. For production, implement proper geographic mapping.
+cat("Aggregating station data to municipal level...\n")
+
+available_weather_vars <- intersect(names(combined_daily), c("ta", "tamax", "tamin", "hr", "prec", "vv", "pres"))
+cat("Available weather variables for aggregation:", paste(available_weather_vars, collapse = ", "), "\n")
+
+if(length(available_weather_vars) == 0) {
+  cat("ERROR: No weather variables available for aggregation\n")
+  quit(save = "no", status = 1)
+}
+
+# Build dynamic aggregation list
+municipal_agg_list <- list(station_count = quote(.N))
+
+if("ta" %in% available_weather_vars) municipal_agg_list$ta <- quote(mean(ta, na.rm = TRUE))
+if("tamax" %in% available_weather_vars) municipal_agg_list$tamax <- quote(max(tamax, na.rm = TRUE))
+if("tamin" %in% available_weather_vars) municipal_agg_list$tamin <- quote(min(tamin, na.rm = TRUE))
+if("hr" %in% available_weather_vars) municipal_agg_list$hr <- quote(mean(hr, na.rm = TRUE))
+if("prec" %in% available_weather_vars) municipal_agg_list$prec <- quote(mean(prec, na.rm = TRUE))
+if("vv" %in% available_weather_vars) municipal_agg_list$vv <- quote(mean(vv, na.rm = TRUE))
+if("pres" %in% available_weather_vars) municipal_agg_list$pres <- quote(mean(pres, na.rm = TRUE))
+
+# Perform aggregation
+municipal_daily <- combined_daily[, municipal_agg_list, by = date]
+
+# Replace infinite values with NA for numeric columns
+for(var in available_weather_vars) {
+  if(var %in% names(municipal_daily)) {
+    if("tamax" %in% var || "tamin" %in% var) {
+      municipal_daily[is.infinite(get(var)), (var) := NA]
+    }
+    municipal_daily[is.nan(get(var)), (var) := NA]
+  }
+}
+
+# Add a generic municipality ID for now (simplified approach)
+municipal_daily[, municipality := "SPAIN_AVERAGE"]
+municipal_daily[, data_source := "observations"]
+
+cat("Created municipal aggregation:", nrow(municipal_daily), "daily records\n")
+
+# Load and append forecast data if available
+if(!is.null(latest_forecast_file)) {
+  cat("Loading forecast data...\n")
+  forecasts <- fread(latest_forecast_file)
+  
+  if(nrow(forecasts) > 0) {
+    # Standardize forecast data structure - update column names based on actual structure
+    cat("Forecast columns:", paste(names(forecasts), collapse = ", "), "\n")
+    
+    forecast_daily <- forecasts[, .(
+      date = as_date(fecha),
+      municipality = municipio_nombre,
+      ta = (temp_max + temp_min) / 2,
+      tamax = temp_max,
+      tamin = temp_min,
+      hr = (humid_max + humid_min) / 2,
+      prec = 0,  # Placeholder - no precipitation data in this format
+      vv = wind_speed,
+      pres = NA_real_, # Pressure not available in forecasts
+      station_count = 1L,
+      data_source = "forecast"
+    )]
+    
+    # Remove forecast dates that overlap with observations
+    max_obs_date <- max(municipal_daily$date)
+    forecast_daily <- forecast_daily[date > max_obs_date]
+    
+    if(nrow(forecast_daily) > 0) {
+      # For simplified approach, aggregate all municipalities to Spain average
+      forecast_aggregated <- forecast_daily[, .(
+        ta = mean(ta, na.rm = TRUE),
+        tamax = mean(tamax, na.rm = TRUE),
+        tamin = mean(tamin, na.rm = TRUE),
+        hr = mean(hr, na.rm = TRUE),
+        prec = mean(prec, na.rm = TRUE),
+        vv = NA_real_,
+        pres = NA_real_,
+        station_count = .N,
+        data_source = "forecast"
+      ), by = date]
+      
+      forecast_aggregated[, municipality := "SPAIN_AVERAGE"]
+      
+      # Combine observations and forecasts
+      final_data <- rbindlist(list(municipal_daily, forecast_aggregated), fill = TRUE)
+      cat("Added", nrow(forecast_aggregated), "forecast records\n")
+    } else {
+      final_data <- municipal_daily
+      cat("No future forecast dates to add\n")
+    }
+  } else {
+    final_data <- municipal_daily
+    cat("Empty forecast file\n")
+  }
+} else {
+  final_data <- municipal_daily
+  cat("No forecast data to append\n")
+}
+
+# Sort by date
+final_data <- final_data[order(date)]
+
+# Add metadata
+final_data[, created_date := Sys.Date()]
+
+# Ensure all columns are atomic (no list columns)
+final_data <- final_data[, .(
+  date, municipality, ta, tamax, tamin, hr, prec, vv, pres, 
+  station_count, data_source, created_date
+)]
+
+cat("\n=== MUNICIPAL DAILY AGGREGATION SUMMARY ===\n")
+cat("Total records:", nrow(final_data), "\n")
+cat("Date range:", as.character(min(final_data$date)), "to", as.character(max(final_data$date)), "\n")
+cat("Observation records:", nrow(final_data[data_source == "observations"]), "\n")
+cat("Forecast records:", nrow(final_data[data_source == "forecast"]), "\n")
+
+# Show variable completeness
+cat("\nVariable completeness:\n")
+completeness <- final_data[, lapply(.SD, function(x) round(sum(!is.na(x))/length(x)*100, 1)), 
+                          .SDcols = c("ta", "tamax", "tamin", "hr", "prec", "vv", "pres")]
+print(completeness)
+
+# Save the result
+output_file <- "data/output/daily_municipal_extended.csv.gz"
+fwrite(final_data, output_file)
+
+cat("\n=== MUNICIPAL DAILY AGGREGATION COMPLETE ===\n")
+cat("Municipal daily data saved to:", output_file, "\n")
+cat("File size:", round(file.size(output_file)/1024/1024, 2), "MB\n")
+
+cat("\nNOTE: This version uses simplified municipality mapping (Spain average).\n")
+cat("For production use, implement proper geographic station-municipality mapping.\n")
+cat("Completed at:", format(Sys.time()), "\n")

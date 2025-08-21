@@ -1,0 +1,108 @@
+
+R version 4.4.2 (2024-10-31) -- "Pile of Leaves"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '~/research/weather-data-collector-spain' loaded. [renv 1.1.4]
+- The project is out-of-sync -- use `renv::status()` for details.
+> #!/usr/bin/env Rscript
+> 
+> # aggregate_municipal_daily.R
+> # --------------------------
+> # Purpose: Create Dataset 2 - Daily municipal data combining station observations with forecasts
+> # 
+> # This script:
+> # 1. Takes daily station data and aggregates it to municipal level
+> # 2. Appends municipal forecast data for future days
+> # 3. Produces a unified municipal daily dataset covering historical + forecast periods
+> #
+> # Output: data/output/daily_municipal_extended.csv.gz
+> #
+> # Dependencies: Requires daily station data and municipal forecast data
+> #
+> # Author: John Palmer
+> # Date: 2025-08-22
+> 
+> rm(list=ls())
+> 
+> library(tidyverse)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.0.4     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+> library(lubridate)
+> library(data.table)
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:lubridate’:
+
+    hour, isoweek, mday, minute, month, quarter, second, wday, week,
+    yday, year
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+The following object is masked from ‘package:purrr’:
+
+    transpose
+
+> 
+> cat("=== Municipal Daily Data Aggregation ===\n")
+=== Municipal Daily Data Aggregation ===
+> cat("Started at:", format(Sys.time()), "\n")
+Started at: 2025-08-22 01:10:23 
+> 
+> # Check required input files
+> required_files <- c(
++   "data/output/daily_station_historical.csv.gz",  # Historical daily station data
++   "data/output/hourly_station_ongoing.csv.gz",    # Recent hourly station data
++   "data/input/municipalities.csv.gz"              # Municipality reference data
++ )
+> 
+> # Check if municipal forecast file exists (most recent one)
+> forecast_files <- list.files("data/output", pattern = "municipal_forecasts_.*\\.csv", full.names = TRUE)
+> if(length(forecast_files) > 0) {
++   latest_forecast_file <- forecast_files[which.max(file.mtime(forecast_files))]
++   required_files <- c(required_files, latest_forecast_file)
++   cat("Using forecast file:", basename(latest_forecast_file), "\n")
++ } else {
++   cat("WARNING: No municipal forecast files found\n")
++   latest_forecast_file <- NULL
++ }
+Using forecast file: municipal_forecasts_2025-08-21.csv 
+> 
+> missing_files <- required_files[!file.exists(required_files)]
+> if(length(missing_files) > 0) {
++   cat("ERROR: Missing required files:\n")
++   cat(paste("-", missing_files, collapse = "\n"))
++   cat("\nPlease run the required data collection scripts first.\n")
++   quit(save = "no", status = 1)
++ }
+ERROR: Missing required files:
+- data/output/daily_station_historical.csv.gz
+Please run the required data collection scripts first.
+> proc.time()
+   user  system elapsed 
+  0.813   0.087   1.016 

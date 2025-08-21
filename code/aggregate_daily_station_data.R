@@ -27,14 +27,14 @@ library(data.table)
 cat("=== DAILY STATION DATA AGGREGATION ===\n")
 
 # Check if expanded hourly data exists
-if(!file.exists("data/spain_weather_expanded.csv.gz")) {
-  cat("ERROR: Expanded hourly weather data not found. Run get_latest_data_expanded.R first.\n")
+if(!file.exists("data/output/hourly_station_ongoing.csv.gz")) {
+  cat("ERROR: Hourly weather data not found. Run get_latest_data.R first.\n")
   quit(save="no", status=1)
 }
 
 # Load expanded hourly data
-cat("Loading hourly expanded weather data...\n")
-hourly_data = fread("data/spain_weather_expanded.csv.gz")
+cat("Loading hourly weather data...\n")
+hourly_data = fread("data/output/hourly_station_ongoing.csv.gz")
 hourly_data$fint = as_datetime(hourly_data$fint)
 hourly_data$date = as.Date(hourly_data$fint)
 
@@ -43,9 +43,9 @@ cat("Date range:", min(hourly_data$date, na.rm=TRUE), "to", max(hourly_data$date
 
 # Load historical daily data if it exists
 historical_daily = NULL
-if(file.exists("data/spain_weather_daily_historical.csv.gz")) {
+if(file.exists("data/output/daily_station_historical.csv.gz")) {
   cat("Loading historical daily data...\n")
-  historical_daily = fread("data/spain_weather_daily_historical.csv.gz")
+  historical_daily = fread("data/output/daily_station_historical.csv.gz")
   
   # Standardize historical data format
   if("fecha" %in% names(historical_daily)) {
@@ -159,7 +159,7 @@ variable_coverage = combined_daily[, .(
 print(variable_coverage)
 
 # Save the aggregated daily data
-output_file = "data/spain_weather_daily_aggregated.csv.gz"
+output_file = "data/output/daily_station_aggregated.csv.gz"
 fwrite(combined_daily, output_file)
 
 cat("\n=== AGGREGATION COMPLETE ===\n")

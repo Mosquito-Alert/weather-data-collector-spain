@@ -1,0 +1,233 @@
+
+R version 4.4.2 (2024-10-31) -- "Pile of Leaves"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '~/research/weather-data-collector-spain' loaded. [renv 1.1.4]
+- The project is out-of-sync -- use `renv::status()` for details.
+> #!/usr/bin/env Rscript
+> 
+> # aggregate_municipal_daily.R
+> # --------------------------
+> # Purpose: Create Dataset 2 - Daily municipal data combining station observations with forecasts
+> # 
+> # This script:
+> # 1. Takes daily station data and aggregates it to municipal level
+> # 2. Appends municipal forecast data for future days
+> # 3. Produces a unified municipal daily dataset covering historical + forecast periods
+> #
+> # Output: data/output/daily_municipal_extended.csv.gz
+> #
+> # Dependencies: Requires daily station data and municipal forecast data
+> #
+> # Author: John Palmer
+> # Date: 2025-08-22
+> 
+> rm(list=ls())
+> 
+> library(tidyverse)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.0.4     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+> library(lubridate)
+> library(data.table)
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:lubridate’:
+
+    hour, isoweek, mday, minute, month, quarter, second, wday, week,
+    yday, year
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+The following object is masked from ‘package:purrr’:
+
+    transpose
+
+> 
+> cat("=== Municipal Daily Data Aggregation ===\n")
+=== Municipal Daily Data Aggregation ===
+> cat("Started at:", format(Sys.time()), "\n")
+Started at: 2025-08-22 01:11:36 
+> 
+> # Check required input files
+> required_files <- c(
++   "data/output/hourly_station_ongoing.csv.gz",    # Recent hourly station data
++   "data/input/municipalities.csv.gz"              # Municipality reference data
++ )
+> 
+> # Optional files
+> optional_files <- c(
++   "data/output/daily_station_historical.csv.gz"   # Historical daily station data
++ )
+> 
+> # Check if municipal forecast file exists (most recent one)
+> forecast_files <- list.files("data/output", pattern = "municipal_forecasts_.*\\.csv", full.names = TRUE)
+> if(length(forecast_files) > 0) {
++   latest_forecast_file <- forecast_files[which.max(file.mtime(forecast_files))]
++   cat("Using forecast file:", basename(latest_forecast_file), "\n")
++ } else {
++   cat("WARNING: No municipal forecast files found\n")
++   latest_forecast_file <- NULL
++ }
+Using forecast file: municipal_forecasts_2025-08-21.csv 
+> 
+> missing_files <- required_files[!file.exists(required_files)]
+> if(length(missing_files) > 0) {
++   cat("ERROR: Missing required files:\n")
++   cat(paste("-", missing_files, collapse = "\n"))
++   cat("\nPlease run the required data collection scripts first.\n")
++   quit(save = "no", status = 1)
++ }
+> 
+> # Check optional files
+> missing_optional <- optional_files[!file.exists(optional_files)]
+> if(length(missing_optional) > 0) {
++   cat("WARNING: Missing optional files:\n")
++   cat(paste("-", missing_optional, collapse = "\n"))
++   cat("Dataset will be created with available data only.\n")
++ }
+WARNING: Missing optional files:
+- data/output/daily_station_historical.csv.gzDataset will be created with available data only.
+> 
+> cat("All required input files found\n")
+All required input files found
+> 
+> # Load municipality reference data
+> cat("Loading municipality reference data...\n")
+Loading municipality reference data...
+> municipalities <- fread("data/input/municipalities.csv.gz")
+> cat("Loaded", nrow(municipalities), "municipalities\n")
+Loaded 8129 municipalities
+> 
+> # Load station data and aggregate to daily if needed
+> cat("Loading and processing station data...\n")
+Loading and processing station data...
+> 
+> # Load historical daily station data
+> if(file.exists("data/output/daily_station_historical.csv.gz")) {
++   historical_daily <- fread("data/output/daily_station_historical.csv.gz")
++   historical_daily[, date := as_date(date)]
++   cat("Loaded", nrow(historical_daily), "historical daily station records\n")
++ } else {
++   historical_daily <- NULL
++   cat("No historical daily station data found\n")
++ }
+No historical daily station data found
+> 
+> # Load recent hourly data and aggregate to daily
+> if(file.exists("data/output/hourly_station_ongoing.csv.gz")) {
++   hourly_recent <- fread("data/output/hourly_station_ongoing.csv.gz")
++   hourly_recent[, date := as_date(fint)]
++   
++   # Convert from long to wide format for easier aggregation
++   hourly_wide <- hourly_recent %>%
++     pivot_wider(names_from = measure, values_from = value) %>%
++     as.data.table()
++   
++   # Aggregate recent hourly to daily (only if we have the expected columns)
++   available_vars <- intersect(names(hourly_wide), c("ta", "tamax", "tamin", "hr", "prec", "vv", "pres"))
++   
++   if(length(available_vars) > 0) {
++     agg_list <- list()
++     if("ta" %in% available_vars) agg_list$ta <- quote(mean(ta, na.rm = TRUE))
++     if("tamax" %in% available_vars) agg_list$tamax <- quote(max(tamax, na.rm = TRUE))
++     if("tamin" %in% available_vars) agg_list$tamin <- quote(min(tamin, na.rm = TRUE))
++     if("hr" %in% available_vars) agg_list$hr <- quote(mean(hr, na.rm = TRUE))
++     if("prec" %in% available_vars) agg_list$prec <- quote(sum(prec, na.rm = TRUE))
++     if("vv" %in% available_vars) agg_list$vv <- quote(mean(vv, na.rm = TRUE))
++     if("pres" %in% available_vars) agg_list$pres <- quote(mean(pres, na.rm = TRUE))
++     
++     recent_daily <- hourly_wide[, agg_list, by = .(date, idema)]
++     
++     # Replace infinite values with NA
++     for(col in names(recent_daily)) {
++       if(is.numeric(recent_daily[[col]])) {
++         recent_daily[is.infinite(get(col)), (col) := NA]
++       }
++     }
++     
++     cat("Aggregated", nrow(recent_daily), "recent daily station records\n")
++     cat("Available variables:", paste(available_vars, collapse = ", "), "\n")
++   } else {
++     recent_daily <- NULL
++     cat("No compatible variables found in hourly data\n")
++   }
++ } else {
++   recent_daily <- NULL
++   cat("No recent hourly station data found\n")
++ }
+Aggregated 5852 recent daily station records
+Available variables: ta, tamax, tamin, hr, prec, vv, pres 
+> 
+> # Combine historical and recent daily data
+> if(!is.null(historical_daily) && !is.null(recent_daily)) {
++   # Align column names - historical uses 'indicativo', recent uses 'idema'
++   if("indicativo" %in% names(historical_daily)) {
++     setnames(historical_daily, "indicativo", "idema")
++   }
++   
++   # Find overlap period and remove from historical to avoid duplicates
++   min_recent_date <- min(recent_daily$date)
++   historical_clean <- historical_daily[date < min_recent_date]
++   
++   # Combine
++   combined_daily <- rbindlist(list(historical_clean, recent_daily), fill = TRUE)
++   cat("Combined daily station data:", nrow(combined_daily), "records\n")
++   
++ } else if(!is.null(historical_daily)) {
++   combined_daily <- historical_daily
++   if("indicativo" %in% names(combined_daily)) {
++     setnames(combined_daily, "indicativo", "idema")
++   }
++ } else if(!is.null(recent_daily)) {
++   combined_daily <- recent_daily
++ } else {
++   cat("ERROR: No station data available for aggregation\n")
++   quit(save = "no", status = 1)
++ }
+> 
+> # Simple municipal aggregation (averaging all stations)
+> # Note: This is a simplified approach. For production, implement proper geographic mapping.
+> cat("Aggregating station data to municipal level...\n")
+Aggregating station data to municipal level...
+> 
+> # For now, we'll create a simple mapping based on station proximity to municipalities
+> # This is a placeholder - in production you'd want proper geographic station-municipality mapping
+> 
+> municipal_daily <- combined_daily[, .(
++   ta = mean(ta, na.rm = TRUE),
++   tamax = max(tamax, na.rm = TRUE), 
++   tamin = min(tamin, na.rm = TRUE),
++   hr = mean(hr, na.rm = TRUE),
++   prec = mean(prec, na.rm = TRUE), # Average precipitation across stations
++   vv = mean(vv, na.rm = TRUE),
++   pres = mean(pres, na.rm = TRUE),
++   station_count = .N
++ ), by = date]
+Error: object 'ta' not found
+Execution halted
