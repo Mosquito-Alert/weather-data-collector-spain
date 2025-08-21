@@ -86,7 +86,7 @@ This project integrates with the [mosquito-alert-model-monitor](https://github.c
 # Test integration
 ./scripts/test_dashboard_integration.sh
 
-# Check dashboard at: /path/to/mosquito-alert-model-monitor/docs/index.html
+# Check dashboard at: ~/research/mosquito-alert-model-monitor/docs/index.html
 ```
 
 **Status Reporting:**
@@ -140,7 +140,7 @@ All output files are written to the `data/` directory as compressed CSVs.
 
 ## Directory Structure
 ```
-realtime-weather-spain/
+weather-data-collector-spain/
 ├── auth/                  # Untracked directory for API keys
 │   └── keys.R
 ├── code/                  # Main R scripts

@@ -1,13 +1,29 @@
 # Site settings for GitHub Pages
-title: "Real-time Weather Spain"
+title: "Weather Data Collector Spain"
 description: "Comprehensive weather data collection and analysis for Spain using AEMET OpenData API"
-url: "https://activityspacelab.github.io"
-baseurl: "/realtime-weather-spain"
+url: "https://mosquito-alert.github.io"
+baseurl: "/weather-data-collector-spain"
 
 # Build settings
 markdown: kramdown
 highlighter: rouge
 theme: minima
+
+# GitHub Pages specific settings
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-paginate
+
+# SEO settings
+author: Mosquito Alert
+twitter:
+  username: mosquitoalert
+social:
+  name: Mosquito Alert
+  links:
+    - https://github.com/Mosquito-Alert
 
 # Navigation
 nav_links:
@@ -27,11 +43,6 @@ collections:
   analysis:
     output: true
     permalink: /:collection/:name/
-
-# Plugins
-plugins:
-  - jekyll-feed
-  - jekyll-sitemap
 
 # Exclude files
 exclude:

@@ -22,7 +22,7 @@
 # 
 # m h  dom mon dow   command
 SHELL=/bin/bash
-*/15 * * * * cd /home/palmer/research/realtime-weather-spain && sh update_weather.sh>>update_weather.log
-0 */4 * * * cd /home/palmer/research/realtime-weather-spain && sh update_historical_weather.sh>>update_historical_weather.log
+*/15 * * * * cd /home/palmer/research/weather-data-collector-spain && sh update_weather.sh>>update_weather.log
+0 */4 * * * cd /home/palmer/research/weather-data-collector-spain && sh update_historical_weather.sh>>update_historical_weather.log
 5-59/15 * * * * cd /home/palmer && source .profile && cd /home/palmer/research/heat-wave-tracker && sh hourly_monitor.sh>>hourly_monitor.log
 10 */4 * * * cd /home/palmer && source .profile && cd /home/palmer/research/heat-wave-tracker && sh monitor_heat.sh>>monnitor_heat.log

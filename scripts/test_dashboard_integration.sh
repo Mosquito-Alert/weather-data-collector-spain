@@ -5,7 +5,7 @@
 # Test script to verify dashboard integration is working
 
 # Configuration
-MONITOR_REPO="$HOME/mosquito-alert-model-monitor"  # Adjust path as needed
+MONITOR_REPO="$HOME/research/mosquito-alert-model-monitor"  # Path to monitor dashboard
 WEATHER_REPO="$HOME/research/weather-data-collector-spain"
 
 echo "=== Weather Data Collector - Dashboard Integration Test ==="
@@ -13,7 +13,7 @@ echo "=== Weather Data Collector - Dashboard Integration Test ==="
 # Check if monitor repo exists
 if [ ! -d "$MONITOR_REPO" ]; then
     echo "❌ Monitor repository not found at: $MONITOR_REPO"
-    echo "Please clone: git clone https://github.com/Mosquito-Alert/mosquito-alert-model-monitor.git"
+    echo "Please clone: cd ~/research && git clone https://github.com/Mosquito-Alert/mosquito-alert-model-monitor.git"
     exit 1
 fi
 
