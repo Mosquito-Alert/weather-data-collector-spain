@@ -1,0 +1,69 @@
+# Weather Data Collector - Dashboard Integration
+# ==============================================
+# Configuration for mosquito-alert-model-monitor dashboard
+
+# Copy this to your mosquito-alert-model-monitor repository
+# in a file called config/weather_jobs.yml
+
+weather_data_collector:
+  description: "Spanish Weather Data Collection System"
+  repository: "https://github.com/Mosquito-Alert/weather-data-collector-spain"
+  jobs:
+    weather-data-collector:
+      name: "Complete Weather Collection"
+      description: "Full weather data collection pipeline"
+      schedule: "Every 6 hours"
+      priority: "high"
+      datasets:
+        - "Daily Station Historical"
+        - "Municipal Extended" 
+        - "Hourly Station Ongoing"
+      
+    weather-forecast:
+      name: "Municipal Forecasts"
+      description: "7-day municipal forecasts for 8,129 Spanish municipalities"
+      schedule: "Every 6 hours"
+      priority: "critical"
+      datasets:
+        - "Municipal Extended (forecast portion)"
+        
+    weather-hourly:
+      name: "Hourly Station Data"
+      description: "Current observations from AEMET stations"
+      schedule: "Every 2 hours"
+      priority: "medium"
+      datasets:
+        - "Hourly Station Ongoing"
+        
+    weather-historical:
+      name: "Historical Data Update"
+      description: "Daily historical weather data maintenance"
+      schedule: "Daily at 3 AM"
+      priority: "low"
+      datasets:
+        - "Daily Station Historical"
+        
+    municipal-forecast-priority:
+      name: "Priority Municipal Data"
+      description: "Immediate municipal data for model use"
+      schedule: "On demand"
+      priority: "critical"
+      datasets:
+        - "Municipal Extended (immediate availability)"
+
+alerts:
+  api_rate_limits:
+    threshold: 3
+    description: "AEMET API rate limit exceeded"
+    
+  empty_responses:
+    threshold: 5
+    description: "Server returned empty responses"
+    
+  forecast_data_age:
+    threshold: 12 # hours
+    description: "Forecast data is stale"
+    
+  disk_space:
+    threshold: 90 # percent
+    description: "Low disk space for data outputs"

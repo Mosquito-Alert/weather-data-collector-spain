@@ -70,6 +70,28 @@ gantt
     Accumulating Archive  :active, archive, 2025-08-01, 2025-08-21
 ```
 
+## Monitoring & Dashboard Integration
+
+### 🖥️ **Real-time Monitoring**
+This project integrates with the [mosquito-alert-model-monitor](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor) dashboard for real-time job monitoring.
+
+**Monitored Jobs:**
+- `weather-forecast`: Municipal forecasts (every 6 hours) - **CRITICAL PRIORITY**
+- `weather-hourly`: Station observations (every 2 hours) - **MEDIUM PRIORITY**  
+- `weather-historical`: Historical data updates (daily) - **LOW PRIORITY**
+- `municipal-forecast-priority`: Immediate municipal data - **CRITICAL PRIORITY**
+
+**Setup Dashboard Monitoring:**
+```bash
+# Test integration
+./scripts/test_dashboard_integration.sh
+
+# Check dashboard at: /path/to/mosquito-alert-model-monitor/docs/index.html
+```
+
+**Status Reporting:**
+All SLURM scripts automatically report job status, progress, and resource usage to the monitoring dashboard.
+
 ## Features
 - **Real-time Observations**: Fetches current hourly weather from all AEMET stations
 - **Historical Data**: Updates and maintains daily historical weather dataset

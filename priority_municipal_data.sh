@@ -1,0 +1,43 @@
+#!/bin/bash
+# filepath: /Users/palmer/research/weather-data-collector-spain/priority_municipal_data.sh
+#SBATCH --job-name=municipal-priority
+#SBATCH --partition=standard
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=4G
+#SBATCH --time=02:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL
+#SBATCH --mail-user=johnrbpalmer@gmail.com
+#SBATCH --output=logs/municipal_priority_%j.out
+#SBATCH --error=logs/municipal_priority_%j.err
+
+# Load required modules
+module load R/4.4.2-gfbf-2024a
+module load cURL/8.7.1-GCCcore-13.3.0
+
+# Set working directory
+cd ~/research/weather-data-collector-spain
+
+# Create logs directory
+mkdir -p logs
+
+# Activate renv
+R --slave --no-restore --file=- <<EOF
+renv::activate()
+EOF
+
+echo "Starting priority municipal data generation: $(date)"
+
+# Get forecasts first (immediate availability)
+echo "Collecting municipal forecasts for immediate model use..."
+R CMD BATCH --no-save --no-restore code/get_forecast_data.R logs/priority_forecast_$(date +%Y%m%d_%H%M%S).out
+
+# Generate backwards municipal data
+echo "Generating municipal data backwards from present..."
+R CMD BATCH --no-save --no-restore code/generate_municipal_priority.R logs/priority_municipal_$(date +%Y%m%d_%H%M%S).out
+
+echo "Priority municipal data generation completed: $(date)"
+echo "Models can now use: data/output/daily_municipal_extended.csv.gz"
+
+# Submit: sbatch priority_municipal_data.sh

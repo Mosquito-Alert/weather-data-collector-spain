@@ -62,7 +62,26 @@ start_priority_generation() {
     echo "✅ Priority generation started - check logs/municipal_priority.log"
 }
 
-# Function to setup cron jobs for continuous operation
+# Function to setup dashboard integration
+setup_dashboard_integration() {
+    echo "=== Setting up dashboard integration ==="
+    
+    # Check if monitor repo exists on cluster
+    if ssh "$CLUSTER_USER@$CLUSTER_HOST" "[ -d mosquito-alert-model-monitor ]"; then
+        echo "✅ Monitor repository found on cluster"
+        
+        # Ensure status directory exists
+        ssh "$CLUSTER_USER@$CLUSTER_HOST" "mkdir -p mosquito-alert-model-monitor/data/status"
+        
+        # Test status reporting
+        ssh "$CLUSTER_USER@$CLUSTER_HOST" "cd $CLUSTER_PATH && ./scripts/update_weather_status.sh weather-test running 0 0"
+        
+        echo "✅ Dashboard integration configured"
+    else
+        echo "⚠️  Monitor repository not found - clone it manually:"
+        echo "   git clone https://github.com/Mosquito-Alert/mosquito-alert-model-monitor.git"
+    fi
+}
 setup_cron_jobs() {
     echo "=== Setting up cron jobs ==="
     
@@ -103,6 +122,9 @@ main() {
         "start")
             start_priority_generation
             ;;
+        "dashboard")
+            setup_dashboard_integration
+            ;;
         "cron")
             setup_cron_jobs
             ;;
@@ -110,11 +132,12 @@ main() {
             deploy_code
             setup_api_keys
             install_dependencies
+            setup_dashboard_integration
             setup_cron_jobs
             start_priority_generation
             ;;
         *)
-            echo "Usage: $0 [code|keys|deps|start|cron|all]"
+            echo "Usage: $0 [code|keys|deps|dashboard|start|cron|all]"
             exit 1
             ;;
     esac
