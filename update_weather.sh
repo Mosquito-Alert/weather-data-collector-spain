@@ -1,5 +1,4 @@
 #!/bin/bash
-# filepath: /Users/palmer/research/weather-data-collector-spain/update_weather.sh
 #SBATCH --job-name=weather-collect
 #SBATCH --partition=ceab
 #SBATCH --nodes=1
@@ -37,6 +36,9 @@ cd ~/research/weather-data-collector-spain
 
 # Create logs directory if it doesn't exist
 mkdir -p logs
+
+# Create output directory if it doesn't exist
+mkdir -p data/output
 
 # Initialize status reporting
 JOB_NAME="weather-data-collector"

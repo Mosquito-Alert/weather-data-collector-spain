@@ -1,5 +1,4 @@
 #!/bin/bash
-# filepath: /Users/palmer/research/weather-data-collector-spain/update_historical_weather.sh
 #SBATCH --job-name=historical-weather
 #SBATCH --partition=ceab
 #SBATCH --nodes=1
@@ -36,6 +35,9 @@ cd ~/research/weather-data-collector-spain
 
 # Create logs directory
 mkdir -p logs
+
+# Create output directory
+mkdir -p data/output
 
 # Activate renv
 R --slave --no-restore --file=- <<EOF

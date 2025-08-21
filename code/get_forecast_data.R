@@ -179,6 +179,9 @@ if(length(all_forecasts) > 0) {
   cat("Sample data:\n")
   print(head(final_data, 3))
   
+  # Ensure output directory exists
+  dir.create("data/output", recursive = TRUE, showWarnings = FALSE)
+  
   # Save the data
   output_file = paste0("data/output/municipal_forecasts_", Sys.Date(), ".csv")
   write.csv(final_data, output_file, row.names = FALSE)

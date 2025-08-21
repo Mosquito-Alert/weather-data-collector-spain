@@ -1,5 +1,4 @@
 #!/bin/bash
-# filepath: /Users/palmer/research/weather-data-collector-spain/priority_municipal_forecast.sh
 #SBATCH --job-name=municipal-forecast-priority
 #SBATCH --partition=ceab
 #SBATCH --nodes=1
@@ -36,6 +35,9 @@ cd ~/research/weather-data-collector-spain
 
 # Create logs directory
 mkdir -p logs
+
+# Create output directory
+mkdir -p data/output
 
 # Initialize status reporting
 JOB_NAME="municipal-forecast-priority"

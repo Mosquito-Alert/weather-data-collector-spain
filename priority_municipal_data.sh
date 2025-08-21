@@ -1,5 +1,4 @@
 #!/bin/bash
-# filepath: /Users/palmer/research/weather-data-collector-spain/priority_municipal_data.sh
 #SBATCH --job-name=municipal-priority
 #SBATCH --partition=ceab
 #SBATCH --nodes=1
@@ -10,9 +9,7 @@
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=johnrbpalmer@gmail.com
 #SBATCH --output=logs/municipal_priority_%j.out
-#SBATCH --error=logs/municipal_priority_%j.err filepath: /Users/palmer/research/weather-data-collector-spain/priority_municipal_data.sh
-#SBATCH --job-name=municipal-priority
-#SBATCH --partition=standard
+#SBATCH --error=logs/municipal_priority_%j.err
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
@@ -47,6 +44,9 @@ cd ~/research/weather-data-collector-spain
 
 # Create logs directory
 mkdir -p logs
+
+# Create output directory
+mkdir -p data/output
 
 # Activate renv
 R --slave --no-restore --file=- <<EOF
