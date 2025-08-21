@@ -4,6 +4,12 @@
 # ------------------------------
 # Purpose: Priority generation of municipal daily data for immediate modeling use
 # 
+# NOTE: This script is now DEPRECATED in favor of the comprehensive aggregation approach.
+# The main workflow now uses aggregate_municipal_daily.R via generate_all_datasets.sh
+# 
+# This script remains available for emergency/priority use cases where immediate
+# municipal data is needed before the full aggregation pipeline runs.
+#
 # Strategy: Start from present/forecast and work backwards, saving incrementally
 # This ensures models can start using data immediately while historical collection continues
 #

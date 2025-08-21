@@ -88,36 +88,31 @@ else
     $STATUS_SCRIPT "weather-forecast" "failed" $(($(date +%s) - START_TIME)) 30
 fi
 
-# Priority 2: Generate municipal priority data (backwards from present)
-echo "Generating priority municipal data..."
-$STATUS_SCRIPT "$JOB_NAME" "running" $(($(date +%s) - START_TIME)) 50
-R CMD BATCH --no-save --no-restore code/generate_municipal_priority.R logs/generate_municipal_priority_$(date +%Y%m%d_%H%M%S).out
-
-# Priority 3: Hourly observations
+# Priority 2: Hourly observations
 echo "Collecting hourly observations..."
-$STATUS_SCRIPT "weather-hourly" "running" $(($(date +%s) - START_TIME)) 70
+$STATUS_SCRIPT "weather-hourly" "running" $(($(date +%s) - START_TIME)) 50
 R CMD BATCH --no-save --no-restore code/get_latest_data.R logs/get_latest_data_$(date +%Y%m%d_%H%M%S).out
 
 if [ $? -eq 0 ]; then
     $STATUS_SCRIPT "weather-hourly" "completed" $(($(date +%s) - START_TIME)) 100
 else
-    $STATUS_SCRIPT "weather-hourly" "failed" $(($(date +%s) - START_TIME)) 70
+    $STATUS_SCRIPT "weather-hourly" "failed" $(($(date +%s) - START_TIME)) 50
 fi
 
-# Priority 4: Historical data update
+# Priority 3: Historical data update
 echo "Updating historical data..."
-$STATUS_SCRIPT "weather-historical" "running" $(($(date +%s) - START_TIME)) 90
+$STATUS_SCRIPT "weather-historical" "running" $(($(date +%s) - START_TIME)) 70
 R CMD BATCH --no-save --no-restore code/get_historical_data.R logs/get_historical_data_$(date +%Y%m%d_%H%M%S).out
 
 if [ $? -eq 0 ]; then
     $STATUS_SCRIPT "weather-historical" "completed" $(($(date +%s) - START_TIME)) 100
 else
-    $STATUS_SCRIPT "weather-historical" "failed" $(($(date +%s) - START_TIME)) 90
+    $STATUS_SCRIPT "weather-historical" "failed" $(($(date +%s) - START_TIME)) 70
 fi
 
-# Priority 5: Generate aggregated datasets
+# Priority 4: Generate aggregated datasets
 echo "Generating aggregated datasets..."
-$STATUS_SCRIPT "weather-aggregation" "running" $(($(date +%s) - START_TIME)) 95
+$STATUS_SCRIPT "weather-aggregation" "running" $(($(date +%s) - START_TIME)) 90
 
 # Run dataset aggregation
 ./generate_all_datasets.sh
@@ -126,7 +121,7 @@ if [ $? -eq 0 ]; then
     $STATUS_SCRIPT "weather-aggregation" "completed" $(($(date +%s) - START_TIME)) 100
     echo "✅ All datasets generated successfully"
 else
-    $STATUS_SCRIPT "weather-aggregation" "failed" $(($(date +%s) - START_TIME)) 95
+    $STATUS_SCRIPT "weather-aggregation" "failed" $(($(date +%s) - START_TIME)) 90
     echo "❌ Dataset generation failed"
 fi
 
