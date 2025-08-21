@@ -24,6 +24,10 @@
 module load LibTIFF/4.6.0-GCCcore-13.3.0
 module load R/4.4.2-gfbf-2024a
 module load cURL/8.7.1-GCCcore-13.3.0
+module load Miniconda3/24.7.1-0
+
+# Activate conda environment
+conda activate mosquito-alert-monitor
 
 # Load SSH agent since this is no longer done by default on the cluster
 eval "$(ssh-agent -s)"

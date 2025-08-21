@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Load required modules
-module load LibTIFF/4.6.0-GCCcore-13.3.0
-
 # Load SSH agent since this is no longer done by default on the cluster
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_rsa
@@ -16,6 +13,14 @@ export LC_MONETARY=C.UTF-8
 export LC_PAPER=C.UTF-8
 export LC_MEASUREMENT=C.UTF-8
 export LANG=C.UTF-8
+
+# Load required modules
+module load LibTIFF/4.6.0-GCCcore-13.3.0
+module load Miniconda3/24.7.1-0
+
+# Activate conda environment
+conda activate mosquito-alert-monitor
+
 
 # test_dashboard_integration.sh
 # -----------------------------
