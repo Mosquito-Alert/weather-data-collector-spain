@@ -1,0 +1,185 @@
+
+R version 4.4.1 (2024-06-14) -- "Race for Your Life"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '~/research/realtime-weather-spain' loaded. [renv 1.1.4]
+> # Title ####
+> # For downloading latest observation data from AEMET stations all over Spain. This needs to be run at least every 12 hours, but better to run it every 2 because of API limits, failures etc.
+> 
+> rm(list=ls())
+> 
+> ####Dependencies####
+> library(tidyverse)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.0.4     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+> library(lubridate)
+> library(curl)
+Using libcurl 8.9.1 with OpenSSL/3.3.1
+
+Attaching package: ‘curl’
+
+The following object is masked from ‘package:readr’:
+
+    parse_date
+
+> library(jsonlite)
+
+Attaching package: ‘jsonlite’
+
+The following object is masked from ‘package:purrr’:
+
+    flatten
+
+> library(RSocrata)
+> library(data.table)
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:lubridate’:
+
+    hour, isoweek, mday, minute, month, quarter, second, wday, week,
+    yday, year
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+The following object is masked from ‘package:purrr’:
+
+    transpose
+
+> library(R.utils)
+Loading required package: R.oo
+Loading required package: R.methodsS3
+R.methodsS3 v1.8.2 (2022-06-13 22:00:14 UTC) successfully loaded. See ?R.methodsS3 for help.
+R.oo v1.27.1 (2025-05-02 21:00:05 UTC) successfully loaded. See ?R.oo for help.
+
+Attaching package: ‘R.oo’
+
+The following object is masked from ‘package:R.methodsS3’:
+
+    throw
+
+The following objects are masked from ‘package:methods’:
+
+    getClasses, getMethods
+
+The following objects are masked from ‘package:base’:
+
+    attach, detach, load, save
+
+R.utils v2.13.0 (2025-02-24 21:20:02 UTC) successfully loaded. See ?R.utils for help.
+
+Attaching package: ‘R.utils’
+
+The following object is masked from ‘package:jsonlite’:
+
+    validate
+
+The following object is masked from ‘package:tidyr’:
+
+    extract
+
+The following object is masked from ‘package:utils’:
+
+    timestamp
+
+The following objects are masked from ‘package:base’:
+
+    cat, commandArgs, getOption, isOpen, nullfile, parse, use, warnings
+
+> 
+> source("auth/keys.R")
+> 
+> aemet_api_request = function(){
++   req = curl_fetch_memory(paste0('https://opendata.aemet.es/opendata/api/observacion/convencional/todas'), handle=h)
++   wurl = fromJSON(rawToChar(req$content))$datos
++   req = curl_fetch_memory(wurl)
++   this_string = rawToChar(req$content)
++   Encoding(this_string) = "latin1"
++   wdia  = fromJSON(this_string) %>% as_tibble() %>% dplyr::select(fint, idema, tamax, tamin, hr)
++   return(wdia)
++ }
+> 
+> get_data = function(){
++   tryCatch(
++     expr = {
++      return(aemet_api_request())
++     },
++     error = function(e){ 
++       # (Optional)
++       # Do this if an error is caught...
++       print(e)
++       # waiting and then...
++       Sys.sleep(50)
++       # try again:
++       wdia = get_data()
++       return(NULL)
++     },
++     warning = function(w){
++       print(w)
++       # (Optional)
++       # Do this if a warning is caught...
++       return(NULL)
++     },
++     finally = {
++       # (Optional)
++       # Do this at the end before quitting the tryCatch structure...
++     }
++   )
++ }
+> 
+> h <- new_handle()
+> handle_setheaders(h, 'api_key' = my_api_key)
+> 
+> wdia = get_data()
+> if(is.null(wdia)){
++   # we didn't get the data, wait in case the problem is that we are being throttled by the API...
++   Sys.sleep(60)
++   # then try again:
++   wdia = get_data()
++ }
+> 
+> if(!is.null(wdia) || nrow(wdia) > 0){
++ latest_weather = wdia %>% pivot_longer(cols = c(tamax, tamin, hr), names_to = "measure") %>% filter(!is.na(value)) %>% mutate(fint = as_datetime(fint)) %>% as.data.table()
++ 
++ print(paste0("downloaded ", nrow(latest_weather), " new rows of data."))
++ 
++ 
++ previous_weather = fread("data/spain_weather.csv.gz")
++ 
++ spain_weather = bind_rows(latest_weather, previous_weather) %>% distinct()
++ 
++ fwrite(as.data.table(spain_weather), "data/spain_weather.csv.gz")
++ } else{
++   
++   print("No new data. Nothing new saved")
++ }
+[1] "downloaded 30466 new rows of data."
+> 
+> 
+> 
+> proc.time()
+   user  system elapsed 
+  4.807   0.447   8.048 
