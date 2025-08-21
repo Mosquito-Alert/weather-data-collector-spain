@@ -6,7 +6,7 @@
 # Reports weather data collection job status
 
 # Configuration
-MONITOR_REPO_PATH="$HOME/mosquito-alert-model-monitor"  # Adjust path as needed
+MONITOR_REPO_PATH="$HOME/research/mosquito-alert-model-monitor"  # Path to monitor dashboard
 STATUS_DIR="$MONITOR_REPO_PATH/data/status"
 JOB_NAME="${1:-weather-data-collector}"
 STATUS="${2:-unknown}"

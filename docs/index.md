@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Real-time Weather Spain Documentation
+title: Weather Data Collector Spain Documentation
 ---
 
-# Real-time Weather Spain
+# Weather Data Collector Spain
 
 ## Overview
 

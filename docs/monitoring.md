@@ -38,7 +38,8 @@ This project is integrated with the [mosquito-alert-model-monitor](https://githu
 ### 1. Clone Monitor Repository
 
 ```bash
-# On cluster
+# On cluster, in research directory
+cd ~/research
 git clone https://github.com/Mosquito-Alert/mosquito-alert-model-monitor.git
 cd mosquito-alert-model-monitor
 
