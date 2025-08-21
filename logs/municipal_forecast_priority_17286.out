@@ -1,0 +1,10 @@
+Agent pid 438572
+Agent pid 438585
+Status updated for municipal-forecast-priority: running
+Starting priority municipal data generation: Thu Aug 21 20:36:46 CEST 2025
+Collecting municipal forecasts for immediate model use...
+Agent pid 438642
+Status updated for municipal-forecast-priority: running
+Agent pid 438724
+Status updated for municipal-forecast-priority: failed
+❌ Forecast collection failed
