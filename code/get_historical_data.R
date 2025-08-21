@@ -1,9 +1,18 @@
-# get_historical_data_expanded.R
+# get_historical_data.R
 # ----------------------
 # Purpose: Download and update historical daily weather data for Spain from the AEMET OpenData API.
 #
-# This script checks for missing dates in the local historical weather dataset and downloads any missing data in chunks.
-# Data is fetched from the AEMET API, processed, and appended to the local CSV file.
+# This script fetches historical daily climatological data using the 7 core variables
+# that are compatible across current observations, historical data, and forecast endpoints.
+#
+# Core Variables (Standardized):
+#   - ta: Air temperature (°C) - from tmed
+#   - tamax: Maximum temperature (°C) - from tmax 
+#   - tamin: Minimum temperature (°C) - from tmin
+#   - hr: Relative humidity (%) - from hrMedia
+#   - prec: Precipitation (mm) - from prec
+#   - vv: Wind speed (km/h) - from velmedia
+#   - pres: Atmospheric pressure (hPa) - from presMax
 #
 # Concurrency Control:
 #   - Set PREVENT_CONCURRENT_RUNS = TRUE to enable lockfile-based run prevention
@@ -17,12 +26,12 @@
 #
 # Usage:
 #   - Requires a valid API key in 'auth/keys.R' as 'my_api_key'.
-#   - Run as an R script. Output is written to 'data/spain_weather_daily_historical.csv.gz'.
+#   - Run as an R script. Output is written to 'data/output/daily_station_historical.csv.gz'.
 #
-# Dependencies: tidyverse, lubridate, data.table, curl, jsonlite, RSocrata
+# Dependencies: tidyverse, lubridate, data.table, curl, jsonlite
 #
-# Author: [Your Name]
-# Date: [YYYY-MM-DD]
+# Author: John Palmer
+# Date: 2025-08-22 (Updated for 7-variable standardization)
 
 # Title ####
 # For downloading and preparing historical weather data. 
@@ -35,7 +44,6 @@ library(lubridate)
 library(data.table)
 library(curl)
 library(jsonlite)
-library(RSocrata)
 
 # If you want to prevent concurrent runs of this script, set PREVENT_CONCURRENT_RUNS to TRUE.
 PREVENT_CONCURRENT_RUNS = FALSE
@@ -43,7 +51,7 @@ PREVENT_CONCURRENT_RUNS = FALSE
 if(PREVENT_CONCURRENT_RUNS) {
   # Prevent concurrent runs by creating a lockfile
   # Lockfile management
-  lockfile <- "tmp/get_historical_data_expanded.lock"
+  lockfile <- "tmp/get_historical_data.lock"
   # Check if lockfile exists
   if (file.exists(lockfile)) {
     cat("Another run is in progress. Exiting.\n")
@@ -59,6 +67,9 @@ if(PREVENT_CONCURRENT_RUNS) {
 # Load API keys
 source("auth/keys.R")
 
+# Set locale to UTF-8 for proper encoding handling
+Sys.setlocale("LC_ALL", "en_US.UTF-8")
+
 # SETTING DATES ####
 # Set the start date for historical data collection
 start_date = as_date("2013-07-01")
@@ -71,13 +82,20 @@ handle_setheaders(h, 'api_key' = my_api_key)
 all_dates = seq.Date(from = start_date, to=today()-4, by = "day")
 
 # Load existing historical weather data
-stored_weather_daily = fread("data/spain_weather_daily_historical.csv.gz")
+if(file.exists("data/output/daily_station_historical.csv.gz")){
+stored_weather_daily = fread("data/output/daily_station_historical.csv.gz")
+} else{stored_weather_daily = NULL}
+
 
 # Reverse date order (latest first)
-all_dates = all_dates[length(all_dates):1]
+all_dates = rev(all_dates)
 
 # Identify which dates are missing from the local dataset
-these_dates = all_dates[which(!all_dates %in% unique(stored_weather_daily$date))]
+if(!is.null(stored_weather_daily)){
+  these_dates = all_dates[which(!all_dates %in% unique(stored_weather_daily$date))]
+} else{
+  these_dates = all_dates
+}
 
 # Set chunk size for API requests (to avoid rate limits)
 chunksize = 20
@@ -89,13 +107,14 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
   
   this_chunk = these_dates[j:min(length(these_dates), (j+(chunksize-1)))]
   
-  weather_daily = rbindlist(lapply(1:length(this_chunk), function(i){
+  weather_daily = rbindlist(lapply(seq_along(this_chunk), function(i){
     
     start_date = this_chunk[i]
     print(start_date)
     
     tryCatch(
       expr = {
+        # Request historical daily climatological data for specific date
         req = curl_fetch_memory(paste0('https://opendata.aemet.es/opendata/api/valores/climatologicos/diarios/datos/fechaini/', start_date, 'T00%3A00%3A00UTC/fechafin/', start_date, 'T23%3A59%3A59UTC/todasestaciones'), handle=h)
         
         wurl = fromJSON(rawToChar(req$content))$datos
@@ -103,14 +122,34 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
         req = curl_fetch_memory(wurl)
         this_string = rawToChar(req$content)
         
+        # Set encoding to handle Spanish characters properly
         Encoding(this_string) = "latin1"
         
-        wdia  = fromJSON(this_string) %>% as_tibble() %>% select(date = fecha, indicativo, TX = tmax, TN = tmin, HRX= hrMax, HRN = hrMin) %>% mutate(date = as_date(date),
-          TX = as.numeric(str_replace(TX, ",", ".")),
-          TN = as.numeric(str_replace(TN, ",", ".")),
-          HRX = as.numeric(str_replace(HRX, ",", ".")),
-          HRN = as.numeric(str_replace(HRN, ",", ".")) 
-        ) %>% as.data.table()
+        # Parse JSON and standardize variable names to match current observations
+        wdia  = fromJSON(this_string) %>% 
+          as_tibble() %>% 
+          select(
+            date = fecha, 
+            indicativo, 
+            ta = tmed,        # Mean temperature -> ta
+            tamax = tmax,     # Maximum temperature -> tamax  
+            tamin = tmin,     # Minimum temperature -> tamin
+            hr = hrMedia,     # Mean humidity -> hr
+            prec = prec,      # Precipitation -> prec
+            vv = velmedia,    # Wind speed -> vv
+            pres = presMax    # Pressure (using max) -> pres
+          ) %>% 
+          mutate(
+            date = as_date(date),
+            ta = as.numeric(str_replace(ta, ",", ".")),
+            tamax = as.numeric(str_replace(tamax, ",", ".")),
+            tamin = as.numeric(str_replace(tamin, ",", ".")),
+            hr = as.numeric(str_replace(hr, ",", ".")),
+            prec = as.numeric(str_replace(prec, ",", ".")),
+            vv = as.numeric(str_replace(vv, ",", ".")),
+            pres = as.numeric(str_replace(pres, ",", "."))
+          ) %>% 
+          as.data.table()
         return(wdia)
         
       },
@@ -136,11 +175,9 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
     
   }))
   
-  stored_weather_daily = fread("data/output/daily_station_historical.csv.gz")
-  
-#  stored_weather_daily =  stored_weather_daily %>% mutate(date = as_date(date), HRX = as.numeric(HRX), HRN = as.numeric(HRN))
-  
+  if(!is.null(stored_weather_daily)){
   weather_daily = rbindlist(list(weather_daily, stored_weather_daily))
+  }
   
   print("writing chunk")
   
