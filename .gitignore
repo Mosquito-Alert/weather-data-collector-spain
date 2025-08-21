@@ -8,6 +8,9 @@
 auth
 
 
-# ignoring data files that are large and not needed in the repo
-data/spain_weather.csv.gz
-data/spain_weather_daily_historical.csv.gz
+# ignoring all output data files - only track input data and documentation
+data/output/
+data/*.csv*
+data/*.gz
+!data/input/
+!data/README.md

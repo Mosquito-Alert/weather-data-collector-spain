@@ -1,6 +1,31 @@
-# Realtime Weather - Spain
+# Weather Data Collector - Spain
 
-This repository provides scripts to download, update, and manage real-time and historical weather data from AEMET weather stations across Spain. The code automates the retrieval of both the latest observations and daily historical data, storing them in compressed CSV files for further analysis or integration.
+This repository provides scripts to download, update, and manage weather data from AEMET weather stations across Spain, producing three comprehensive datasets for analysis and research.
+
+## Three Output Datasets
+
+### 📊 Dataset 1: Daily Station Data (`daily_station_historical.csv.gz`)
+Daily aggregated weather data by station, combining:
+- Historical data from AEMET historical endpoint (2013+)
+- Recent data from current observations (last 4 days)
+- Variables: daily min/max/mean temperature, precipitation totals, etc.
+
+### 🏘️ Dataset 2: Municipal Daily Data (`municipal_daily_combined.csv.gz`) 
+Daily weather data by municipality (8,129 Spanish municipalities), combining:
+- Station data aggregated to municipal level (historical + recent)
+- 7-day municipal forecasts from AEMET
+- Complete temporal coverage: historical through 7-day forecast
+
+### ⏰ Dataset 3: Hourly Station Data (`hourly_station_observations.csv.gz`)
+Hourly observations from all AEMET stations:
+- Real-time collection building our own historical archive
+- Expanded variable set (7 safe variables)
+- Updated every 2 hours
+
+## Data Licensing & Publishing
+✅ **Publishing Authorized**: AEMET permits reuse for commercial and non-commercial purposes
+📋 **Attribution Required**: Must cite "© AEMET" as data source
+🚀 **Zenodo Ready**: Datasets can be published on Zenodo with proper attribution
 
 ## Features
 - **Real-time Observations**: Fetches current hourly weather from all AEMET stations (expanded to 7 safe variables)

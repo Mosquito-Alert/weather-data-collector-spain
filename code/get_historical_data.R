@@ -1,9 +1,13 @@
-# get_historical_data.R
+# get_historical_data_expanded.R
 # ----------------------
 # Purpose: Download and update historical daily weather data for Spain from the AEMET OpenData API.
 #
 # This script checks for missing dates in the local historical weather dataset and downloads any missing data in chunks.
 # Data is fetched from the AEMET API, processed, and appended to the local CSV file.
+#
+# Concurrency Control:
+#   - Set PREVENT_CONCURRENT_RUNS = TRUE to enable lockfile-based run prevention
+#   - Set PREVENT_CONCURRENT_RUNS = FALSE (default) to allow multiple concurrent runs
 #
 # Main Steps:
 #   1. Load dependencies and API key.
@@ -33,6 +37,26 @@ library(curl)
 library(jsonlite)
 library(RSocrata)
 
+# If you want to prevent concurrent runs of this script, set PREVENT_CONCURRENT_RUNS to TRUE.
+PREVENT_CONCURRENT_RUNS = FALSE
+
+if(PREVENT_CONCURRENT_RUNS) {
+  # Prevent concurrent runs by creating a lockfile
+  # Lockfile management
+  lockfile <- "tmp/get_historical_data_expanded.lock"
+  # Check if lockfile exists
+  if (file.exists(lockfile)) {
+    cat("Another run is in progress. Exiting.\n")
+    quit(save = "no", status = 0)
+  }
+  # Create a temporary directory and lockfile
+  dir.create("tmp", showWarnings = FALSE)
+  file.create(lockfile)
+  # Ensure lockfile is removed on exit
+  on.exit(unlink(lockfile), add = TRUE)
+}
+
+# Load API keys
 source("auth/keys.R")
 
 # SETTING DATES ####
@@ -112,7 +136,7 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
     
   }))
   
-  stored_weather_daily = fread("data/spain_weather_daily_historical.csv.gz")
+  stored_weather_daily = fread("data/output/daily_station_historical.csv.gz")
   
 #  stored_weather_daily =  stored_weather_daily %>% mutate(date = as_date(date), HRX = as.numeric(HRX), HRN = as.numeric(HRN))
   
@@ -120,7 +144,7 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
   
   print("writing chunk")
   
-  fwrite(weather_daily, "data/spain_weather_daily_historical.csv.gz")
+  fwrite(weather_daily, "data/output/daily_station_historical.csv.gz")
   
   print("pausing 30 seconds")
   Sys.sleep(30)
