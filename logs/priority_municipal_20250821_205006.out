@@ -1,0 +1,212 @@
+
+R version 4.4.2 (2024-10-31) -- "Pile of Leaves"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '~/research/weather-data-collector-spain' loaded. [renv 1.1.4]
+> #!/usr/bin/env Rscript
+> 
+> # generate_municipal_priority.R
+> # ------------------------------
+> # Purpose: Priority generation of municipal daily data for immediate modeling use
+> # 
+> # Strategy: Start from present/forecast and work backwards, saving incrementally
+> # This ensures models can start using data immediately while historical collection continues
+> #
+> # Priority Schedule:
+> # 1. Generate forecast period (next 7 days) - IMMEDIATE
+> # 2. Generate recent period (past 7 days) - HIGH PRIORITY  
+> # 3. Generate historical chunks working backwards - BACKGROUND
+> #
+> # Output: daily_municipal_extended.csv.gz (updated incrementally)
+> 
+> library(tidyverse)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.2     ✔ tibble    3.3.0
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.1.0     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+> library(lubridate)
+> library(data.table)
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:lubridate’:
+
+    hour, isoweek, mday, minute, month, quarter, second, wday, week,
+    yday, year
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+The following object is masked from ‘package:purrr’:
+
+    transpose
+
+> 
+> cat("=== MUNICIPAL DATA PRIORITY GENERATION ===\n")
+=== MUNICIPAL DATA PRIORITY GENERATION ===
+> cat("Started at:", format(Sys.time()), "\n")
+Started at: 2025-08-21 20:50:23 
+> 
+> # Configuration
+> FORECAST_DAYS <- 7
+> RECENT_DAYS <- 7
+> HISTORICAL_CHUNK_DAYS <- 30  # Process historical data in monthly chunks
+> OUTPUT_FILE <- "data/output/daily_municipal_extended.csv.gz"
+> 
+> # Phase 1: Generate forecast data (IMMEDIATE - for models)
+> generate_forecast_period <- function() {
++   cat("\n=== PHASE 1: FORECAST PERIOD (IMMEDIATE PRIORITY) ===\n")
++   
++   # Check if we have recent municipal forecast data
++   forecast_file <- list.files("data/output", pattern = "municipal_forecasts_.*\\.csv", full.names = TRUE)
++   
++   if (length(forecast_file) > 0) {
++     cat("Found forecast file:", basename(forecast_file[1]), "\n")
++     forecast_data <- fread(forecast_file[1])
++     
++     # Process and standardize forecast data
++     cat("Processing forecast data for", nrow(forecast_data), "records\n")
++     
++     # Save forecast portion immediately for models
++     forecast_output <- paste0("data/output/daily_municipal_forecast_only.csv.gz")
++     fwrite(forecast_data, forecast_output)
++     cat("✅ IMMEDIATE: Forecast data available at:", forecast_output, "\n")
++     
++     return(forecast_data)
++   } else {
++     cat("❌ No forecast data found. Run get_forecast_data.R first.\n")
++     return(NULL)
++   }
++ }
+> 
+> # Phase 2: Generate recent period (HIGH PRIORITY - past week)
+> generate_recent_period <- function() {
++   cat("\n=== PHASE 2: RECENT PERIOD (HIGH PRIORITY) ===\n")
++   
++   recent_start <- Sys.Date() - RECENT_DAYS
++   recent_end <- Sys.Date() - 1
++   
++   cat("Generating recent period:", as.character(recent_start), "to", as.character(recent_end), "\n")
++   
++   # This will aggregate station data to municipal level for recent days
++   # Implementation needed: municipality-station mapping and aggregation
++   
++   cat("🔄 Recent period generation - implementation needed\n")
++   cat("Will aggregate station observations to municipal level\n")
++   
++   return(NULL)
++ }
+> 
+> # Phase 3: Generate historical chunks (BACKGROUND - work backwards)
+> generate_historical_chunks <- function(start_date = Sys.Date() - RECENT_DAYS - 1) {
++   cat("\n=== PHASE 3: HISTORICAL CHUNKS (BACKGROUND) ===\n")
++   
++   chunk_end <- start_date
++   chunk_start <- chunk_end - HISTORICAL_CHUNK_DAYS
++   
++   cat("Next historical chunk:", as.character(chunk_start), "to", as.character(chunk_end), "\n")
++   cat("🔄 Historical chunk generation - implementation needed\n")
++   
++   return(NULL)
++ }
+> 
+> # Incremental save function
+> save_incremental_update <- function(new_data, existing_file = OUTPUT_FILE) {
++   if (file.exists(existing_file)) {
++     existing_data <- fread(existing_file)
++     combined_data <- rbind(existing_data, new_data)
++     # Remove duplicates and sort by date
++     combined_data <- combined_data[!duplicated(combined_data[, .(municipio_id, fecha)])]
++     combined_data <- combined_data[order(municipio_id, fecha)]
++   } else {
++     combined_data <- new_data
++   }
++   
++   fwrite(combined_data, existing_file)
++   cat("💾 Incremental save completed:", nrow(combined_data), "total records\n")
++   
++   return(combined_data)
++ }
+> 
+> # Main execution function
+> main <- function(phase = "all") {
++   
++   if (phase %in% c("all", "forecast")) {
++     forecast_data <- generate_forecast_period()
++     if (!is.null(forecast_data)) {
++       # Immediately save forecast data for model use
++       save_incremental_update(forecast_data)
++     }
++   }
++   
++   if (phase %in% c("all", "recent")) {
++     recent_data <- generate_recent_period()
++     if (!is.null(recent_data)) {
++       save_incremental_update(recent_data)
++     }
++   }
++   
++   if (phase %in% c("all", "historical")) {
++     historical_data <- generate_historical_chunks()
++     if (!is.null(historical_data)) {
++       save_incremental_update(historical_data)
++     }
++   }
++   
++   cat("\n=== PRIORITY GENERATION SUMMARY ===\n")
++   if (file.exists(OUTPUT_FILE)) {
++     final_data <- fread(OUTPUT_FILE)
++     cat("Total records in municipal dataset:", nrow(final_data), "\n")
++     cat("Date range:", min(final_data$fecha, na.rm = TRUE), "to", max(final_data$fecha, na.rm = TRUE), "\n")
++     cat("Municipalities covered:", length(unique(final_data$municipio_id)), "\n")
++   }
++   
++   cat("Municipal data ready for modeling at:", OUTPUT_FILE, "\n")
++ }
+> 
+> # Allow script to be run with different phases
+> args <- commandArgs(trailingOnly = TRUE)
+> if (length(args) > 0) {
++   main(args[1])
++ } else {
++   main("forecast")  # Default: just generate forecast for immediate model use
++ }
+
+=== PHASE 1: FORECAST PERIOD (IMMEDIATE PRIORITY) ===
+Found forecast file: municipal_forecasts_2025-08-21.csv 
+Processing forecast data for 7 records
+✅ IMMEDIATE: Forecast data available at: data/output/daily_municipal_forecast_only.csv.gz 
+💾 Incremental save completed: 14 total records
+
+=== PRIORITY GENERATION SUMMARY ===
+Total records in municipal dataset: 14 
+Date range: 20321 to 20327 
+Municipalities covered: 2 
+Municipal data ready for modeling at: data/output/daily_municipal_extended.csv.gz 
+> 
+> cat("Priority municipal data generation completed at:", format(Sys.time()), "\n")
+Priority municipal data generation completed at: 2025-08-21 20:50:24 
+> 
+> proc.time()
+   user  system elapsed 
+  5.293   1.260  17.765 
