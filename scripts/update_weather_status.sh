@@ -94,7 +94,7 @@ get_data_info() {
     echo "{\"output_files\": $file_count, \"total_size_mb\": ${total_size:-0}}"
 }
 
-# Build comprehensive status JSON
+# Build status JSON matching monitor format
 cat > "$STATUS_DIR/${JOB_NAME}.json" << EOF
 {
   "job_name": "$JOB_NAME",
@@ -106,20 +106,12 @@ cat > "$STATUS_DIR/${JOB_NAME}.json" << EOF
   "cpu_usage": $CPU_USAGE,
   "memory_usage": $MEMORY_USAGE,
   "next_scheduled_run": "$NEXT_RUN",
-  "log_entries": $(get_latest_logs),
   "config": {
     "project_type": "weather_data_collection",
     "data_source": "AEMET OpenData API",
     "collection_scope": "Spain",
-    "municipalities": 8129,
-    "api_keys": 3,
-    "output_datasets": 3
-  },
-  "metrics": $(get_data_info),
-  "alerts": {
-    "api_errors": false,
-    "disk_space_low": false,
-    "rate_limit_exceeded": false
+    "script": "$(basename "$0")",
+    "cluster": "SLURM cluster"
   }
 }
 EOF
