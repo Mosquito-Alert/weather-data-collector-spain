@@ -9,7 +9,7 @@
 # 2. Appends municipal forecast data for future days
 # 3. Produces a unified municipal daily dataset covering historical + forecast periods
 #
-# Output: data/output/municipal_daily_combined.csv.gz
+# Output: data/output/daily_municipal_extended.csv.gz
 
 library(tidyverse)
 library(lubridate)

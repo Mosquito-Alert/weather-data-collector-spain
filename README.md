@@ -22,13 +22,56 @@ Hourly observations from all AEMET stations:
 - Expanded variable set (7 safe variables)
 - Updated every 2 hours
 
-## Data Licensing & Publishing
-✅ **Publishing Authorized**: AEMET permits reuse for commercial and non-commercial purposes
-📋 **Attribution Required**: Must cite "© AEMET" as data source
-🚀 **Zenodo Ready**: Datasets can be published on Zenodo with proper attribution
+## Data Collection Workflow
+
+```mermaid
+flowchart TD
+    A[AEMET API] --> B[Historical Endpoint]
+    A --> C[Current Observations]
+    A --> D[Municipal Forecasts]
+    
+    B --> E[get_historical_data.R]
+    C --> F[get_latest_data.R]
+    D --> G[get_forecast_data.R]
+    
+    E --> H[daily_station_historical.csv.gz]
+    F --> I[hourly_station_ongoing.csv.gz]
+    G --> J[Municipal Forecast Data]
+    
+    H --> K[aggregate_municipal_daily.R]
+    J --> K
+    K --> L[daily_municipal_extended.csv.gz]
+    
+    H --> M[Dataset 1: Daily Station]
+    L --> N[Dataset 2: Municipal Extended]
+    I --> O[Dataset 3: Hourly Station]
+    
+    M --> P[Zenodo Publication]
+    N --> P
+    O --> P
+```
+
+## Dataset Temporal Coverage
+
+```mermaid
+gantt
+    title Weather Data Temporal Coverage
+    dateFormat  YYYY-MM-DD
+    section Dataset 1 - Daily Station
+    Historical Records    :done, hist1, 2013-01-01, 2025-08-17
+    Recent Observations   :active, recent1, 2025-08-17, 2025-08-21
+    
+    section Dataset 2 - Municipal Extended  
+    Historical Period     :done, hist2, 2013-01-01, 2025-08-17
+    Recent Period         :active, recent2, 2025-08-17, 2025-08-21
+    Forecast Period       :forecast, 2025-08-21, 2025-08-28
+    
+    section Dataset 3 - Hourly Station
+    Accumulating Archive  :active, archive, 2025-08-01, 2025-08-21
+```
 
 ## Features
-- **Real-time Observations**: Fetches current hourly weather from all AEMET stations (expanded to 7 safe variables)
+- **Real-time Observations**: Fetches current hourly weather from all AEMET stations
 - **Historical Data**: Updates and maintains daily historical weather dataset
 - **Forecast Collection**: Downloads 7-day municipal forecasts for all 8,129 Spanish municipalities
 - **Variable Compatibility**: Uses consistent variables across observation, historical, and forecast data

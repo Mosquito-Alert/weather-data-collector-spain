@@ -156,7 +156,7 @@ if(!is.null(wdia) && nrow(wdia) > 0){
     arrange(desc(fint))
 
   # Save updated data
-  fwrite(as.data.table(spain_weather), "data/output/hourly_station_observations.csv.gz")
+  fwrite(as.data.table(spain_weather), "data/output/hourly_station_ongoing.csv.gz")
   
   print(paste0("Total dataset now contains ", nrow(spain_weather), " rows."))
 } else{
