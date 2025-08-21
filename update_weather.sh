@@ -1,7 +1,7 @@
 #!/bin/bash
 # filepath: /Users/palmer/research/weather-data-collector-spain/update_weather.sh
 #SBATCH --job-name=weather-collect
-#SBATCH --partition=standard
+#SBATCH --partition=ceab
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2

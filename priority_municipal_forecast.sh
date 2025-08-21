@@ -1,7 +1,7 @@
 #!/bin/bash
-# filepath: /Users/palmer/research/weather-data-collector-spain/priority_municipal_data.sh
-#SBATCH --job-name=municipal-priority
-#SBATCH --partition=standard
+# filepath: /Users/palmer/research/weather-data-collector-spain/priority_municipal_forecast.sh
+#SBATCH --job-name=municipal-forecast-priority
+#SBATCH --partition=ceab
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
@@ -9,8 +9,8 @@
 #SBATCH --time=02:00:00
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=johnrbpalmer@gmail.com
-#SBATCH --output=logs/municipal_priority_%j.out
-#SBATCH --error=logs/municipal_priority_%j.err
+#SBATCH --output=logs/municipal_forecast_priority_%j.out
+#SBATCH --error=logs/municipal_forecast_priority_%j.err
 
 # Load required modules
 module load LibTIFF/4.6.0-GCCcore-13.3.0
@@ -83,4 +83,4 @@ else
     exit 1
 fi
 
-# Submit: sbatch priority_municipal_data.sh
+# Submit: sbatch priority_municipal_forecast.sh
