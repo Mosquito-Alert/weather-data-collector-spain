@@ -30,8 +30,22 @@ STATUS="${2:-unknown}"
 DURATION="${3:-0}"
 PROGRESS="${4:-0}"
 
+# Check if monitor repository exists
+if [ ! -d "$MONITOR_REPO_PATH" ]; then
+    echo "⚠️  Monitor repository not found at: $MONITOR_REPO_PATH"
+    echo "Status update skipped - monitor not available"
+    exit 0
+fi
+
 # Ensure status directory exists
 mkdir -p "$STATUS_DIR"
+
+# Check if status directory is writable
+if [ ! -w "$STATUS_DIR" ]; then
+    echo "⚠️  Cannot write to status directory: $STATUS_DIR"
+    echo "Status update skipped - no write permissions"
+    exit 0
+fi
 
 # Get current timestamp
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -111,6 +125,16 @@ cat > "$STATUS_DIR/${JOB_NAME}.json" << EOF
 EOF
 
 echo "Status updated for $JOB_NAME: $STATUS"
+echo "Status file written to: $STATUS_DIR/${JOB_NAME}.json"
+echo "Monitor repo: $MONITOR_REPO_PATH"
+
+# Verify the file was written successfully
+if [ -f "$STATUS_DIR/${JOB_NAME}.json" ]; then
+    echo "✅ Status file created successfully"
+    echo "File size: $(stat -c%s "$STATUS_DIR/${JOB_NAME}.json" 2>/dev/null || echo "unknown") bytes"
+else
+    echo "❌ Failed to create status file"
+fi
 
 # Optional: Trigger dashboard update if running locally
 if [ -f "$MONITOR_REPO_PATH/index.qmd" ] && [ "$AUTO_RENDER" = "true" ]; then
