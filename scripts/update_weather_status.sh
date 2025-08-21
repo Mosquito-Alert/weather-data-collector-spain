@@ -24,8 +24,8 @@ conda activate mosquito-alert-monitor
 
 # scripts/update_weather_status.sh
 # ---------------------------------
-# Integration script for mosquito-alert-model-monitor dashboard
-# Reports weather data collection job status
+# Enhanced integration script for mosquito-alert-model-monitor dashboard
+# Reports weather data collection job status AND triggers dashboard rebuild via git push
 
 # Configuration
 MONITOR_REPO_PATH="$HOME/research/mosquito-alert-model-monitor"  # Path to monitor dashboard
@@ -129,12 +129,32 @@ echo "Monitor repo: $MONITOR_REPO_PATH"
 if [ -f "$STATUS_DIR/${JOB_NAME}.json" ]; then
     echo "✅ Status file created successfully"
     echo "File size: $(stat -c%s "$STATUS_DIR/${JOB_NAME}.json" 2>/dev/null || echo "unknown") bytes"
+    
+    # Push changes to git to trigger dashboard rebuild
+    cd "$MONITOR_REPO_PATH"
+    if [ -d ".git" ]; then
+        echo "🔄 Triggering dashboard rebuild via git push..."
+        
+        # Add the status file
+        git add "data/status/${JOB_NAME}.json"
+        
+        # Create commit message with job details
+        COMMIT_MSG="Update ${JOB_NAME} status: ${STATUS} ($(date '+%Y-%m-%d %H:%M:%S'))"
+        
+        # Commit changes
+        if git commit -m "$COMMIT_MSG" > /dev/null 2>&1; then
+            # Push to trigger GitHub Actions
+            if git push origin main > /dev/null 2>&1; then
+                echo "✅ Dashboard rebuild triggered - will be live in ~2-3 minutes"
+            else
+                echo "⚠️  Git push failed - dashboard may not update automatically"
+            fi
+        else
+            echo "ℹ️  No changes to commit (status unchanged)"
+        fi
+    else
+        echo "⚠️  Monitor repo is not a git repository - no automatic rebuild"
+    fi
 else
     echo "❌ Failed to create status file"
-fi
-
-# Optional: Trigger dashboard update if running locally
-if [ -f "$MONITOR_REPO_PATH/index.qmd" ] && [ "$AUTO_RENDER" = "true" ]; then
-    cd "$MONITOR_REPO_PATH"
-    quarto render index.qmd >/dev/null 2>&1 &
 fi

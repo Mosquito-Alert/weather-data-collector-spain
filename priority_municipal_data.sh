@@ -52,22 +52,50 @@ mkdir -p logs
 # Create output directory
 mkdir -p data/output
 
+# Initialize status reporting
+JOB_NAME="municipal-forecast-priority"
+STATUS_SCRIPT="./scripts/update_weather_status.sh" 
+START_TIME=$(date +%s)
+
+# Report job started
+$STATUS_SCRIPT "$JOB_NAME" "running" 0 5
+
 # Activate renv
 R --slave --no-restore --file=- <<EOF
 renv::activate()
 EOF
 
 echo "Starting priority municipal data generation: $(date)"
+$STATUS_SCRIPT "$JOB_NAME" "running" $(($(date +%s) - START_TIME)) 10
 
 # Get forecasts first (immediate availability)
 echo "Collecting municipal forecasts for immediate model use..."
+$STATUS_SCRIPT "$JOB_NAME" "running" $(($(date +%s) - START_TIME)) 25
 R CMD BATCH --no-save --no-restore code/get_forecast_data.R logs/priority_forecast_$(date +%Y%m%d_%H%M%S).out
+
+if [ $? -eq 0 ]; then
+    $STATUS_SCRIPT "$JOB_NAME" "running" $(($(date +%s) - START_TIME)) 60
+    echo "✅ Municipal forecasts collected successfully"
+else
+    $STATUS_SCRIPT "$JOB_NAME" "failed" $(($(date +%s) - START_TIME)) 25
+    echo "❌ Municipal forecast collection failed"
+    exit 1
+fi
 
 # Generate backwards municipal data
 echo "Generating municipal data backwards from present..."
+$STATUS_SCRIPT "$JOB_NAME" "running" $(($(date +%s) - START_TIME)) 75
 R CMD BATCH --no-save --no-restore code/generate_municipal_priority.R logs/priority_municipal_$(date +%Y%m%d_%H%M%S).out
 
-echo "Priority municipal data generation completed: $(date)"
-echo "Models can now use: data/output/daily_municipal_extended.csv.gz"
+if [ $? -eq 0 ]; then
+    FINAL_DURATION=$(($(date +%s) - START_TIME))
+    $STATUS_SCRIPT "$JOB_NAME" "completed" $FINAL_DURATION 100
+    echo "✅ Priority municipal data generation completed: $(date)"
+    echo "Models can now use: data/output/daily_municipal_extended.csv.gz"
+else
+    $STATUS_SCRIPT "$JOB_NAME" "failed" $(($(date +%s) - START_TIME)) 75
+    echo "❌ Municipal data generation failed"
+    exit 1
+fi
 
 # Submit: sbatch priority_municipal_data.sh

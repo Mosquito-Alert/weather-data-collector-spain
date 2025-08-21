@@ -45,12 +45,12 @@ mkdir -p logs
 mkdir -p data/output
 
 # Initialize status reporting
-JOB_NAME="weather-data-collector"
+JOB_NAME="weather-hourly"
 STATUS_SCRIPT="./scripts/update_weather_status.sh"
 START_TIME=$(date +%s)
 
 # Report job started
-$STATUS_SCRIPT "$JOB_NAME" "running" 0 0
+$STATUS_SCRIPT "$JOB_NAME" "running" 0 5
 
 # Initialize renv if first run
 if [ ! -f "renv.lock" ]; then
@@ -79,7 +79,7 @@ $STATUS_SCRIPT "$JOB_NAME" "running" $(($(date +%s) - START_TIME)) 20
 
 # Priority 1: Municipal forecasts (immediate model needs)
 echo "Collecting municipal forecasts..."
-$STATUS_SCRIPT "weather-forecast" "running" $(($(date +%s) - START_TIME)) 30
+$STATUS_SCRIPT "weather-forecast" "running" $(($(date +%s) - START_TIME)) 25
 R CMD BATCH --no-save --no-restore code/get_forecast_data.R logs/get_forecast_data_$(date +%Y%m%d_%H%M%S).out
 
 if [ $? -eq 0 ]; then
@@ -90,12 +90,14 @@ fi
 
 # Priority 2: Hourly observations
 echo "Collecting hourly observations..."
-$STATUS_SCRIPT "weather-hourly" "running" $(($(date +%s) - START_TIME)) 50
+$STATUS_SCRIPT "$JOB_NAME" "running" $(($(date +%s) - START_TIME)) 50
 R CMD BATCH --no-save --no-restore code/get_latest_data.R logs/get_latest_data_$(date +%Y%m%d_%H%M%S).out
 
 if [ $? -eq 0 ]; then
-    $STATUS_SCRIPT "weather-hourly" "completed" $(($(date +%s) - START_TIME)) 100
+    $STATUS_SCRIPT "$JOB_NAME" "completed" $(($(date +%s) - START_TIME)) 100
 else
+    $STATUS_SCRIPT "$JOB_NAME" "failed" $(($(date +%s) - START_TIME)) 50
+fi
     $STATUS_SCRIPT "weather-hourly" "failed" $(($(date +%s) - START_TIME)) 50
 fi
 
