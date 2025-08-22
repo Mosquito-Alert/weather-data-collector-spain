@@ -1,0 +1,63 @@
+Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
+Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
+
+CondaError: Run 'conda init' before 'conda activate'
+
+Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
+
+CondaError: Run 'conda init' before 'conda activate'
+
+rpm: no arguments given for query
+/home/j.palmer/.conda/envs/mosquito-alert-monitor/lib/R/bin/R --vanilla -s -f '/tmp/RtmpKOiKwm/renv-install-6d74b521480df.R'
+================================================================================
+
+Error in dyn.load(file, DLLpath = DLLpath, ...) : 
+  unable to load shared object '/home/j.palmer/research/weather-data-collector-spain/renv/staging/1/ragg/libs/ragg.so':
+  libtiff.so.5: cannot open shared object file: No such file or directory
+Calls: loadNamespace -> library.dynam -> dyn.load
+Execution halted
+
+Error: error testing if 'ragg' can be loaded [error code 1]
+Execution halted
+From github.com:Mosquito-Alert/weather-data-collector-spain
+ * branch            main       -> FETCH_HEAD
+Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
+
+CondaError: Run 'conda init' before 'conda activate'
+
+Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
+
+CondaError: Run 'conda init' before 'conda activate'
+
+Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
+
+CondaError: Run 'conda init' before 'conda activate'
+
+Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
+
+CondaError: Run 'conda init' before 'conda activate'
+
+Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
+
+CondaError: Run 'conda init' before 'conda activate'
+
+Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
+
+CondaError: Run 'conda init' before 'conda activate'
+
+Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
+
+CondaError: Run 'conda init' before 'conda activate'
+
+Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
+
+CondaError: Run 'conda init' before 'conda activate'
+
+Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
+
+CondaError: Run 'conda init' before 'conda activate'
+
+Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
+
+CondaError: Run 'conda init' before 'conda activate'
+

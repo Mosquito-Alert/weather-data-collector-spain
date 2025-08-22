@@ -1,0 +1,464 @@
+Agent pid 448250
+Agent pid 448258
+Status updated for weather-hourly: running
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 484 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
+Restoring renv packages...
+Agent pid 448296
+Status updated for weather-hourly: running
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 484 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
+- One or more packages recorded in the lockfile are not installed.
+- Use `renv::status()` for more details.
+The following package(s) will be updated:
+
+# CRAN -----------------------------------------------------------------------
+- MASS            [7.3-64 -> 7.3-65]
+- askpass         [* -> 1.2.1]
+- backports       [* -> 1.5.0]
+- base64enc       [* -> 0.1-3]
+- bit             [* -> 4.6.0]
+- bit64           [* -> 4.6.0-1]
+- blob            [* -> 1.2.4]
+- broom           [* -> 1.0.9]
+- bslib           [* -> 0.9.0]
+- cachem          [* -> 1.1.0]
+- callr           [* -> 3.7.6]
+- cellranger      [* -> 1.1.0]
+- clipr           [* -> 0.8.0]
+- conflicted      [* -> 1.2.0]
+- cpp11           [* -> 0.5.2]
+- crayon          [* -> 1.5.3]
+- curl            [* -> 7.0.0]
+- data.table      [* -> 1.17.8]
+- DBI             [* -> 1.2.3]
+- dbplyr          [* -> 2.5.0]
+- digest          [* -> 0.6.37]
+- dplyr           [* -> 1.1.4]
+- dtplyr          [* -> 1.3.1]
+- evaluate        [* -> 1.0.4]
+- farver          [* -> 2.1.2]
+- fastmap         [* -> 1.2.0]
+- fontawesome     [* -> 0.5.3]
+- forcats         [* -> 1.0.0]
+- fs              [* -> 1.6.6]
+- gargle          [* -> 1.5.2]
+- generics        [* -> 0.1.4]
+- ggplot2         [* -> 3.5.2]
+- gh              [* -> 1.5.0]
+- gitcreds        [* -> 0.1.2]
+- glue            [* -> 1.8.0]
+- googledrive     [* -> 2.1.1]
+- googlesheets4   [* -> 1.1.1]
+- gtable          [* -> 0.3.6]
+- haven           [* -> 2.5.5]
+- here            [* -> 1.0.1]
+- highr           [* -> 0.11]
+- hms             [* -> 1.1.3]
+- htmltools       [* -> 0.5.8.1]
+- httr            [* -> 1.4.7]
+- httr2           [* -> 1.2.1]
+- ids             [* -> 1.0.1]
+- ini             [* -> 0.3.1]
+- isoband         [* -> 0.2.7]
+- jquerylib       [* -> 0.1.4]
+- jsonlite        [* -> 2.0.0]
+- knitr           [* -> 1.50]
+- labeling        [* -> 0.4.3]
+- lifecycle       [* -> 1.0.4]
+- lubridate       [* -> 1.9.4]
+- magrittr        [* -> 2.0.3]
+- memoise         [* -> 2.0.1]
+- mime            [* -> 0.13]
+- modelr          [* -> 0.1.11]
+- openssl         [* -> 2.3.3]
+- pillar          [* -> 1.11.0]
+- pkgconfig       [* -> 2.0.3]
+- prettyunits     [* -> 1.2.0]
+- processx        [* -> 3.8.6]
+- progress        [* -> 1.2.3]
+- ps              [* -> 1.9.1]
+- purrr           [* -> 1.1.0]
+- R.methodsS3     [* -> 1.8.2]
+- R.oo            [* -> 1.27.1]
+- R.utils         [* -> 2.13.0]
+- R6              [* -> 2.6.1]
+- ragg            [* -> 1.4.0]
+- rappdirs        [* -> 0.3.3]
+- RColorBrewer    [* -> 1.1-3]
+- readr           [* -> 2.1.5]
+- readxl          [* -> 1.4.5]
+- rematch         [* -> 2.0.0]
+- rematch2        [* -> 2.1.2]
+- reprex          [* -> 2.1.1]
+- rmarkdown       [* -> 2.29]
+- rstudioapi      [* -> 0.17.1]
+- rvest           [* -> 1.0.4]
+- sass            [* -> 0.4.10]
+- scales          [* -> 1.4.0]
+- selectr         [* -> 0.4-2]
+- stringi         [* -> 1.8.7]
+- stringr         [* -> 1.5.1]
+- sys             [* -> 3.4.3]
+- systemfonts     [* -> 1.2.3]
+- textshaping     [* -> 1.0.1]
+- tibble          [* -> 3.3.0]
+- tidyr           [* -> 1.3.1]
+- tidyselect      [* -> 1.2.1]
+- tidyverse       [* -> 2.0.0]
+- timechange      [* -> 0.3.0]
+- tinytex         [* -> 0.57]
+- tzdb            [* -> 0.5.0]
+- utf8            [* -> 1.2.6]
+- uuid            [* -> 1.2-1]
+- vctrs           [* -> 0.6.5]
+- viridisLite     [* -> 0.4.2]
+- vroom           [* -> 1.6.5]
+- withr           [* -> 3.0.2]
+- xfun            [* -> 0.53]
+- xml2            [* -> 1.3.8]
+- yaml            [* -> 2.3.10]
+
+# RSPM -----------------------------------------------------------------------
+- cli             [* -> 3.6.5]
+- rlang           [* -> 1.1.6]
+- rprojroot       [* -> 2.1.0]
+
+# Downloading packages -------------------------------------------------------
+- Querying repositories for available source packages ... Done!
+- Downloading MASS from CRAN ...                OK [1.2 Mb in 2.3s]
+- Downloading DBI from CRAN ...                 OK [file is up to date]
+- Downloading R.methodsS3 from CRAN ...         OK [file is up to date]
+- Downloading R.oo from CRAN ...                OK [file is up to date]
+- Downloading R.utils from CRAN ...             OK [file is up to date]
+- Downloading R6 from CRAN ...                  OK [file is up to date]
+- Downloading RColorBrewer from CRAN ...        OK [file is up to date]
+- Downloading askpass from CRAN ...             OK [file is up to date]
+- Downloading sys from CRAN ...                 OK [file is up to date]
+- Downloading backports from CRAN ...           OK [file is up to date]
+- Downloading base64enc from CRAN ...           OK [file is up to date]
+- Downloading bit from CRAN ...                 OK [628.1 Kb in 1.5s]
+- Downloading bit64 from CRAN ...               OK [file is up to date]
+- Downloading blob from CRAN ...                OK [file is up to date]
+- Downloading rlang from RSPM ...               OK [file is up to date]
+- Downloading vctrs from CRAN ...               OK [file is up to date]
+- Downloading cli from RSPM ...                 OK [file is up to date]
+- Downloading glue from CRAN ...                OK [file is up to date]
+- Downloading lifecycle from CRAN ...           OK [file is up to date]
+- Downloading broom from CRAN ...               OK [1.9 Mb in 1.0s]
+- Downloading dplyr from CRAN ...               OK [file is up to date]
+- Downloading generics from CRAN ...            OK [file is up to date]
+- Downloading magrittr from CRAN ...            OK [file is up to date]
+- Downloading pillar from CRAN ...              OK [file is up to date]
+- Downloading utf8 from CRAN ...                OK [file is up to date]
+- Downloading tibble from CRAN ...              OK [file is up to date]
+- Downloading pkgconfig from CRAN ...           OK [file is up to date]
+- Downloading tidyselect from CRAN ...          OK [file is up to date]
+- Downloading withr from CRAN ...               OK [file is up to date]
+- Downloading purrr from CRAN ...               OK [file is up to date]
+- Downloading stringr from CRAN ...             OK [file is up to date]
+- Downloading stringi from CRAN ...             OK [3.2 Mb in 2.0s]
+- Downloading tidyr from CRAN ...               OK [file is up to date]
+- Downloading cpp11 from CRAN ...               OK [file is up to date]
+- Downloading bslib from CRAN ...               OK [file is up to date]
+- Downloading cachem from CRAN ...              OK [file is up to date]
+- Downloading fastmap from CRAN ...             OK [file is up to date]
+- Downloading htmltools from CRAN ...           OK [file is up to date]
+- Downloading digest from CRAN ...              OK [file is up to date]
+- Downloading jquerylib from CRAN ...           OK [file is up to date]
+- Downloading jsonlite from CRAN ...            OK [file is up to date]
+- Downloading memoise from CRAN ...             OK [file is up to date]
+- Downloading mime from CRAN ...                OK [file is up to date]
+- Downloading sass from CRAN ...                OK [file is up to date]
+- Downloading fs from CRAN ...                  OK [file is up to date]
+- Downloading rappdirs from CRAN ...            OK [file is up to date]
+- Downloading callr from CRAN ...               OK [file is up to date]
+- Downloading processx from CRAN ...            OK [341.3 Kb in 1.4s]
+- Downloading ps from CRAN ...                  OK [499 Kb in 0.87s]
+- Downloading cellranger from CRAN ...          OK [file is up to date]
+- Downloading rematch from CRAN ...             OK [file is up to date]
+- Downloading clipr from CRAN ...               OK [file is up to date]
+- Downloading conflicted from CRAN ...          OK [file is up to date]
+- Downloading crayon from CRAN ...              OK [file is up to date]
+- Downloading curl from CRAN ...                OK [file is up to date]
+- Downloading data.table from CRAN ...          OK [2.6 Mb in 1.7s]
+- Downloading dbplyr from CRAN ...              OK [file is up to date]
+- Downloading dtplyr from CRAN ...              OK [file is up to date]
+- Downloading evaluate from CRAN ...            OK [file is up to date]
+- Downloading farver from CRAN ...              OK [file is up to date]
+- Downloading fontawesome from CRAN ...         OK [file is up to date]
+- Downloading forcats from CRAN ...             OK [file is up to date]
+- Downloading gargle from CRAN ...              OK [file is up to date]
+- Downloading httr from CRAN ...                OK [file is up to date]
+- Downloading openssl from CRAN ...             OK [file is up to date]
+- Downloading ggplot2 from CRAN ...             OK [4.9 Mb in 1.4s]
+- Downloading gtable from CRAN ...              OK [file is up to date]
+- Downloading isoband from CRAN ...             OK [file is up to date]
+- Downloading scales from CRAN ...              OK [864.3 Kb in 1.6s]
+- Downloading labeling from CRAN ...            OK [file is up to date]
+- Downloading viridisLite from CRAN ...         OK [file is up to date]
+- Downloading gh from CRAN ...                  OK [file is up to date]
+- Downloading gitcreds from CRAN ...            OK [file is up to date]
+- Downloading httr2 from CRAN ...               OK [813.3 Kb in 1.5s]
+- Downloading ini from CRAN ...                 OK [file is up to date]
+- Downloading googledrive from CRAN ...         OK [file is up to date]
+- Downloading uuid from CRAN ...                OK [file is up to date]
+- Downloading googlesheets4 from CRAN ...       OK [file is up to date]
+- Downloading ids from CRAN ...                 OK [file is up to date]
+- Downloading rematch2 from CRAN ...            OK [file is up to date]
+- Downloading haven from CRAN ...               OK [383.4 Kb in 0.89s]
+- Downloading hms from CRAN ...                 OK [file is up to date]
+- Downloading readr from CRAN ...               OK [file is up to date]
+- Downloading vroom from CRAN ...               OK [file is up to date]
+- Downloading tzdb from CRAN ...                OK [646.8 Kb in 1.5s]
+- Downloading progress from CRAN ...            OK [file is up to date]
+- Downloading prettyunits from CRAN ...         OK [file is up to date]
+- Downloading here from CRAN ...                OK [file is up to date]
+- Downloading rprojroot from RSPM ...           OK [file is up to date]
+- Downloading highr from CRAN ...               OK [file is up to date]
+- Downloading xfun from CRAN ...                OK [602.4 Kb in 0.85s]
+- Downloading knitr from CRAN ...               OK [file is up to date]
+- Downloading yaml from CRAN ...                OK [file is up to date]
+- Downloading lubridate from CRAN ...           OK [file is up to date]
+- Downloading timechange from CRAN ...          OK [file is up to date]
+- Downloading modelr from CRAN ...              OK [file is up to date]
+- Downloading ragg from CRAN ...                OK [643.6 Kb in 1.5s]
+- Downloading systemfonts from CRAN ...         OK [357.6 Kb in 1.4s]
+- Downloading textshaping from CRAN ...         OK [183.3 Kb in 0.85s]
+- Downloading readxl from CRAN ...              OK [402.9 Kb in 1.5s]
+- Downloading reprex from CRAN ...              OK [file is up to date]
+- Downloading rmarkdown from CRAN ...           OK [file is up to date]
+- Downloading tinytex from CRAN ...             OK [file is up to date]
+- Downloading rstudioapi from CRAN ...          OK [file is up to date]
+- Downloading rvest from CRAN ...               OK [file is up to date]
+- Downloading selectr from CRAN ...             OK [file is up to date]
+- Downloading xml2 from CRAN ...                OK [282 Kb in 1.5s]
+- Downloading tidyverse from CRAN ...           OK [file is up to date]
+Successfully downloaded 108 packages in 120 seconds.
+
+# Installing packages --------------------------------------------------------
+- Installing MASS ...                           OK [installed binary and cached in 2.2s]
+- Installing DBI ...                            OK [installed binary and cached in 2.1s]
+- Installing R.methodsS3 ...                    OK [installed binary and cached in 1.3s]
+- Installing R.oo ...                           OK [installed binary and cached in 3.0s]
+- Installing R.utils ...                        OK [installed binary and cached in 3.9s]
+- Installing R6 ...                             OK [installed binary and cached in 1.2s]
+- Installing RColorBrewer ...                   OK [installed binary and cached in 1.2s]
+- Installing sys ...                            OK [installed binary and cached in 1.2s]
+- Installing askpass ...                        OK [installed binary and cached in 1.2s]
+- Installing backports ...                      OK [installed binary and cached in 1.4s]
+- Installing base64enc ...                      OK [installed binary and cached in 1.2s]
+- Installing bit ...                            OK [installed binary and cached in 1.9s]
+- Installing bit64 ...                          OK [installed binary and cached in 1.9s]
+- Installing rlang ...                          OK [installed binary and cached in 3.2s]
+- Installing cli ...                            OK [installed binary and cached in 2.2s]
+- Installing glue ...                           OK [installed binary and cached in 1.4s]
+- Installing lifecycle ...                      OK [installed binary and cached in 1.7s]
+- Installing vctrs ...                          OK [installed binary and cached in 2.4s]
+- Installing blob ...                           OK [installed binary and cached in 1.8s]
+- Installing generics ...                       OK [installed binary and cached in 1.3s]
+- Installing magrittr ...                       OK [installed binary and cached in 1.4s]
+- Installing utf8 ...                           OK [installed binary and cached in 1.3s]
+- Installing pillar ...                         OK [installed binary and cached in 2.5s]
+- Installing pkgconfig ...                      OK [installed binary and cached in 1.2s]
+- Installing tibble ...                         OK [installed binary and cached in 2.8s]
+- Installing withr ...                          OK [installed binary and cached in 1.4s]
+- Installing tidyselect ...                     OK [installed binary and cached in 2.0s]
+- Installing dplyr ...                          OK [installed binary and cached in 4.1s]
+- Installing purrr ...                          OK [installed binary and cached in 2.7s]
+- Installing stringi ...                        OK [installed binary and cached in 2.4s]
+- Installing stringr ...                        OK [installed binary and cached in 2.4s]
+- Installing cpp11 ...                          OK [installed binary and cached in 1.3s]
+- Installing tidyr ...                          OK [installed binary and cached in 3.8s]
+- Installing broom ...                          OK [installed binary and cached in 5.0s]
+- Installing fastmap ...                        OK [installed binary and cached in 1.2s]
+- Installing cachem ...                         OK [installed binary and cached in 1.7s]
+- Installing digest ...                         OK [installed binary and cached in 1.3s]
+- Installing htmltools ...                      OK [installed binary and cached in 2.2s]
+- Installing jquerylib ...                      OK [installed binary and cached in 2.0s]
+- Installing jsonlite ...                       OK [installed binary and cached in 1.4s]
+- Installing memoise ...                        OK [installed binary and cached in 1.9s]
+- Installing mime ...                           OK [installed binary and cached in 1.2s]
+- Installing fs ...                             OK [installed binary and cached in 1.5s]
+- Installing rappdirs ...                       OK [installed binary and cached in 1.2s]
+- Installing sass ...                           OK [installed binary and cached in 2.5s]
+- Installing bslib ...                          OK [installed binary and cached in 5.2s]
+- Installing ps ...                             OK [installed binary and cached in 1.5s]
+- Installing processx ...                       OK [installed binary and cached in 1.5s]
+- Installing callr ...                          OK [installed binary and cached in 1.7s]
+- Installing rematch ...                        OK [installed binary and cached in 1.2s]
+- Installing cellranger ...                     OK [installed binary and cached in 1.3s]
+- Installing clipr ...                          OK [installed binary and cached in 1.2s]
+- Installing conflicted ...                     OK [installed binary and cached in 1.9s]
+- Installing crayon ...                         OK [installed binary and cached in 1.3s]
+- Installing curl ...                           OK [installed binary and cached in 1.6s]
+- Installing data.table ...                     OK [installed binary and cached in 2.6s]
+- Installing dbplyr ...                         OK [installed binary and cached in 4.4s]
+- Installing dtplyr ...                         OK [installed binary and cached in 3.5s]
+- Installing evaluate ...                       OK [installed binary and cached in 1.3s]
+- Installing farver ...                         OK [installed binary and cached in 1.3s]
+- Installing fontawesome ...                    OK [installed binary and cached in 2.1s]
+- Installing forcats ...                        OK [installed binary and cached in 2.2s]
+- Installing openssl ...                        OK [installed binary and cached in 1.7s]
+- Installing httr ...                           OK [installed binary and cached in 1.7s]
+- Installing gargle ...                         OK [installed binary and cached in 2.4s]
+- Installing gtable ...                         OK [installed binary and cached in 2.1s]
+- Installing isoband ...                        OK [installed binary and cached in 1.5s]
+- Installing labeling ...                       OK [installed binary and cached in 1.2s]
+- Installing viridisLite ...                    OK [installed binary and cached in 1.3s]
+- Installing scales ...                         OK [installed binary and cached in 3.1s]
+- Installing ggplot2 ...                        OK [installed binary and cached in 6.0s]
+- Installing gitcreds ...                       OK [installed binary and cached in 1.2s]
+- Installing httr2 ...                          OK [installed binary and cached in 2.8s]
+- Installing ini ...                            OK [installed binary and cached in 1.2s]
+- Installing gh ...                             OK [installed binary and cached in 2.1s]
+- Installing uuid ...                           OK [installed binary and cached in 1.2s]
+- Installing googledrive ...                    OK [installed binary and cached in 4.1s]
+- Installing ids ...                            OK [installed binary and cached in 1.3s]
+- Installing rematch2 ...                       OK [installed binary and cached in 2.6s]
+- Installing googlesheets4 ...                  OK [installed binary and cached in 4.0s]
+- Installing hms ...                            OK [installed binary and cached in 2.0s]
+- Installing tzdb ...                           OK [installed binary and cached in 1.4s]
+- Installing prettyunits ...                    OK [installed binary and cached in 1.2s]
+- Installing progress ...                       OK [installed binary and cached in 2.3s]
+- Installing vroom ...                          OK [installed binary and cached in 3.8s]
+- Installing readr ...                          OK [installed binary and cached in 3.5s]
+- Installing haven ...                          OK [installed binary and cached in 3.0s]
+- Installing rprojroot ...                      OK [installed binary and cached in 1.3s]
+- Installing here ...                           OK [installed binary and cached in 1.3s]
+- Installing xfun ...                           OK [installed binary and cached in 1.7s]
+- Installing highr ...                          OK [installed binary and cached in 1.2s]
+- Installing yaml ...                           OK [installed binary and cached in 1.2s]
+- Installing knitr ...                          OK [installed binary and cached in 2.2s]
+- Installing timechange ...                     OK [installed binary and cached in 1.2s]
+- Installing lubridate ...                      OK [installed binary and cached in 3.0s]
+- Installing modelr ...                         OK [installed binary and cached in 3.9s]
+- Installing systemfonts ...                    OK [installed binary and cached in 2.0s]
+- Installing textshaping ...                    OK [installed binary and cached in 2.0s]
+- Installing ragg ...                           FAILED
+Traceback (most recent calls last):
+14: renv::restore(prompt = FALSE)
+13: renv_restore_run_actions(project, diff, current, lockfile, rebuild)
+12: renv_install_impl(records)
+11: renv_install_staged(records)
+10: renv_install_default(records)
+ 9: handler(package, renv_install_package(record))
+ 8: renv_install_package(record)
+ 7: withCallingHandlers(renv_install_package_impl(record), error = function(e) writef("FAILED"))
+ 6: renv_install_package_impl(record)
+ 5: withCallingHandlers(if (isbin) renv_install_test(package), error = function(err) unlink(installpath, 
+        recursive = TRUE))
+ 4: renv_install_test(package)
+ 3: renv_system_exec(command = R(), args = c("--vanilla", "-s", "-f", 
+        renv_shell_path(script)), action = sprintf("testing if '%s' can be loaded", 
+        package))
+ 2: abort(sprintf("error %s [error code %i]", action, status), body = renv_system_exec_details(command, 
+        args, output))
+ 1: stop(fallback)
+- One or more packages recorded in the lockfile are not installed.
+- Use `renv::status()` for more details.
+Already up to date.
+Starting weather data collection: Fri Aug 22 12:27:14 CEST 2025
+Agent pid 453566
+Status updated for weather-hourly: running
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 487 bytes
+🔄 Triggering dashboard rebuild via git push...
+✅ Dashboard rebuild triggered - will be live in ~2-3 minutes
+Collecting municipal forecasts...
+Agent pid 453608
+Status updated for weather-forecast: running
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-forecast.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 488 bytes
+🔄 Triggering dashboard rebuild via git push...
+✅ Dashboard rebuild triggered - will be live in ~2-3 minutes
+Agent pid 453708
+Status updated for weather-forecast: failed
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-forecast.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 487 bytes
+🔄 Triggering dashboard rebuild via git push...
+✅ Dashboard rebuild triggered - will be live in ~2-3 minutes
+Collecting hourly observations...
+Agent pid 453750
+Status updated for weather-hourly: running
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 487 bytes
+🔄 Triggering dashboard rebuild via git push...
+✅ Dashboard rebuild triggered - will be live in ~2-3 minutes
+Agent pid 453835
+Status updated for weather-hourly: failed
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 486 bytes
+🔄 Triggering dashboard rebuild via git push...
+✅ Dashboard rebuild triggered - will be live in ~2-3 minutes
+Updating historical data...
+Agent pid 453877
+Status updated for weather-historical: running
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-historical.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 491 bytes
+🔄 Triggering dashboard rebuild via git push...
+✅ Dashboard rebuild triggered - will be live in ~2-3 minutes
+Agent pid 453962
+Status updated for weather-historical: failed
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-historical.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 490 bytes
+🔄 Triggering dashboard rebuild via git push...
+✅ Dashboard rebuild triggered - will be live in ~2-3 minutes
+Generating aggregated datasets...
+Agent pid 454004
+Status updated for weather-aggregation: running
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-aggregation.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 491 bytes
+🔄 Triggering dashboard rebuild via git push...
+✅ Dashboard rebuild triggered - will be live in ~2-3 minutes
+=== GENERATING ALL REQUIRED DATASETS ===
+Started at: Fri Aug 22 12:28:08 CEST 2025
+Log files will be saved with prefix: logs/generate_datasets_20250822_122808
+
+Checking for required input files...
+Input file check complete.
+
+=== STEP 1/3: GENERATING DATASET 1 (Daily Station Data) ===
+Running aggregate_daily_station_data.R...
+Agent pid 454095
+Status updated for weather-aggregation: failed
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-aggregation.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 490 bytes
+🔄 Triggering dashboard rebuild via git push...
+✅ Dashboard rebuild triggered - will be live in ~2-3 minutes
+❌ Dataset generation failed
+Weather data collection completed: Fri Aug 22 12:28:18 CEST 2025
+Agent pid 454139
+Status updated for weather-hourly: completed
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 490 bytes
+🔄 Triggering dashboard rebuild via git push...
+✅ Dashboard rebuild triggered - will be live in ~2-3 minutes

@@ -1,0 +1,64 @@
+
+R version 4.4.3 (2025-02-28) -- "Trophy Case"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: x86_64-conda-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '~/research/weather-data-collector-spain' loaded. [renv 1.1.4]
+- One or more packages recorded in the lockfile are not installed.
+- Use `renv::status()` for more details.
+> # get_historical_data.R
+> # ----------------------
+> # Purpose: Download and update historical daily weather data for Spain from the AEMET OpenData API.
+> #
+> # This script fetches historical daily climatological data using the 7 core variables
+> # that are compatible across current observations, historical data, and forecast endpoints.
+> #
+> # Core Variables (Standardized):
+> #   - ta: Air temperature (°C) - from tmed
+> #   - tamax: Maximum temperature (°C) - from tmax 
+> #   - tamin: Minimum temperature (°C) - from tmin
+> #   - hr: Relative humidity (%) - from hrMedia
+> #   - prec: Precipitation (mm) - from prec
+> #   - vv: Wind speed (km/h) - from velmedia
+> #   - pres: Atmospheric pressure (hPa) - from presMax
+> #
+> # Concurrency Control:
+> #   - Set PREVENT_CONCURRENT_RUNS = TRUE to enable lockfile-based run prevention
+> #   - Set PREVENT_CONCURRENT_RUNS = FALSE (default) to allow multiple concurrent runs
+> #
+> # Main Steps:
+> #   1. Load dependencies and API key.
+> #   2. Determine which dates are missing from the local dataset.
+> #   3. Download missing data in chunks, handling API rate limits and errors.
+> #   4. Append new data to the historical dataset.
+> #
+> # Usage:
+> #   - Requires a valid API key in 'auth/keys.R' as 'my_api_key'.
+> #   - Run as an R script. Output is written to 'data/output/daily_station_historical.csv.gz'.
+> #
+> # Dependencies: tidyverse, lubridate, data.table, curl, jsonlite
+> #
+> # Author: John Palmer
+> # Date: 2025-08-22 (Updated for 7-variable standardization)
+> 
+> # Title ####
+> # For downloading and preparing historical weather data. 
+> 
+> rm(list=ls())
+> 
+> ####Dependencies####
+> library(tidyverse)
+Error in library(tidyverse) : there is no package called ‘tidyverse’
+Execution halted

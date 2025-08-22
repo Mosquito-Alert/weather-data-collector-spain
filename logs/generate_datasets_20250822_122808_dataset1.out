@@ -1,0 +1,45 @@
+
+R version 4.4.3 (2025-02-28) -- "Trophy Case"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: x86_64-conda-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '~/research/weather-data-collector-spain' loaded. [renv 1.1.4]
+- One or more packages recorded in the lockfile are not installed.
+- Use `renv::status()` for more details.
+> #!/usr/bin/env Rscript
+> 
+> # aggregate_daily_station_data.R
+> # -------------------------------
+> # Purpose: Create daily aggregated weather data by station from hourly observations
+> #
+> # This script processes the hourly expanded weather data to create daily summaries
+> # by station. It combines historical daily data with aggregated current observations
+> # to provide a complete time series from 2013 to present.
+> #
+> # Output: Daily means, minimums, maximums, and totals by weather station
+> #
+> # Data Sources:
+> #   1. Historical daily data (2013 to T-4 days) from AEMET climatological endpoint
+> #   2. Current hourly data (T-4 days to present) aggregated to daily values
+> #
+> # Author: John Palmer
+> # Date: 2025-08-20
+> 
+> rm(list=ls())
+> 
+> # Dependencies ####
+> library(tidyverse)
+Error in library(tidyverse) : there is no package called ‘tidyverse’
+Execution halted

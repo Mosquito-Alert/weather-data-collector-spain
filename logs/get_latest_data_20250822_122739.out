@@ -1,0 +1,61 @@
+
+R version 4.4.3 (2025-02-28) -- "Trophy Case"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: x86_64-conda-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '~/research/weather-data-collector-spain' loaded. [renv 1.1.4]
+- One or more packages recorded in the lockfile are not installed.
+- Use `renv::status()` for more details.
+> # get_latest_data_expanded.R
+> # ----------------------
+> # Purpose: Download and update the latest observation data from AEMET stations across Spain.
+> #
+> # This script fetches weather observations from the AEMET OpenData API using the 7 core variables
+> # that are compatible across current observations, historical data, and forecast endpoints.
+> #
+> # Core Variables (Safe for all endpoints):
+> #   - ta: Air temperature (°C)
+> #   - tamax: Maximum temperature (°C) 
+> #   - tamin: Minimum temperature (°C)
+> #   - hr: Relative humidity (%)
+> #   - prec: Precipitation (mm)
+> #   - vv: Wind speed (km/h)
+> #   - pres: Atmospheric pressure (hPa)
+> #
+> # Main Steps:
+> #   1. Load dependencies and API key.
+> #   2. Define functions to request and process data from the AEMET API, with error handling and retries.
+> #   3. Download the latest data and reshape it for storage.
+> #   4. Append new data to the local CSV file, ensuring no duplicates.
+> #
+> # Usage:
+> #   - Requires a valid API key in 'auth/keys.R' as 'my_api_key'.
+> #   - Run as an R script. Output is written to 'data/spain_weather_expanded.csv.gz'.
+> #
+> # Dependencies: tidyverse, lubridate, curl, jsonlite, data.table, R.utils
+> #
+> # Author: John Palmer
+> # Date: 2025-08-20 (Updated for 7-variable expansion)
+> 
+> # Title ####
+> # For downloading latest observation data from AEMET stations all over Spain. This needs to be run at least every 12 hours, but better to run it every 2 because of API limits, failures etc.
+> 
+> rm(list=ls())
+> 
+> 
+> # Dependencies ####
+> library(tidyverse)
+Error in library(tidyverse) : there is no package called ‘tidyverse’
+Execution halted
