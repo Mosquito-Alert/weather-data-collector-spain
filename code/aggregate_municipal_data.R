@@ -28,9 +28,19 @@ cat("=== MUNICIPAL DATA AGGREGATION ===\n")
 
 # Check required input files
 required_files = c(
-  "data/spain_weather_daily_aggregated.csv.gz",
-  "data/spain_weather_municipal_forecast.csv.gz"
+  "data/output/daily_station_aggregated.csv.gz",           # From aggregate_daily_station_data.R
+  "data/output/municipal_forecasts_2025-08-22.csv"        # From get_forecast_data.R (today's date)
 )
+
+# Also check for any recent forecast files if today's doesn't exist
+if(!file.exists("data/output/municipal_forecasts_2025-08-22.csv")) {
+  recent_forecast_files = list.files("data/output", pattern = "municipal_forecasts_.*\\.csv$", full.names = TRUE)
+  if(length(recent_forecast_files) > 0) {
+    # Use the most recent forecast file
+    required_files[2] = tail(recent_forecast_files[order(file.mtime(recent_forecast_files))], 1)
+    cat("Using recent forecast file:", required_files[2], "\n")
+  }
+}
 
 missing_files = required_files[!file.exists(required_files)]
 if(length(missing_files) > 0) {
@@ -42,7 +52,7 @@ if(length(missing_files) > 0) {
 
 # Load daily aggregated station data
 cat("Loading daily aggregated station data...\n")
-station_daily = fread("data/spain_weather_daily_aggregated.csv.gz")
+station_daily = fread("data/output/daily_station_aggregated.csv.gz")
 station_daily$date = as.Date(station_daily$date)
 
 cat("Loaded", nrow(station_daily), "daily station records.\n")
@@ -51,8 +61,13 @@ cat("Number of stations:", length(unique(station_daily$idema)), "\n")
 
 # Load municipal forecasts
 cat("Loading municipal forecast data...\n")
-municipal_forecasts = fread("data/spain_weather_municipal_forecast.csv.gz")
-municipal_forecasts$fecha = as.Date(municipal_forecasts$fecha)
+municipal_forecasts = fread(required_files[2])  # Use the forecast file we determined above
+if("fecha" %in% names(municipal_forecasts)) {
+  municipal_forecasts$fecha = as.Date(municipal_forecasts$fecha)
+} else if("date" %in% names(municipal_forecasts)) {
+  names(municipal_forecasts)[names(municipal_forecasts) == "date"] = "fecha"
+  municipal_forecasts$fecha = as.Date(municipal_forecasts$fecha)
+}
 
 cat("Loaded", nrow(municipal_forecasts), "municipal forecast records.\n")
 cat("Forecast date range:", min(municipal_forecasts$fecha, na.rm=TRUE), "to", max(municipal_forecasts$fecha, na.rm=TRUE), "\n")

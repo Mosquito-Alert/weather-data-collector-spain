@@ -68,6 +68,12 @@ renv::init()
 renv::install(c("tidyverse", "lubridate", "data.table", "curl", "jsonlite", "httr", "R.utils"))
 renv::snapshot()
 EOF
+else
+    echo "Restoring renv packages..."
+    $STATUS_SCRIPT "$JOB_NAME" "running" 0 15
+    R --slave --no-restore --file=- <<EOF
+renv::restore(prompt = FALSE)
+EOF
 fi
 
 # Activate renv

@@ -74,9 +74,10 @@ Sys.setlocale("LC_ALL", "en_US.UTF-8")
 # Set the start date for historical data collection
 start_date = as_date("2013-07-01")
 
-# Set up curl handle with API key for authentication
+# Set up curl handle with API key for authentication and increased timeout
 h <- new_handle()
 handle_setheaders(h, 'api_key' = my_api_key)
+handle_setopt(h, timeout = 60, connecttimeout = 30)  # Increase timeout values
 
 # Generate sequence of all dates to check (from start_date to 4 days before today)
 all_dates = seq.Date(from = start_date, to=today()-4, by = "day")
@@ -97,8 +98,8 @@ if(!is.null(stored_weather_daily)){
   these_dates = all_dates
 }
 
-# Set chunk size for API requests (to avoid rate limits)
-chunksize = 20
+# Set chunk size for API requests (reduced to avoid rate limits and timeouts)
+chunksize = 5
 
 # Main download loop: only run if there are missing dates
 if(length(these_dates) > 0){
@@ -145,7 +146,13 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
             tamax = as.numeric(str_replace(tamax, ",", ".")),
             tamin = as.numeric(str_replace(tamin, ",", ".")),
             hr = as.numeric(str_replace(hr, ",", ".")),
-            prec = as.numeric(str_replace(prec, ",", ".")),
+            # Handle precipitation more carefully - it often contains "Ip" for trace amounts
+            prec = case_when(
+              is.na(prec) ~ NA_real_,
+              str_detect(prec, "Ip|ip") ~ 0.1,  # Trace precipitation = 0.1mm
+              prec == "" ~ NA_real_,
+              TRUE ~ suppressWarnings(as.numeric(str_replace(prec, ",", ".")))
+            ),
             vv = as.numeric(str_replace(vv, ",", ".")),
             pres = as.numeric(str_replace(pres, ",", "."))
           ) %>% 
@@ -154,17 +161,12 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
         
       },
       error = function(e){ 
-        # (Optional)
-        # Do this if an error is caught...
-        print(e)
-        Sys.sleep(50)
+        cat("ERROR on date", as.character(start_date), ":", e$message, "\n")
+        Sys.sleep(60)  # Longer sleep on error
         return(NULL)
       },
       warning = function(w){
-        print(w)
-        
-        # (Optional)
-        # Do this if a warning is caught...
+        cat("WARNING on date", as.character(start_date), ":", w$message, "\n") 
         return(NULL)
       },
       finally = {
@@ -179,15 +181,15 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
   weather_daily = rbindlist(list(weather_daily, stored_weather_daily))
   }
   
-  print("writing chunk")
-  
-  fwrite(weather_daily, "data/output/daily_station_historical.csv.gz")
-  
-  print("pausing 30 seconds")
-  Sys.sleep(30)
-  
-})
-
+   print("writing chunk")
+   
+   fwrite(weather_daily, "data/output/daily_station_historical.csv.gz")
+   
+   print("pausing 60 seconds")
+   Sys.sleep(60)  # Increased pause between chunks
+   
+ })
+ 
 } else{
   
   print("Up to date - no historical data downloaded")
