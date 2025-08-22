@@ -177,11 +177,17 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
     
   }))
   
-  if(!is.null(stored_weather_daily)){
-  weather_daily = rbindlist(list(weather_daily, stored_weather_daily))
-  }
+  print(paste0("Just grabbed ", nrow(weather_daily), " new records"))
   
-   print("writing chunk")
+  if(file.exists("data/output/daily_station_historical.csv.gz")){
+    stored_weather_daily = fread("data/output/daily_station_historical.csv.gz")
+    
+    print(paste0("We already had ", nrow(stored_weather_daily), " records stored"))
+    
+    weather_daily = rbindlist(list(weather_daily, stored_weather_daily))
+  } 
+  
+   print(paste0("writing chunk with ", nrow(weather_daily), " records"))
    
    fwrite(weather_daily, "data/output/daily_station_historical.csv.gz")
    
