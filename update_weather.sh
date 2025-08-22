@@ -15,11 +15,15 @@
 module load LibTIFF/4.6.0-GCCcore-13.3.0
 module load R/4.4.2-gfbf-2024a
 module load cURL/8.7.1-GCCcore-13.3.0
-module load openssl/1.1.1
+module load OpenSSL/3
 module load Miniconda3/24.7.1-0
 
-# Activate conda environment
-conda activate mosquito-alert-monitor
+# Initialize and activate conda environment
+source ~/.bashrc  # Ensure conda is initialized
+if ! conda activate mosquito-alert-monitor; then
+    echo "WARNING: Failed to activate conda environment mosquito-alert-monitor"
+    echo "Continuing with default environment..."
+fi
 
 # Load SSH agent since this is no longer done by default on the cluster
 eval "$(ssh-agent -s)"
@@ -94,10 +98,8 @@ $STATUS_SCRIPT "$JOB_NAME" "running" $(($(date +%s) - START_TIME)) 50
 R CMD BATCH --no-save --no-restore code/get_latest_data.R logs/get_latest_data_$(date +%Y%m%d_%H%M%S).out
 
 if [ $? -eq 0 ]; then
-    $STATUS_SCRIPT "$JOB_NAME" "completed" $(($(date +%s) - START_TIME)) 100
+    $STATUS_SCRIPT "weather-hourly" "completed" $(($(date +%s) - START_TIME)) 100
 else
-    $STATUS_SCRIPT "$JOB_NAME" "failed" $(($(date +%s) - START_TIME)) 50
-fi
     $STATUS_SCRIPT "weather-hourly" "failed" $(($(date +%s) - START_TIME)) 50
 fi
 
