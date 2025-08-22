@@ -58,49 +58,49 @@ cat("Loaded", nrow(municipal_forecasts), "municipal forecast records.\n")
 cat("Forecast date range:", min(municipal_forecasts$fecha, na.rm=TRUE), "to", max(municipal_forecasts$fecha, na.rm=TRUE), "\n")
 cat("Number of municipalities:", length(unique(municipal_forecasts$municipio_id)), "\n")
 
-# Create simplified municipality-station mapping
-# This is a basic approach - in practice you'd want a proper geographic mapping
-cat("Creating municipality-station mapping...\n")
+# Load station-municipality mapping table
+cat("Loading station-municipality mapping...\n")
 
-# Get unique stations with their coordinates
-if("lat" %in% names(station_daily) && "lon" %in% names(station_daily)) {
-  station_coords = station_daily[, .(
-    lat = mean(as.numeric(value[measure == "lat"]), na.rm=TRUE),
-    lon = mean(as.numeric(value[measure == "lon"]), na.rm=TRUE)
-  ), by = idema][!is.na(lat) & !is.na(lon)]
-  
-  cat("Found coordinates for", nrow(station_coords), "stations.\n")
-} else {
-  # If no coordinates available, create a basic mapping based on major cities
-  cat("No station coordinates available. Using simplified mapping for major municipalities.\n")
-  
-  # Basic mapping for the municipalities we have forecasts for
-  municipality_station_map = data.table(
-    municipio_id = c("28079", "08019", "41091", "46250", "29067", "48020", "15030", 
-                     "07040", "35016", "38023", "50297", "33044", "30030", "17079", "03014"),
-    municipio_nombre = c("Madrid", "Barcelona", "Sevilla", "Valencia", "Málaga", "Bilbao", 
-                        "A Coruña", "Palma", "Las Palmas", "Santa Cruz de Tenerife", 
-                        "Zaragoza", "Oviedo", "Murcia", "Girona", "Alicante"),
-    # Assign representative stations (this would need proper geographic mapping in production)
-    primary_station = c("3195", "0076", "5783", "8416", "6155", "1082", "1387", 
-                       "B228", "C649", "C427", "9434", "1208", "7228", "0367", "8025")
-  )
-} 
+if(!file.exists("data/input/station_point_municipaities_table.csv")) {
+  cat("ERROR: Station-municipality mapping file not found: data/input/station_point_municipaities_table.csv\n")
+  quit(save="no", status=1)
+}
 
-# For this simplified version, aggregate all stations to create "regional" summaries
-# that can be matched with municipal forecasts
-cat("Aggregating station data to regional summaries...\n")
+station_municipality_map = fread("data/input/station_point_municipaities_table.csv")
+cat("Loaded mapping for", nrow(station_municipality_map), "stations to municipalities.\n")
+cat("Number of municipalities:", length(unique(station_municipality_map$NATCODE)), "\n")
 
-# Create daily regional aggregates (mean across all stations with data each day)
-regional_daily = station_daily[, .(
+# Create proper municipality-station aggregation
+cat("Aggregating station data by municipality...\n")
+# Join station data with municipality mapping
+cat("Joining station data with municipality mapping...\n")
+
+# Merge station data with municipality mapping
+station_daily_with_municipality = merge(
+  station_daily,
+  station_municipality_map[, .(idema = INDICATIVO, municipio_id = NATCODE, municipio_nombre = NAMEUNIT)],
+  by = "idema",
+  all.x = TRUE  # Keep all station data, even if not mapped
+)
+
+cat("Stations with municipality mapping:", 
+    length(unique(station_daily_with_municipality$idema[!is.na(station_daily_with_municipality$municipio_id)])), "\n")
+cat("Stations without mapping:", 
+    length(unique(station_daily_with_municipality$idema[is.na(station_daily_with_municipality$municipio_id)])), "\n")
+
+# Create municipal aggregates
+cat("Creating municipal aggregates from station data...\n")
+
+municipal_daily = station_daily_with_municipality[!is.na(municipio_id), .(
   value = mean(value, na.rm = TRUE),
   n_stations = length(unique(idema)),
   source = "station_aggregate"
-), by = .(date, measure)]
+), by = .(date, municipio_id, municipio_nombre, measure)]
 
-cat("Created regional daily aggregates:\n")
-cat("  Records:", nrow(regional_daily), "\n")
-cat("  Date range:", min(regional_daily$date), "to", max(regional_daily$date), "\n")
+cat("Created municipal daily aggregates:\n")
+cat("  Records:", nrow(municipal_daily), "\n")
+cat("  Municipalities:", length(unique(municipal_daily$municipio_id)), "\n")
+cat("  Date range:", min(municipal_daily$date), "to", max(municipal_daily$date), "\n")
 
 # Convert forecast data to compatible format
 cat("Processing municipal forecast data...\n")
@@ -139,27 +139,35 @@ cat("Reshaped forecast data:\n")
 cat("  Records:", nrow(forecast_reshaped), "\n")
 cat("  Variables:", paste(unique(forecast_reshaped$measure), collapse=", "), "\n")
 
-# For this simplified version, create a combined dataset using the major municipality (Madrid)
-# as representative, and combine with regional station aggregates
-madrid_forecasts = forecast_reshaped[municipio_id == "28079"]
-madrid_forecasts$municipio_id = NULL  # Remove for joining with regional data
+# Match forecast data with municipal aggregates  
+cat("Combining municipal station data with forecasts...\n")
 
-# Combine regional station data with Madrid forecasts
-# Add municipality info to regional data (using Madrid as representative)
-regional_daily$municipio_id = "28079"
-regional_daily$municipio_nombre = "Madrid (Regional)"
+# Filter forecast data to only municipalities that have station data
+available_municipalities = unique(municipal_daily$municipio_id)
+forecast_filtered = forecast_reshaped[municipio_id %in% available_municipalities]
 
-# Find the overlap/gap between station data and forecasts
-station_end_date = max(regional_daily$date, na.rm=TRUE)
-forecast_start_date = min(madrid_forecasts$date, na.rm=TRUE)
+cat("Municipalities with both station data and forecasts:", 
+    length(intersect(unique(municipal_daily$municipio_id), unique(forecast_filtered$municipio_id))), "\n")
 
-cat("Station data ends:", station_end_date, "\n")
-cat("Forecast data starts:", forecast_start_date, "\n")
+# Find the overlap/gap between station data and forecasts by municipality
+overlap_summary = municipal_daily[, .(
+  station_end_date = max(date, na.rm=TRUE),
+  station_start_date = min(date, na.rm=TRUE)
+), by = municipio_id]
 
-# Combine datasets
+forecast_summary = forecast_filtered[, .(
+  forecast_start_date = min(date, na.rm=TRUE),
+  forecast_end_date = max(date, na.rm=TRUE)  
+), by = municipio_id]
+
+coverage_summary = merge(overlap_summary, forecast_summary, by = "municipio_id", all = TRUE)
+cat("Coverage summary for municipalities:\n")
+print(coverage_summary[1:10])  # Show first 10 for brevity
+
+# Combine municipal station data with forecasts
 combined_municipal = rbind(
-  regional_daily[, .(date, municipio_id, municipio_nombre, measure, value, source)],
-  madrid_forecasts[, .(date, municipio_id, municipio_nombre, measure, value, source)],
+  municipal_daily[, .(date, municipio_id, municipio_nombre, measure, value, source)],
+  forecast_filtered[, .(date, municipio_id, municipio_nombre, measure, value, source)],
   fill = TRUE
 )
 
@@ -169,30 +177,52 @@ combined_municipal = combined_municipal[order(date, measure)]
 # Create summary
 cat("\n=== MUNICIPAL AGGREGATION SUMMARY ===\n")
 cat("Total municipal records:", nrow(combined_municipal), "\n")
+cat("Number of municipalities:", length(unique(combined_municipal$municipio_id)), "\n")
 cat("Date range:", min(combined_municipal$date, na.rm=TRUE), "to", max(combined_municipal$date, na.rm=TRUE), "\n")
 cat("Variables included:", paste(unique(combined_municipal$measure), collapse=", "), "\n")
 
 # Summary by source
 source_summary = combined_municipal[, .(
   records = .N,
+  municipalities = length(unique(municipio_id)),
   date_min = min(date, na.rm=TRUE),
   date_max = max(date, na.rm=TRUE)
 ), by = source]
 
+cat("\nBy source:\n")
 print(source_summary)
+
+# Summary by municipality (top 10 by record count)
+municipality_summary = combined_municipal[, .(
+  records = .N,
+  variables = length(unique(measure)),
+  date_min = min(date, na.rm=TRUE),
+  date_max = max(date, na.rm=TRUE)
+), by = .(municipio_id, municipio_nombre)][order(-records)]
+
+cat("\nTop 10 municipalities by record count:\n")
+print(municipality_summary[1:10])
 
 # Summary by variable
 variable_summary = combined_municipal[, .(
   records = .N,
+  municipalities = length(unique(municipio_id)),
   date_min = min(date, na.rm=TRUE),
   date_max = max(date, na.rm=TRUE)
 ), by = measure]
 
+cat("\nBy variable:\n")
 print(variable_summary)
 
 # Save the combined municipal data
-output_file = "data/spain_weather_municipal_combined.csv.gz"
+output_file = "data/output/municipal_combined.csv.gz"
 fwrite(combined_municipal, output_file)
+
+cat("\n=== AGGREGATION COMPLETE ===\n")
+cat("Municipal aggregated data saved to:", output_file, "\n")
+cat("File size:", round(file.size(output_file)/1024/1024, 1), "MB\n")
+cat("Total municipalities:", length(unique(combined_municipal$municipio_id)), "\n")
+cat("Date coverage:", min(combined_municipal$date, na.rm=TRUE), "to", max(combined_municipal$date, na.rm=TRUE), "\n")
 
 cat("\n=== MUNICIPAL AGGREGATION COMPLETE ===\n")
 cat("Municipal combined data saved to:", output_file, "\n")
