@@ -1,0 +1,10 @@
+
+CondaError: Run 'conda init' before 'conda activate'
+
+Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
+From github.com:Mosquito-Alert/weather-data-collector-spain
+ * branch            main       -> FETCH_HEAD
+From github.com:Mosquito-Alert/weather-data-collector-spain
+ * branch            main       -> FETCH_HEAD
+To github.com:Mosquito-Alert/weather-data-collector-spain.git
+   09b7e92..4386630  main -> main
