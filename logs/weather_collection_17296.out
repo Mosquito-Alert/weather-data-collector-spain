@@ -1,0 +1,112 @@
+Agent pid 447003
+Agent pid 447011
+Status updated for weather-hourly: running
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 482 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
+# Bootstrapping renv 1.1.4 ---------------------------------------------------
+- Downloading renv ... OK
+- Installing renv  ... OK
+
+- One or more packages recorded in the lockfile are not installed.
+- Use `renv::status()` for more details.
+Already up to date.
+Starting weather data collection: Fri Aug 22 11:57:19 CEST 2025
+Agent pid 447196
+Status updated for weather-hourly: running
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 486 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
+Collecting municipal forecasts...
+Agent pid 447244
+Status updated for weather-forecast: running
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-forecast.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 488 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
+Agent pid 447331
+Status updated for weather-forecast: failed
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-forecast.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 487 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
+Collecting hourly observations...
+Agent pid 447370
+Status updated for weather-hourly: running
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 485 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
+Agent pid 447452
+Status updated for weather-hourly: failed
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 485 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
+Updating historical data...
+Agent pid 447491
+Status updated for weather-historical: running
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-historical.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 490 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
+Agent pid 447573
+Status updated for weather-historical: failed
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-historical.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 488 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
+Generating aggregated datasets...
+Agent pid 447612
+Status updated for weather-aggregation: running
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-aggregation.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 491 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
+=== GENERATING ALL REQUIRED DATASETS ===
+Started at: Fri Aug 22 11:58:09 CEST 2025
+Log files will be saved with prefix: logs/generate_datasets_20250822_115809
+
+Checking for required input files...
+Input file check complete.
+
+=== STEP 1/3: GENERATING DATASET 1 (Daily Station Data) ===
+Running aggregate_daily_station_data.R...
+Agent pid 447700
+Status updated for weather-aggregation: failed
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-aggregation.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 491 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
+❌ Dataset generation failed
+Weather data collection completed: Fri Aug 22 11:58:19 CEST 2025
+Agent pid 447740
+Status updated for weather-hourly: completed
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 490 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
