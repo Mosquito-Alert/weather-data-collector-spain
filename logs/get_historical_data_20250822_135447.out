@@ -1,0 +1,1630 @@
+
+R version 4.4.2 (2024-10-31) -- "Pile of Leaves"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '~/research/weather-data-collector-spain' loaded. [renv 1.1.4]
+> # get_historical_data.R
+> # ----------------------
+> # Purpose: Download and update historical daily weather data for Spain from the AEMET OpenData API.
+> #
+> # This script fetches historical daily climatological data using the 7 core variables
+> # that are compatible across current observations, historical data, and forecast endpoints.
+> #
+> # Core Variables (Standardized):
+> #   - ta: Air temperature (°C) - from tmed
+> #   - tamax: Maximum temperature (°C) - from tmax 
+> #   - tamin: Minimum temperature (°C) - from tmin
+> #   - hr: Relative humidity (%) - from hrMedia
+> #   - prec: Precipitation (mm) - from prec
+> #   - vv: Wind speed (km/h) - from velmedia
+> #   - pres: Atmospheric pressure (hPa) - from presMax
+> #
+> # Concurrency Control:
+> #   - Set PREVENT_CONCURRENT_RUNS = TRUE to enable lockfile-based run prevention
+> #   - Set PREVENT_CONCURRENT_RUNS = FALSE (default) to allow multiple concurrent runs
+> #
+> # Main Steps:
+> #   1. Load dependencies and API key.
+> #   2. Determine which dates are missing from the local dataset.
+> #   3. Download missing data in chunks, handling API rate limits and errors.
+> #   4. Append new data to the historical dataset.
+> #
+> # Usage:
+> #   - Requires a valid API key in 'auth/keys.R' as 'my_api_key'.
+> #   - Run as an R script. Output is written to 'data/output/daily_station_historical.csv.gz'.
+> #
+> # Dependencies: tidyverse, lubridate, data.table, curl, jsonlite
+> #
+> # Author: John Palmer
+> # Date: 2025-08-22 (Updated for 7-variable standardization)
+> 
+> # Title ####
+> # For downloading and preparing historical weather data. 
+> 
+> rm(list=ls())
+> 
+> ####Dependencies####
+> library(tidyverse)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.2     ✔ tibble    3.3.0
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.1.0     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+> library(lubridate)
+> library(data.table)
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:lubridate’:
+
+    hour, isoweek, mday, minute, month, quarter, second, wday, week,
+    yday, year
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+The following object is masked from ‘package:purrr’:
+
+    transpose
+
+> library(curl)
+Using libcurl 8.7.1 with OpenSSL/3.2.2
+
+Attaching package: ‘curl’
+
+The following object is masked from ‘package:readr’:
+
+    parse_date
+
+> library(jsonlite)
+
+Attaching package: ‘jsonlite’
+
+The following object is masked from ‘package:purrr’:
+
+    flatten
+
+> 
+> # If you want to prevent concurrent runs of this script, set PREVENT_CONCURRENT_RUNS to TRUE.
+> PREVENT_CONCURRENT_RUNS = FALSE
+> 
+> if(PREVENT_CONCURRENT_RUNS) {
++   # Prevent concurrent runs by creating a lockfile
++   # Lockfile management
++   lockfile <- "tmp/get_historical_data.lock"
++   # Check if lockfile exists
++   if (file.exists(lockfile)) {
++     cat("Another run is in progress. Exiting.\n")
++     quit(save = "no", status = 0)
++   }
++   # Create a temporary directory and lockfile
++   dir.create("tmp", showWarnings = FALSE)
++   file.create(lockfile)
++   # Ensure lockfile is removed on exit
++   on.exit(unlink(lockfile), add = TRUE)
++ }
+> 
+> # Load API keys
+> source("auth/keys.R")
+> 
+> # Set locale to UTF-8 for proper encoding handling
+> Sys.setlocale("LC_ALL", "en_US.UTF-8")
+[1] ""
+Warning message:
+In Sys.setlocale("LC_ALL", "en_US.UTF-8") :
+  OS reports request to set locale to "en_US.UTF-8" cannot be honored
+> 
+> # SETTING DATES ####
+> # Set the start date for historical data collection
+> start_date = as_date("2013-07-01")
+> 
+> # Set up curl handle with API key for authentication and increased timeout
+> h <- new_handle()
+> handle_setheaders(h, 'api_key' = my_api_key)
+> handle_setopt(h, timeout = 60, connecttimeout = 30)  # Increase timeout values
+> 
+> # Generate sequence of all dates to check (from start_date to 4 days before today)
+> all_dates = seq.Date(from = start_date, to=today()-4, by = "day")
+> 
+> # Load existing historical weather data
+> if(file.exists("data/output/daily_station_historical.csv.gz")){
++ stored_weather_daily = fread("data/output/daily_station_historical.csv.gz")
++ } else{stored_weather_daily = NULL}
+> 
+> 
+> # Reverse date order (latest first)
+> all_dates = rev(all_dates)
+> 
+> # Identify which dates are missing from the local dataset
+> if(!is.null(stored_weather_daily)){
++   these_dates = all_dates[which(!all_dates %in% unique(stored_weather_daily$date))]
++ } else{
++   these_dates = all_dates
++ }
+> 
+> # Set chunk size for API requests (reduced to avoid rate limits and timeouts)
+> chunksize = 5
+> 
+> # Main download loop: only run if there are missing dates
+> if(length(these_dates) > 0){
++ 
++ lapply(seq(1, length(these_dates), chunksize), function(j){
++   
++   this_chunk = these_dates[j:min(length(these_dates), (j+(chunksize-1)))]
++   
++   weather_daily = rbindlist(lapply(seq_along(this_chunk), function(i){
++     
++     start_date = this_chunk[i]
++     print(start_date)
++     
++     tryCatch(
++       expr = {
++         # Request historical daily climatological data for specific date
++         req = curl_fetch_memory(paste0('https://opendata.aemet.es/opendata/api/valores/climatologicos/diarios/datos/fechaini/', start_date, 'T00%3A00%3A00UTC/fechafin/', start_date, 'T23%3A59%3A59UTC/todasestaciones'), handle=h)
++         
++         wurl = fromJSON(rawToChar(req$content))$datos
++         
++         req = curl_fetch_memory(wurl)
++         this_string = rawToChar(req$content)
++         
++         # Set encoding to handle Spanish characters properly
++         Encoding(this_string) = "latin1"
++         
++         # Parse JSON and standardize variable names to match current observations
++         wdia  = fromJSON(this_string) %>% 
++           as_tibble() %>% 
++           select(
++             date = fecha, 
++             indicativo, 
++             ta = tmed,        # Mean temperature -> ta
++             tamax = tmax,     # Maximum temperature -> tamax  
++             tamin = tmin,     # Minimum temperature -> tamin
++             hr = hrMedia,     # Mean humidity -> hr
++             prec = prec,      # Precipitation -> prec
++             vv = velmedia,    # Wind speed -> vv
++             pres = presMax    # Pressure (using max) -> pres
++           ) %>% 
++           mutate(
++             date = as_date(date),
++             ta = as.numeric(str_replace(ta, ",", ".")),
++             tamax = as.numeric(str_replace(tamax, ",", ".")),
++             tamin = as.numeric(str_replace(tamin, ",", ".")),
++             hr = as.numeric(str_replace(hr, ",", ".")),
++             # Handle precipitation more carefully - it often contains "Ip" for trace amounts
++             prec = case_when(
++               is.na(prec) ~ NA_real_,
++               str_detect(prec, "Ip|ip") ~ 0.1,  # Trace precipitation = 0.1mm
++               prec == "" ~ NA_real_,
++               TRUE ~ suppressWarnings(as.numeric(str_replace(prec, ",", ".")))
++             ),
++             vv = as.numeric(str_replace(vv, ",", ".")),
++             pres = as.numeric(str_replace(pres, ",", "."))
++           ) %>% 
++           as.data.table()
++         return(wdia)
++         
++       },
++       error = function(e){ 
++         cat("ERROR on date", as.character(start_date), ":", e$message, "\n")
++         Sys.sleep(60)  # Longer sleep on error
++         return(NULL)
++       },
++       warning = function(w){
++         cat("WARNING on date", as.character(start_date), ":", w$message, "\n") 
++         return(NULL)
++       },
++       finally = {
++         # (Optional)
++         # Do this at the end before quitting the tryCatch structure...
++       }
++     )
++     
++   }))
++   
++   print(paste0("Just grabbed ", nrow(weather_daily), " new records"))
++   
++   if(file.exists("data/output/daily_station_historical.csv.gz")){
++     stored_weather_daily = fread("data/output/daily_station_historical.csv.gz")
++     
++     print(paste0("We already had ", nrow(stored_weather_daily), " records stored"))
++     
++     weather_daily = rbindlist(list(weather_daily, stored_weather_daily))
++   } 
++   
++    print(paste0("writing chunk with ", nrow(weather_daily), " records"))
++    
++    fwrite(weather_daily, "data/output/daily_station_historical.csv.gz")
++    
++    print("pausing 60 seconds")
++    Sys.sleep(60)  # Increased pause between chunks
++    
++  })
++  
++ } else{
++   
++   print("Up to date - no historical data downloaded")
++ }
+[1] "2025-08-18"
+ERROR on date 2025-08-18 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-08-17"
+[1] "2025-08-16"
+[1] "2025-08-15"
+ERROR on date 2025-08-15 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-08-14"
+ERROR on date 2025-08-14 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "Just grabbed 1716 new records"
+[1] "We already had 5220 records stored"
+[1] "writing chunk with 6936 records"
+[1] "pausing 60 seconds"
+[1] "2025-08-13"
+[1] "2025-08-12"
+[1] "2025-08-11"
+[1] "2025-08-10"
+[1] "2025-08-09"
+ERROR on date 2025-08-09 : lexical error: invalid char in json text.
+                                       <!DOCTYPE html><html><head><tit
+                     (right here) ------^
+ 
+[1] "Just grabbed 3440 new records"
+[1] "We already had 6936 records stored"
+[1] "writing chunk with 10376 records"
+[1] "pausing 60 seconds"
+[1] "2025-08-08"
+ERROR on date 2025-08-08 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-08-07"
+ERROR on date 2025-08-07 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-08-06"
+[1] "2025-08-05"
+[1] "2025-08-04"
+[1] "Just grabbed 2596 new records"
+[1] "We already had 10376 records stored"
+[1] "writing chunk with 12972 records"
+[1] "pausing 60 seconds"
+[1] "2025-08-03"
+ERROR on date 2025-08-03 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-08-02"
+ERROR on date 2025-08-02 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-08-01"
+ERROR on date 2025-08-01 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-07-31"
+ERROR on date 2025-07-31 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2025-07-30"
+[1] "Just grabbed 876 new records"
+[1] "We already had 12972 records stored"
+[1] "writing chunk with 13848 records"
+[1] "pausing 60 seconds"
+[1] "2025-07-29"
+ERROR on date 2025-07-29 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-07-28"
+[1] "2025-07-27"
+[1] "2025-07-26"
+[1] "2025-07-25"
+[1] "Just grabbed 3493 new records"
+[1] "We already had 13848 records stored"
+[1] "writing chunk with 17341 records"
+[1] "pausing 60 seconds"
+[1] "2025-07-24"
+ERROR on date 2025-07-24 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-07-23"
+ERROR on date 2025-07-23 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2025-07-22"
+[1] "2025-07-21"
+[1] "2025-07-20"
+[1] "Just grabbed 2623 new records"
+[1] "We already had 17341 records stored"
+[1] "writing chunk with 19964 records"
+[1] "pausing 60 seconds"
+[1] "2025-07-19"
+[1] "2025-07-18"
+[1] "2025-07-17"
+[1] "2025-07-16"
+[1] "2025-07-15"
+[1] "Just grabbed 4369 new records"
+[1] "We already had 19964 records stored"
+[1] "writing chunk with 24333 records"
+[1] "pausing 60 seconds"
+[1] "2025-07-14"
+ERROR on date 2025-07-14 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-07-13"
+[1] "2025-07-12"
+[1] "2025-07-11"
+[1] "2025-07-10"
+[1] "Just grabbed 3495 new records"
+[1] "We already had 24333 records stored"
+[1] "writing chunk with 27828 records"
+[1] "pausing 60 seconds"
+[1] "2025-07-09"
+ERROR on date 2025-07-09 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-07-08"
+[1] "2025-07-07"
+[1] "2025-07-06"
+ERROR on date 2025-07-06 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-07-05"
+[1] "Just grabbed 2614 new records"
+[1] "We already had 27828 records stored"
+[1] "writing chunk with 30442 records"
+[1] "pausing 60 seconds"
+[1] "2025-07-04"
+[1] "2025-07-03"
+ERROR on date 2025-07-03 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-07-02"
+[1] "2025-07-01"
+[1] "2025-06-30"
+[1] "Just grabbed 3489 new records"
+[1] "We already had 30442 records stored"
+[1] "writing chunk with 33931 records"
+[1] "pausing 60 seconds"
+[1] "2025-06-29"
+[1] "2025-06-28"
+[1] "2025-06-27"
+[1] "2025-06-26"
+[1] "2025-06-25"
+[1] "Just grabbed 4392 new records"
+[1] "We already had 33931 records stored"
+[1] "writing chunk with 38323 records"
+[1] "pausing 60 seconds"
+[1] "2025-06-24"
+[1] "2025-06-23"
+[1] "2025-06-22"
+[1] "2025-06-21"
+[1] "2025-06-20"
+[1] "Just grabbed 4384 new records"
+[1] "We already had 38323 records stored"
+[1] "writing chunk with 42707 records"
+[1] "pausing 60 seconds"
+[1] "2025-06-19"
+ERROR on date 2025-06-19 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-06-18"
+[1] "2025-06-17"
+[1] "2025-06-16"
+[1] "2025-06-15"
+[1] "Just grabbed 3522 new records"
+[1] "We already had 42707 records stored"
+[1] "writing chunk with 46229 records"
+[1] "pausing 60 seconds"
+[1] "2025-06-14"
+[1] "2025-06-13"
+[1] "2025-06-12"
+[1] "2025-06-11"
+[1] "2025-06-10"
+[1] "Just grabbed 4403 new records"
+[1] "We already had 46229 records stored"
+[1] "writing chunk with 50632 records"
+[1] "pausing 60 seconds"
+[1] "2025-06-09"
+[1] "2025-06-08"
+[1] "2025-06-07"
+[1] "2025-06-06"
+[1] "2025-06-05"
+[1] "Just grabbed 4419 new records"
+[1] "We already had 50632 records stored"
+[1] "writing chunk with 55051 records"
+[1] "pausing 60 seconds"
+[1] "2025-06-04"
+[1] "2025-06-03"
+[1] "2025-06-02"
+[1] "2025-06-01"
+[1] "2025-05-31"
+[1] "Just grabbed 4408 new records"
+[1] "We already had 55051 records stored"
+[1] "writing chunk with 59459 records"
+[1] "pausing 60 seconds"
+[1] "2025-05-30"
+ERROR on date 2025-05-30 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-05-29"
+ERROR on date 2025-05-29 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-05-28"
+ERROR on date 2025-05-28 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-05-27"
+ERROR on date 2025-05-27 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-05-26"
+ERROR on date 2025-05-26 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "Just grabbed 0 new records"
+[1] "We already had 59459 records stored"
+[1] "writing chunk with 59459 records"
+[1] "pausing 60 seconds"
+[1] "2025-05-25"
+[1] "2025-05-24"
+[1] "2025-05-23"
+[1] "2025-05-22"
+[1] "2025-05-21"
+[1] "Just grabbed 4411 new records"
+[1] "We already had 59459 records stored"
+[1] "writing chunk with 63870 records"
+[1] "pausing 60 seconds"
+[1] "2025-05-20"
+[1] "2025-05-19"
+[1] "2025-05-18"
+[1] "2025-05-17"
+[1] "2025-05-16"
+[1] "Just grabbed 4394 new records"
+[1] "We already had 63870 records stored"
+[1] "writing chunk with 68264 records"
+[1] "pausing 60 seconds"
+[1] "2025-05-15"
+[1] "2025-05-14"
+[1] "2025-05-13"
+[1] "2025-05-12"
+[1] "2025-05-11"
+[1] "Just grabbed 4377 new records"
+[1] "We already had 68264 records stored"
+[1] "writing chunk with 72641 records"
+[1] "pausing 60 seconds"
+[1] "2025-05-10"
+[1] "2025-05-09"
+[1] "2025-05-08"
+[1] "2025-05-07"
+[1] "2025-05-06"
+[1] "Just grabbed 4405 new records"
+[1] "We already had 72641 records stored"
+[1] "writing chunk with 77046 records"
+[1] "pausing 60 seconds"
+[1] "2025-05-05"
+ERROR on date 2025-05-05 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-05-04"
+ERROR on date 2025-05-04 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2025-05-03"
+[1] "2025-05-02"
+[1] "2025-05-01"
+[1] "Just grabbed 2637 new records"
+[1] "We already had 77046 records stored"
+[1] "writing chunk with 79683 records"
+[1] "pausing 60 seconds"
+[1] "2025-04-25"
+[1] "2025-04-24"
+ERROR on date 2025-04-24 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-04-23"
+[1] "2025-04-22"
+[1] "2025-04-21"
+[1] "Just grabbed 3521 new records"
+[1] "We already had 79683 records stored"
+[1] "writing chunk with 83204 records"
+[1] "pausing 60 seconds"
+[1] "2025-04-20"
+ERROR on date 2025-04-20 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-04-19"
+[1] "2025-04-18"
+[1] "2025-04-17"
+[1] "2025-04-16"
+[1] "Just grabbed 3501 new records"
+[1] "We already had 83204 records stored"
+[1] "writing chunk with 86705 records"
+[1] "pausing 60 seconds"
+[1] "2025-04-15"
+[1] "2025-04-14"
+[1] "2025-04-13"
+[1] "2025-04-11"
+[1] "2025-04-10"
+[1] "Just grabbed 4384 new records"
+[1] "We already had 86705 records stored"
+[1] "writing chunk with 91089 records"
+[1] "pausing 60 seconds"
+[1] "2025-04-09"
+[1] "2025-04-08"
+[1] "2025-04-07"
+[1] "2025-04-06"
+[1] "2025-04-05"
+[1] "Just grabbed 4397 new records"
+[1] "We already had 91089 records stored"
+[1] "writing chunk with 95486 records"
+[1] "pausing 60 seconds"
+[1] "2025-04-04"
+[1] "2025-04-03"
+[1] "2025-04-02"
+[1] "2025-04-01"
+[1] "2025-03-31"
+[1] "Just grabbed 4411 new records"
+[1] "We already had 95486 records stored"
+[1] "writing chunk with 99897 records"
+[1] "pausing 60 seconds"
+[1] "2025-03-30"
+[1] "2025-03-29"
+[1] "2025-03-28"
+[1] "2025-03-27"
+[1] "2025-03-26"
+[1] "Just grabbed 4419 new records"
+[1] "We already had 99897 records stored"
+[1] "writing chunk with 104316 records"
+[1] "pausing 60 seconds"
+[1] "2025-03-25"
+ERROR on date 2025-03-25 : lexical error: invalid char in json text.
+                                       <!DOCTYPE html><html><head><tit
+                     (right here) ------^
+ 
+[1] "2025-03-24"
+[1] "2025-03-23"
+[1] "2025-03-22"
+[1] "2025-03-21"
+[1] "Just grabbed 3535 new records"
+[1] "We already had 104316 records stored"
+[1] "writing chunk with 107851 records"
+[1] "pausing 60 seconds"
+[1] "2025-03-20"
+[1] "2025-03-19"
+[1] "2025-03-18"
+[1] "2025-03-17"
+[1] "2025-03-16"
+[1] "Just grabbed 4403 new records"
+[1] "We already had 107851 records stored"
+[1] "writing chunk with 112254 records"
+[1] "pausing 60 seconds"
+[1] "2025-03-15"
+ERROR on date 2025-03-15 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-03-14"
+[1] "2025-03-13"
+[1] "2025-03-12"
+[1] "2025-03-11"
+[1] "Just grabbed 3530 new records"
+[1] "We already had 112254 records stored"
+[1] "writing chunk with 115784 records"
+[1] "pausing 60 seconds"
+[1] "2025-03-10"
+ERROR on date 2025-03-10 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-03-09"
+[1] "2025-03-08"
+[1] "2025-03-07"
+[1] "2025-03-06"
+[1] "Just grabbed 3526 new records"
+[1] "We already had 115784 records stored"
+[1] "writing chunk with 119310 records"
+[1] "pausing 60 seconds"
+[1] "2025-03-05"
+ERROR on date 2025-03-05 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-03-04"
+ERROR on date 2025-03-04 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-03-03"
+ERROR on date 2025-03-03 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-03-02"
+ERROR on date 2025-03-02 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-03-01"
+[1] "Just grabbed 882 new records"
+[1] "We already had 119310 records stored"
+[1] "writing chunk with 120192 records"
+[1] "pausing 60 seconds"
+[1] "2025-02-28"
+[1] "2025-02-27"
+[1] "2025-02-26"
+[1] "2025-02-25"
+[1] "2025-02-24"
+[1] "Just grabbed 4415 new records"
+[1] "We already had 120192 records stored"
+[1] "writing chunk with 124607 records"
+[1] "pausing 60 seconds"
+[1] "2025-02-23"
+[1] "2025-02-22"
+[1] "2025-02-21"
+[1] "2025-02-20"
+[1] "2025-02-19"
+[1] "Just grabbed 4430 new records"
+[1] "We already had 124607 records stored"
+[1] "writing chunk with 129037 records"
+[1] "pausing 60 seconds"
+[1] "2025-02-18"
+ERROR on date 2025-02-18 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-02-17"
+ERROR on date 2025-02-17 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-02-16"
+[1] "2025-02-15"
+[1] "2025-02-14"
+[1] "Just grabbed 2661 new records"
+[1] "We already had 129037 records stored"
+[1] "writing chunk with 131698 records"
+[1] "pausing 60 seconds"
+[1] "2025-02-13"
+ERROR on date 2025-02-13 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-02-12"
+ERROR on date 2025-02-12 : Timeout was reached [opendata.aemet.es]:
+Operation timed out after 60002 milliseconds with 0 bytes received 
+[1] "2025-02-11"
+[1] "2025-02-10"
+[1] "2025-02-09"
+[1] "Just grabbed 2656 new records"
+[1] "We already had 131698 records stored"
+[1] "writing chunk with 134354 records"
+[1] "pausing 60 seconds"
+[1] "2025-02-08"
+[1] "2025-02-07"
+[1] "2025-02-06"
+[1] "2025-02-05"
+[1] "2025-02-04"
+[1] "Just grabbed 4428 new records"
+[1] "We already had 134354 records stored"
+[1] "writing chunk with 138782 records"
+[1] "pausing 60 seconds"
+[1] "2025-02-03"
+[1] "2025-02-02"
+[1] "2025-02-01"
+[1] "2025-01-31"
+[1] "2025-01-30"
+[1] "Just grabbed 4420 new records"
+[1] "We already had 138782 records stored"
+[1] "writing chunk with 143202 records"
+[1] "pausing 60 seconds"
+[1] "2025-01-29"
+ERROR on date 2025-01-29 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-01-28"
+[1] "2025-01-27"
+[1] "2025-01-26"
+[1] "2025-01-25"
+[1] "Just grabbed 3542 new records"
+[1] "We already had 143202 records stored"
+[1] "writing chunk with 146744 records"
+[1] "pausing 60 seconds"
+[1] "2025-01-24"
+ERROR on date 2025-01-24 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2025-01-23"
+ERROR on date 2025-01-23 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-01-22"
+[1] "2025-01-21"
+[1] "2025-01-20"
+[1] "Just grabbed 2657 new records"
+[1] "We already had 146744 records stored"
+[1] "writing chunk with 149401 records"
+[1] "pausing 60 seconds"
+[1] "2025-01-19"
+ERROR on date 2025-01-19 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2025-01-18"
+[1] "2025-01-17"
+[1] "2025-01-16"
+[1] "2025-01-15"
+[1] "Just grabbed 3543 new records"
+[1] "We already had 149401 records stored"
+[1] "writing chunk with 152944 records"
+[1] "pausing 60 seconds"
+[1] "2025-01-14"
+[1] "2025-01-13"
+[1] "2025-01-12"
+[1] "2025-01-11"
+[1] "2025-01-10"
+[1] "Just grabbed 4419 new records"
+[1] "We already had 152944 records stored"
+[1] "writing chunk with 157363 records"
+[1] "pausing 60 seconds"
+[1] "2025-01-09"
+[1] "2025-01-08"
+[1] "2025-01-07"
+[1] "2025-01-06"
+[1] "2025-01-05"
+[1] "Just grabbed 4401 new records"
+[1] "We already had 157363 records stored"
+[1] "writing chunk with 161764 records"
+[1] "pausing 60 seconds"
+[1] "2025-01-04"
+[1] "2025-01-03"
+[1] "2025-01-02"
+[1] "2025-01-01"
+[1] "2024-12-31"
+[1] "Just grabbed 4395 new records"
+[1] "We already had 161764 records stored"
+[1] "writing chunk with 166159 records"
+[1] "pausing 60 seconds"
+[1] "2024-12-30"
+[1] "2024-12-29"
+[1] "2024-12-28"
+[1] "2024-12-27"
+[1] "2024-12-26"
+[1] "Just grabbed 4398 new records"
+[1] "We already had 166159 records stored"
+[1] "writing chunk with 170557 records"
+[1] "pausing 60 seconds"
+[1] "2024-12-25"
+ERROR on date 2024-12-25 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2024-12-24"
+ERROR on date 2024-12-24 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-12-23"
+[1] "2024-12-22"
+[1] "2024-12-21"
+[1] "Just grabbed 2651 new records"
+[1] "We already had 170557 records stored"
+[1] "writing chunk with 173208 records"
+[1] "pausing 60 seconds"
+[1] "2024-12-20"
+ERROR on date 2024-12-20 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-12-19"
+ERROR on date 2024-12-19 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-12-18"
+[1] "2024-12-17"
+[1] "2024-12-16"
+ERROR on date 2024-12-16 : lexical error: invalid char in json text.
+                                       <!DOCTYPE html><html><head><tit
+                     (right here) ------^
+ 
+[1] "Just grabbed 1767 new records"
+[1] "We already had 173208 records stored"
+[1] "writing chunk with 174975 records"
+[1] "pausing 60 seconds"
+[1] "2024-12-15"
+[1] "2024-12-14"
+[1] "2024-12-13"
+[1] "2024-12-12"
+[1] "2024-12-11"
+[1] "Just grabbed 4391 new records"
+[1] "We already had 174975 records stored"
+[1] "writing chunk with 179366 records"
+[1] "pausing 60 seconds"
+[1] "2024-12-10"
+ERROR on date 2024-12-10 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-12-09"
+ERROR on date 2024-12-09 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-12-08"
+[1] "2024-12-07"
+[1] "2024-12-06"
+[1] "Just grabbed 2646 new records"
+[1] "We already had 179366 records stored"
+[1] "writing chunk with 182012 records"
+[1] "pausing 60 seconds"
+[1] "2024-12-05"
+ERROR on date 2024-12-05 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-12-04"
+[1] "2024-12-03"
+[1] "2024-12-02"
+[1] "2024-12-01"
+[1] "Just grabbed 3537 new records"
+[1] "We already had 182012 records stored"
+[1] "writing chunk with 185549 records"
+[1] "pausing 60 seconds"
+[1] "2024-11-30"
+ERROR on date 2024-11-30 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-11-29"
+ERROR on date 2024-11-29 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-11-28"
+[1] "2024-11-27"
+[1] "2024-11-26"
+[1] "Just grabbed 2653 new records"
+[1] "We already had 185549 records stored"
+[1] "writing chunk with 188202 records"
+[1] "pausing 60 seconds"
+[1] "2024-11-25"
+ERROR on date 2024-11-25 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-11-24"
+ERROR on date 2024-11-24 : argument is not a character vector 
+[1] "2024-11-23"
+ERROR on date 2024-11-23 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-11-22"
+ERROR on date 2024-11-22 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-11-21"
+[1] "Just grabbed 886 new records"
+[1] "We already had 188202 records stored"
+[1] "writing chunk with 189088 records"
+[1] "pausing 60 seconds"
+[1] "2024-11-20"
+[1] "2024-11-19"
+[1] "2024-11-18"
+[1] "2024-11-17"
+[1] "2024-11-16"
+[1] "Just grabbed 4422 new records"
+[1] "We already had 189088 records stored"
+[1] "writing chunk with 193510 records"
+[1] "pausing 60 seconds"
+[1] "2024-11-15"
+ERROR on date 2024-11-15 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-11-14"
+ERROR on date 2024-11-14 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-11-13"
+[1] "2024-11-12"
+[1] "2024-11-11"
+[1] "Just grabbed 2653 new records"
+[1] "We already had 193510 records stored"
+[1] "writing chunk with 196163 records"
+[1] "pausing 60 seconds"
+[1] "2024-11-10"
+[1] "2024-11-09"
+[1] "2024-11-08"
+[1] "2024-11-07"
+[1] "2024-11-06"
+[1] "Just grabbed 4419 new records"
+[1] "We already had 196163 records stored"
+[1] "writing chunk with 200582 records"
+[1] "pausing 60 seconds"
+[1] "2024-11-05"
+ERROR on date 2024-11-05 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-11-04"
+ERROR on date 2024-11-04 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2024-11-03"
+ERROR on date 2024-11-03 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-11-02"
+[1] "2024-11-01"
+[1] "Just grabbed 1763 new records"
+[1] "We already had 200582 records stored"
+[1] "writing chunk with 202345 records"
+[1] "pausing 60 seconds"
+[1] "2024-10-31"
+ERROR on date 2024-10-31 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2024-10-30"
+ERROR on date 2024-10-30 : Timeout was reached [opendata.aemet.es]:
+Operation timed out after 60002 milliseconds with 0 bytes received 
+[1] "2024-10-29"
+ERROR on date 2024-10-29 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-10-28"
+ERROR on date 2024-10-28 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-10-27"
+ERROR on date 2024-10-27 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "Just grabbed 0 new records"
+[1] "We already had 202345 records stored"
+[1] "writing chunk with 202345 records"
+[1] "pausing 60 seconds"
+[1] "2024-10-26"
+[1] "2024-10-25"
+ERROR on date 2024-10-25 : lexical error: invalid char in json text.
+                                       <!DOCTYPE html><html><head><tit
+                     (right here) ------^
+ 
+[1] "2024-10-24"
+[1] "2024-10-23"
+[1] "2024-10-22"
+[1] "Just grabbed 3532 new records"
+[1] "We already had 202345 records stored"
+[1] "writing chunk with 205877 records"
+[1] "pausing 60 seconds"
+[1] "2024-10-21"
+[1] "2024-10-20"
+[1] "2024-10-19"
+[1] "2024-10-18"
+[1] "2024-10-17"
+[1] "Just grabbed 4415 new records"
+[1] "We already had 205877 records stored"
+[1] "writing chunk with 210292 records"
+[1] "pausing 60 seconds"
+[1] "2024-10-16"
+ERROR on date 2024-10-16 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-10-15"
+ERROR on date 2024-10-15 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-10-14"
+[1] "2024-10-13"
+[1] "2024-10-12"
+[1] "Just grabbed 2648 new records"
+[1] "We already had 210292 records stored"
+[1] "writing chunk with 212940 records"
+[1] "pausing 60 seconds"
+[1] "2024-10-11"
+ERROR on date 2024-10-11 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-10-10"
+[1] "2024-10-09"
+ERROR on date 2024-10-09 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-10-08"
+[1] "2024-10-07"
+[1] "Just grabbed 2648 new records"
+[1] "We already had 212940 records stored"
+[1] "writing chunk with 215588 records"
+[1] "pausing 60 seconds"
+[1] "2024-10-06"
+[1] "2024-10-05"
+[1] "2024-10-04"
+[1] "2024-10-03"
+[1] "2024-10-02"
+[1] "Just grabbed 4433 new records"
+[1] "We already had 215588 records stored"
+[1] "writing chunk with 220021 records"
+[1] "pausing 60 seconds"
+[1] "2024-10-01"
+ERROR on date 2024-10-01 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-09-30"
+[1] "2024-09-29"
+ERROR on date 2024-09-29 : lexical error: invalid char in json text.
+                                       <!DOCTYPE html><html><head><tit
+                     (right here) ------^
+ 
+[1] "2024-09-28"
+ERROR on date 2024-09-28 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-09-27"
+ERROR on date 2024-09-27 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "Just grabbed 888 new records"
+[1] "We already had 220021 records stored"
+[1] "writing chunk with 220909 records"
+[1] "pausing 60 seconds"
+[1] "2024-09-26"
+ERROR on date 2024-09-26 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2024-09-25"
+ERROR on date 2024-09-25 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2024-09-24"
+[1] "2024-09-23"
+[1] "2024-09-22"
+[1] "Just grabbed 2654 new records"
+[1] "We already had 220909 records stored"
+[1] "writing chunk with 223563 records"
+[1] "pausing 60 seconds"
+[1] "2024-09-21"
+[1] "2024-09-20"
+[1] "2024-09-19"
+[1] "2024-09-18"
+[1] "2024-09-17"
+[1] "Just grabbed 4413 new records"
+[1] "We already had 223563 records stored"
+[1] "writing chunk with 227976 records"
+[1] "pausing 60 seconds"
+[1] "2024-09-16"
+ERROR on date 2024-09-16 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-09-15"
+[1] "2024-09-14"
+[1] "2024-09-13"
+[1] "2024-09-12"
+[1] "Just grabbed 3524 new records"
+[1] "We already had 227976 records stored"
+[1] "writing chunk with 231500 records"
+[1] "pausing 60 seconds"
+[1] "2024-09-11"
+[1] "2024-09-10"
+[1] "2024-09-09"
+[1] "2024-09-08"
+[1] "2024-09-07"
+[1] "Just grabbed 4399 new records"
+[1] "We already had 231500 records stored"
+[1] "writing chunk with 235899 records"
+[1] "pausing 60 seconds"
+[1] "2024-09-06"
+ERROR on date 2024-09-06 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-09-05"
+[1] "2024-09-04"
+[1] "2024-09-03"
+[1] "2024-09-02"
+[1] "Just grabbed 3516 new records"
+[1] "We already had 235899 records stored"
+[1] "writing chunk with 239415 records"
+[1] "pausing 60 seconds"
+[1] "2024-09-01"
+ERROR on date 2024-09-01 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2024-08-31"
+ERROR on date 2024-08-31 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2024-08-30"
+[1] "2024-08-29"
+[1] "2024-08-28"
+[1] "Just grabbed 2624 new records"
+[1] "We already had 239415 records stored"
+[1] "writing chunk with 242039 records"
+[1] "pausing 60 seconds"
+[1] "2024-08-27"
+ERROR on date 2024-08-27 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2024-08-26"
+[1] "2024-08-25"
+[1] "2024-08-24"
+[1] "2024-08-23"
+[1] "Just grabbed 3501 new records"
+[1] "We already had 242039 records stored"
+[1] "writing chunk with 245540 records"
+[1] "pausing 60 seconds"
+[1] "2024-08-22"
+[1] "2024-08-21"
+[1] "2024-08-20"
+[1] "2024-08-19"
+[1] "2024-08-18"
+[1] "Just grabbed 4401 new records"
+[1] "We already had 245540 records stored"
+[1] "writing chunk with 249941 records"
+[1] "pausing 60 seconds"
+[1] "2024-08-17"
+[1] "2024-08-16"
+[1] "2024-08-15"
+[1] "2024-08-14"
+[1] "2024-08-13"
+[1] "Just grabbed 4395 new records"
+[1] "We already had 249941 records stored"
+[1] "writing chunk with 254336 records"
+[1] "pausing 60 seconds"
+[1] "2024-08-12"
+ERROR on date 2024-08-12 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-08-11"
+[1] "2024-08-10"
+[1] "2024-08-09"
+[1] "2024-08-08"
+[1] "Just grabbed 3541 new records"
+[1] "We already had 254336 records stored"
+[1] "writing chunk with 257877 records"
+[1] "pausing 60 seconds"
+[1] "2024-08-07"
+ERROR on date 2024-08-07 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-08-06"
+[1] "2024-08-05"
+[1] "2024-08-04"
+[1] "2024-08-03"
+[1] "Just grabbed 3534 new records"
+[1] "We already had 257877 records stored"
+[1] "writing chunk with 261411 records"
+[1] "pausing 60 seconds"
+[1] "2024-08-02"
+ERROR on date 2024-08-02 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-08-01"
+[1] "2024-07-31"
+[1] "2024-07-30"
+[1] "2024-07-29"
+[1] "Just grabbed 3523 new records"
+[1] "We already had 261411 records stored"
+[1] "writing chunk with 264934 records"
+[1] "pausing 60 seconds"
+[1] "2024-07-28"
+[1] "2024-07-27"
+ERROR on date 2024-07-27 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2024-07-26"
+[1] "2024-07-25"
+[1] "2024-07-24"
+[1] "Just grabbed 3538 new records"
+[1] "We already had 264934 records stored"
+[1] "writing chunk with 268472 records"
+[1] "pausing 60 seconds"
+[1] "2024-07-23"
+ERROR on date 2024-07-23 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-07-22"
+[1] "2024-07-21"
+[1] "2024-07-20"
+[1] "2024-07-19"
+[1] "Just grabbed 3536 new records"
+[1] "We already had 268472 records stored"
+[1] "writing chunk with 272008 records"
+[1] "pausing 60 seconds"
+[1] "2024-07-18"
+[1] "2024-07-17"
+[1] "2024-07-16"
+[1] "2024-07-15"
+[1] "2024-07-14"
+[1] "Just grabbed 4412 new records"
+[1] "We already had 272008 records stored"
+[1] "writing chunk with 276420 records"
+[1] "pausing 60 seconds"
+[1] "2024-07-13"
+[1] "2024-07-12"
+[1] "2024-07-11"
+[1] "2024-07-10"
+[1] "2024-07-09"
+[1] "Just grabbed 4413 new records"
+[1] "We already had 276420 records stored"
+[1] "writing chunk with 280833 records"
+[1] "pausing 60 seconds"
+[1] "2024-07-08"
+[1] "2024-07-07"
+[1] "2024-07-06"
+[1] "2024-07-05"
+[1] "2024-07-04"
+[1] "Just grabbed 4397 new records"
+[1] "We already had 280833 records stored"
+[1] "writing chunk with 285230 records"
+[1] "pausing 60 seconds"
+[1] "2024-07-03"
+[1] "2024-07-02"
+[1] "2024-07-01"
+[1] "2024-06-30"
+[1] "2024-06-29"
+[1] "Just grabbed 4386 new records"
+[1] "We already had 285230 records stored"
+[1] "writing chunk with 289616 records"
+[1] "pausing 60 seconds"
+[1] "2024-06-28"
+ERROR on date 2024-06-28 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-06-27"
+[1] "2024-06-26"
+ERROR on date 2024-06-26 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-06-25"
+ERROR on date 2024-06-25 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-06-24"
+ERROR on date 2024-06-24 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "Just grabbed 882 new records"
+[1] "We already had 289616 records stored"
+[1] "writing chunk with 290498 records"
+[1] "pausing 60 seconds"
+[1] "2024-06-23"
+[1] "2024-06-22"
+[1] "2024-06-21"
+[1] "2024-06-20"
+[1] "2024-06-19"
+[1] "Just grabbed 4410 new records"
+[1] "We already had 290498 records stored"
+[1] "writing chunk with 294908 records"
+[1] "pausing 60 seconds"
+[1] "2024-06-18"
+[1] "2024-06-17"
+[1] "2024-06-16"
+[1] "2024-06-15"
+[1] "2024-06-14"
+[1] "Just grabbed 4428 new records"
+[1] "We already had 294908 records stored"
+[1] "writing chunk with 299336 records"
+[1] "pausing 60 seconds"
+[1] "2024-06-13"
+[1] "2024-06-12"
+[1] "2024-06-11"
+[1] "2024-06-10"
+[1] "2024-06-09"
+[1] "Just grabbed 4419 new records"
+[1] "We already had 299336 records stored"
+[1] "writing chunk with 303755 records"
+[1] "pausing 60 seconds"
+[1] "2024-06-08"
+ERROR on date 2024-06-08 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-06-07"
+[1] "2024-06-06"
+[1] "2024-06-05"
+[1] "2024-06-04"
+[1] "Just grabbed 3544 new records"
+[1] "We already had 303755 records stored"
+[1] "writing chunk with 307299 records"
+[1] "pausing 60 seconds"
+[1] "2024-06-03"
+[1] "2024-06-02"
+ERROR on date 2024-06-02 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2024-06-01"
+ERROR on date 2024-06-01 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-05-31"
+[1] "2024-05-30"
+[1] "Just grabbed 2660 new records"
+[1] "We already had 307299 records stored"
+[1] "writing chunk with 309959 records"
+[1] "pausing 60 seconds"
+[1] "2024-05-29"
+[1] "2024-05-28"
+[1] "2024-05-27"
+[1] "2024-05-26"
+[1] "2024-05-25"
+[1] "Just grabbed 4425 new records"
+[1] "We already had 309959 records stored"
+[1] "writing chunk with 314384 records"
+[1] "pausing 60 seconds"
+[1] "2024-05-24"
+[1] "2024-05-23"
+[1] "2024-05-22"
+[1] "2024-05-21"
+[1] "2024-05-20"
+[1] "Just grabbed 4415 new records"
+[1] "We already had 314384 records stored"
+[1] "writing chunk with 318799 records"
+[1] "pausing 60 seconds"
+[1] "2024-05-19"
+ERROR on date 2024-05-19 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-05-18"
+[1] "2024-05-17"
+[1] "2024-05-16"
+[1] "2024-05-15"
+[1] "Just grabbed 3535 new records"
+[1] "We already had 318799 records stored"
+[1] "writing chunk with 322334 records"
+[1] "pausing 60 seconds"
+[1] "2024-05-14"
+[1] "2024-05-13"
+[1] "2024-05-12"
+[1] "2024-05-11"
+[1] "2024-05-10"
+[1] "Just grabbed 4430 new records"
+[1] "We already had 322334 records stored"
+[1] "writing chunk with 326764 records"
+[1] "pausing 60 seconds"
+[1] "2024-05-09"
+ERROR on date 2024-05-09 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-05-08"
+[1] "2024-05-07"
+[1] "2024-05-06"
+[1] "2024-05-05"
+[1] "Just grabbed 3540 new records"
+[1] "We already had 326764 records stored"
+[1] "writing chunk with 330304 records"
+[1] "pausing 60 seconds"
+[1] "2024-05-04"
+[1] "2024-05-03"
+[1] "2024-05-02"
+[1] "2024-05-01"
+[1] "2024-04-30"
+[1] "Just grabbed 4427 new records"
+[1] "We already had 330304 records stored"
+[1] "writing chunk with 334731 records"
+[1] "pausing 60 seconds"
+[1] "2024-04-29"
+ERROR on date 2024-04-29 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-04-28"
+[1] "2024-04-27"
+[1] "2024-04-26"
+[1] "2024-04-25"
+[1] "Just grabbed 3551 new records"
+[1] "We already had 334731 records stored"
+[1] "writing chunk with 338282 records"
+[1] "pausing 60 seconds"
+[1] "2024-04-24"
+ERROR on date 2024-04-24 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-04-23"
+[1] "2024-04-22"
+[1] "2024-04-21"
+[1] "2024-04-20"
+[1] "Just grabbed 3567 new records"
+[1] "We already had 338282 records stored"
+[1] "writing chunk with 341849 records"
+[1] "pausing 60 seconds"
+[1] "2024-04-19"
+[1] "2024-04-18"
+[1] "2024-04-17"
+[1] "2024-04-16"
+[1] "2024-04-15"
+[1] "Just grabbed 4467 new records"
+[1] "We already had 341849 records stored"
+[1] "writing chunk with 346316 records"
+[1] "pausing 60 seconds"
+[1] "2024-04-14"
+ERROR on date 2024-04-14 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-04-13"
+ERROR on date 2024-04-13 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-04-12"
+[1] "2024-04-11"
+[1] "2024-04-10"
+[1] "Just grabbed 2681 new records"
+[1] "We already had 346316 records stored"
+[1] "writing chunk with 348997 records"
+[1] "pausing 60 seconds"
+[1] "2024-04-09"
+[1] "2024-04-08"
+[1] "2024-04-07"
+[1] "2024-04-06"
+[1] "2024-04-05"
+[1] "Just grabbed 4451 new records"
+[1] "We already had 348997 records stored"
+[1] "writing chunk with 353448 records"
+[1] "pausing 60 seconds"
+[1] "2024-04-04"
+[1] "2024-04-03"
+[1] "2024-04-02"
+[1] "2024-04-01"
+[1] "2024-03-31"
+[1] "Just grabbed 4439 new records"
+[1] "We already had 353448 records stored"
+[1] "writing chunk with 357887 records"
+[1] "pausing 60 seconds"
+[1] "2024-03-30"
+[1] "2024-03-29"
+[1] "2024-03-28"
+[1] "2024-03-27"
+[1] "2024-03-26"
+[1] "Just grabbed 4407 new records"
+[1] "We already had 357887 records stored"
+[1] "writing chunk with 362294 records"
+[1] "pausing 60 seconds"
+[1] "2024-03-25"
+[1] "2024-03-24"
+[1] "2024-03-23"
+[1] "2024-03-22"
+[1] "2024-03-21"
+[1] "Just grabbed 4434 new records"
+[1] "We already had 362294 records stored"
+[1] "writing chunk with 366728 records"
+[1] "pausing 60 seconds"
+[1] "2024-03-20"
+ERROR on date 2024-03-20 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-03-19"
+ERROR on date 2024-03-19 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-03-18"
+ERROR on date 2024-03-18 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-03-17"
+[1] "2024-03-16"
+[1] "Just grabbed 1777 new records"
+[1] "We already had 366728 records stored"
+[1] "writing chunk with 368505 records"
+[1] "pausing 60 seconds"
+[1] "2024-03-15"
+[1] "2024-03-14"
+[1] "2024-03-13"
+[1] "2024-03-12"
+[1] "2024-03-11"
+[1] "Just grabbed 4435 new records"
+[1] "We already had 368505 records stored"
+[1] "writing chunk with 372940 records"
+[1] "pausing 60 seconds"
+[1] "2024-03-10"
+[1] "2024-03-09"
+[1] "2024-03-08"
+[1] "2024-03-07"
+[1] "2024-03-06"
+[1] "Just grabbed 4443 new records"
+[1] "We already had 372940 records stored"
+[1] "writing chunk with 377383 records"
+[1] "pausing 60 seconds"
+[1] "2024-03-05"
+ERROR on date 2024-03-05 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-03-04"
+ERROR on date 2024-03-04 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-03-03"
+ERROR on date 2024-03-03 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-03-02"
+[1] "2024-03-01"
+[1] "Just grabbed 1778 new records"
+[1] "We already had 377383 records stored"
+[1] "writing chunk with 379161 records"
+[1] "pausing 60 seconds"
+[1] "2024-02-29"
+ERROR on date 2024-02-29 : lexical error: invalid char in json text.
+                                       <!DOCTYPE html><html><head><tit
+                     (right here) ------^
+ 
+[1] "2024-02-28"
+[1] "2024-02-27"
+[1] "2024-02-26"
+[1] "2024-02-25"
+[1] "Just grabbed 3552 new records"
+[1] "We already had 379161 records stored"
+[1] "writing chunk with 382713 records"
+[1] "pausing 60 seconds"
+[1] "2024-02-24"
+ERROR on date 2024-02-24 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-02-23"
+ERROR on date 2024-02-23 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2024-02-22"
+[1] "2024-02-21"
+ERROR on date 2024-02-21 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-02-20"
+ERROR on date 2024-02-20 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "Just grabbed 888 new records"
+[1] "We already had 382713 records stored"
+[1] "writing chunk with 383601 records"
+[1] "pausing 60 seconds"
+[1] "2024-02-19"
+[1] "2024-02-18"
+[1] "2024-02-17"
+[1] "2024-02-16"
+[1] "2024-02-15"
+[1] "Just grabbed 4442 new records"
+[1] "We already had 383601 records stored"
+[1] "writing chunk with 388043 records"
+[1] "pausing 60 seconds"
+[1] "2024-02-14"
+[1] "2024-02-13"
+[1] "2024-02-12"
+[1] "2024-02-11"
+[1] "2024-02-10"
+[1] "Just grabbed 4428 new records"
+[1] "We already had 388043 records stored"
+[1] "writing chunk with 392471 records"
+[1] "pausing 60 seconds"
+[1] "2024-02-09"
+[1] "2024-02-08"
+[1] "2024-02-07"
+[1] "2024-02-06"
+[1] "2024-02-05"
+[1] "Just grabbed 4453 new records"
+[1] "We already had 392471 records stored"
+[1] "writing chunk with 396924 records"
+[1] "pausing 60 seconds"
+[1] "2024-02-04"
+ERROR on date 2024-02-04 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2024-02-03"
+ERROR on date 2024-02-03 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-02-02"
+[1] "2024-02-01"
+[1] "2024-01-31"
+[1] "Just grabbed 2674 new records"
+[1] "We already had 396924 records stored"
+[1] "writing chunk with 399598 records"
+[1] "pausing 60 seconds"
+[1] "2024-01-30"
+ERROR on date 2024-01-30 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2024-01-29"
+ERROR on date 2024-01-29 : lexical error: invalid bytes in UTF8 string.
+                {   "descripcion" : "L�mite de peticiones o caudal por
+                     (right here) ------^
+ 
+[1] "2024-01-28"
+[1] "2024-01-27"
+[1] "2024-01-26"
+[1] "Just grabbed 2671 new records"
+[1] "We already had 399598 records stored"
+[1] "writing chunk with 402269 records"
+[1] "pausing 60 seconds"
+[1] "2024-01-25"
+[1] "2024-01-24"
+[1] "2024-01-23"
+[1] "2024-01-22"
+[1] "2024-01-21"
+[1] "Just grabbed 4449 new records"
+[1] "We already had 402269 records stored"
+[1] "writing chunk with 406718 records"
+[1] "pausing 60 seconds"
+[1] "2024-01-20"
+ERROR on date 2024-01-20 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-01-19"
+ERROR on date 2024-01-19 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-01-18"
+ERROR on date 2024-01-18 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2024-01-17"
+[1] "2024-01-16"
+[1] "Just grabbed 1779 new records"
+[1] "We already had 406718 records stored"
+[1] "writing chunk with 408497 records"
+[1] "pausing 60 seconds"
+[1] "2024-01-15"
+[1] "2024-01-14"
+[1] "2024-01-13"
+[1] "2024-01-12"
+[1] "2024-01-11"
+[1] "Just grabbed 4442 new records"
+[1] "We already had 408497 records stored"
+[1] "writing chunk with 412939 records"
+[1] "pausing 60 seconds"
+[1] "2024-01-10"
+[1] "2024-01-09"
+[1] "2024-01-08"
+[1] "2024-01-07"
+[1] "2024-01-06"
+[1] "Just grabbed 4446 new records"
+[1] "We already had 412939 records stored"
+[1] "writing chunk with 417385 records"
+[1] "pausing 60 seconds"
+[1] "2024-01-05"
+[1] "2024-01-04"
+[1] "2024-01-03"
+[1] "2024-01-02"
+[1] "2024-01-01"
+[1] "Just grabbed 4449 new records"
+[1] "We already had 417385 records stored"
+[1] "writing chunk with 421834 records"
+[1] "pausing 60 seconds"
+[1] "2023-12-31"
+ERROR on date 2023-12-31 : lexical error: invalid char in json text.
+                                       <!DOCTYPE html><html><head><tit
+                     (right here) ------^
+ 
+[1] "2023-12-30"
+ERROR on date 2023-12-30 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2023-12-29"
+ERROR on date 2023-12-29 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+[1] "2023-12-28"
+[1] "2023-12-27"
+[1] "Just grabbed 1778 new records"
+[1] "We already had 421834 records stored"
+[1] "writing chunk with 423612 records"
+[1] "pausing 60 seconds"
+[1] "2023-12-26"
+ERROR on date 2023-12-26 : Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
