@@ -18,8 +18,13 @@ export LANG=C.UTF-8
 module load LibTIFF/4.6.0-GCCcore-13.3.0
 module load Miniconda3/24.7.1-0
 
-# Activate conda environment
-conda activate mosquito-alert-monitor
+# Initialize conda if needed
+source ~/.bashrc 2>/dev/null || true
+
+# Activate conda environment for dashboard operations
+conda activate mosquito-alert-monitor 2>/dev/null || {
+    echo "WARNING: Failed to activate conda environment mosquito-alert-monitor"
+}
 
 
 # scripts/update_weather_status.sh
@@ -158,3 +163,6 @@ if [ -f "$STATUS_DIR/${JOB_NAME}.json" ]; then
 else
     echo "❌ Failed to create status file"
 fi
+
+# Deactivate conda environment to allow R/renv to work properly
+conda deactivate 2>/dev/null || true

@@ -16,14 +16,6 @@ module load LibTIFF/4.6.0-GCCcore-13.3.0
 module load R/4.4.2-gfbf-2024a
 module load cURL/8.7.1-GCCcore-13.3.0
 module load OpenSSL/3
-module load Miniconda3/24.7.1-0
-
-# Initialize and activate conda environment
-source ~/.bashrc  # Ensure conda is initialized
-if ! conda activate mosquito-alert-monitor; then
-    echo "WARNING: Failed to activate conda environment mosquito-alert-monitor"
-    echo "Continuing with default environment..."
-fi
 
 # Load SSH agent since this is no longer done by default on the cluster
 eval "$(ssh-agent -s)"
@@ -55,31 +47,6 @@ START_TIME=$(date +%s)
 
 # Report job started
 $STATUS_SCRIPT "$JOB_NAME" "running" 0 5
-
-# Initialize renv if first run
-if [ ! -f "renv.lock" ]; then
-    echo "Initializing renv..."
-    $STATUS_SCRIPT "$JOB_NAME" "running" 0 10
-    R --slave --no-restore --file=- <<EOF
-if (!requireNamespace("renv", quietly = TRUE)) {
-  install.packages("renv", repos="https://cran.r-project.org")
-}
-renv::init()
-renv::install(c("tidyverse", "lubridate", "data.table", "curl", "jsonlite", "httr", "R.utils"))
-renv::snapshot()
-EOF
-else
-    echo "Restoring renv packages..."
-    $STATUS_SCRIPT "$JOB_NAME" "running" 0 15
-    R --slave --no-restore --file=- <<EOF
-renv::restore(prompt = FALSE)
-EOF
-fi
-
-# Activate renv
-R --slave --no-restore --file=- <<EOF
-renv::activate()
-EOF
 
 # Pull any pending commits
 git pull origin main
@@ -123,8 +90,6 @@ fi
 # Priority 4: Generate aggregated datasets
 echo "Generating aggregated datasets..."
 $STATUS_SCRIPT "weather-aggregation" "running" $(($(date +%s) - START_TIME)) 90
-
-# Run dataset aggregation
 ./generate_all_datasets.sh
 
 if [ $? -eq 0 ]; then
