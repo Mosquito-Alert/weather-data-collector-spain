@@ -1,6 +1,11 @@
-# Weather Data Collection Crontab Schedule
-# ========================================
+# Weather Data Collection + Monitor Dashboard Crontab Schedule
+# =============================================================
 
+# GIT CONFLICT PREVENTION - CRITICAL FOR DASHBOARD RELIABILITY  
+# Sync monitor repository every 30 minutes to prevent git conflicts
+*/30 * * * * cd ~/research/mosquito-alert-model-monitor && ~/research/mosquito-alert-model-monitor/scripts/cluster_sync.sh
+
+# WEATHER DATA COLLECTION JOBS
 # Hourly collection (every hour at 5 minutes past)
 # Collects latest 12-hour observation data to build continuous database
 5 * * * * cd ~/research/weather-data-collector-spain && sbatch update_weather_hourly.sh
@@ -16,3 +21,7 @@
 # Monthly deep historical collection (1st of month at 1 AM)
 # Full historical data collection with extra time
 0 1 1 * * cd ~/research/weather-data-collector-spain && SKIP_HISTORICAL=false sbatch update_weather.sh
+
+# MAINTENANCE
+# Weekly log cleanup
+0 3 * * 1 find ~/research/weather-data-collector-spain/logs -name "*.out" -mtime +30 -delete
