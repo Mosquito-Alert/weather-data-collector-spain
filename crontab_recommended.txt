@@ -1,9 +1,6 @@
 # Weather Data Collection + Monitor Dashboard Crontab Schedule
 # =============================================================
 
-# GIT CONFLICT PREVENTION - CRITICAL FOR DASHBOARD RELIABILITY  
-# Sync monitor repository every 30 minutes to prevent git conflicts
-*/30 * * * * cd ~/research/mosquito-alert-model-monitor && ~/research/mosquito-alert-model-monitor/scripts/cluster_sync.sh
 
 # WEATHER DATA COLLECTION JOBS
 # Hourly collection (every hour at 5 minutes past)
