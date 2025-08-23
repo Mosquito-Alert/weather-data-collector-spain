@@ -1,0 +1,40 @@
+Agent pid 467460
+WARNING: Failed to activate conda environment mosquito-alert-monitor
+Status updated for weather-hourly-quick: running
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly-quick.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 490 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
+Starting hourly weather data collection: Sat Aug 23 17:05:04 CEST 2025
+Collecting hourly observations...
+Agent pid 467499
+WARNING: Failed to activate conda environment mosquito-alert-monitor
+Status updated for weather-hourly-quick: running
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly-quick.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 491 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
+Agent pid 467536
+WARNING: Failed to activate conda environment mosquito-alert-monitor
+Status updated for weather-hourly-quick: failed
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly-quick.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 488 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
+❌ Hourly data collection failed
+Hourly weather data collection completed: Sat Aug 23 17:05:08 CEST 2025
+Agent pid 467573
+WARNING: Failed to activate conda environment mosquito-alert-monitor
+Status updated for weather-hourly-quick: completed
+Status file written to: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly-quick.json
+Monitor repo: /home/j.palmer/research/mosquito-alert-model-monitor
+✅ Status file created successfully
+File size: 494 bytes
+🔄 Triggering dashboard rebuild via git push...
+⚠️  Git push failed - dashboard may not update automatically
