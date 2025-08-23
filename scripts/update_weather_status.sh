@@ -1,30 +1,26 @@
 #!/bin/bash
 
-# Load SSH agent since this is no longer done by default on the cluster
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_rsa
+# Drop-in status update script that calls the monitor project
+# This script NEVER fails the calling job and provides dashboard integration
 
-# Set locale environment variables
-export LC_CTYPE=C.UTF-8
-export LC_COLLATE=C.UTF-8
-export LC_TIME=C.UTF-8
-export LC_MESSAGES=C.UTF-8
-export LC_MONETARY=C.UTF-8
-export LC_PAPER=C.UTF-8
-export LC_MEASUREMENT=C.UTF-8
-export LANG=C.UTF-8
+JOB_NAME="${1:-weather-unknown}"
+STATUS="${2:-unknown}"
+DURATION="${3:-0}"
+PROGRESS="${4:-0}"
+LOG_MESSAGE="${5:-Weather job status update}"
 
-# Load required modules
-module load LibTIFF/4.6.0-GCCcore-13.3.0
-module load Miniconda3/24.7.1-0
+# Use the robust monitor script if available
+MONITOR_SCRIPT="$HOME/research/mosquito-alert-model-monitor/scripts/update_job_status.sh"
 
-# Initialize conda if needed
-source ~/.bashrc 2>/dev/null || true
+if [ -f "$MONITOR_SCRIPT" ]; then
+    echo "📊 Updating dashboard via monitor project..."
+    "$MONITOR_SCRIPT" "$JOB_NAME" "$STATUS" "$DURATION" "$PROGRESS" "$LOG_MESSAGE"
+else
+    echo "⚠️  Monitor project not found - skipping dashboard update"
+fi
 
-# Activate conda environment for dashboard operations
-conda activate mosquito-alert-monitor 2>/dev/null || {
-    echo "WARNING: Failed to activate conda environment mosquito-alert-monitor"
-}
+# ALWAYS exit successfully so calling jobs continue
+exit 0
 
 
 # scripts/update_weather_status.sh
