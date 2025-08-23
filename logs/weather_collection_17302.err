@@ -8,3 +8,4 @@ Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
 Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
 Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
 Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
+slurmstepd-node8: error: *** JOB 17302 ON node8 CANCELLED AT 2025-08-22T19:49:22 DUE TO TIME LIMIT ***
