@@ -1,0 +1,18 @@
+# Weather Data Collection Crontab Schedule
+# ========================================
+
+# Hourly collection (every hour at 5 minutes past)
+# Collects latest 12-hour observation data to build continuous database
+5 * * * * cd ~/research/weather-data-collector-spain && sbatch update_weather_hourly.sh
+
+# Daily collection (6:30 AM daily)  
+# Collects forecasts and generates aggregated datasets
+30 6 * * * cd ~/research/weather-data-collector-spain && sbatch update_weather_daily.sh
+
+# Weekly historical update (Sundays at 2 AM)
+# Updates historical database (can take 6+ hours)
+0 2 * * 0 cd ~/research/weather-data-collector-spain && sbatch update_weather.sh
+
+# Monthly deep historical collection (1st of month at 1 AM)
+# Full historical data collection with extra time
+0 1 1 * * cd ~/research/weather-data-collector-spain && SKIP_HISTORICAL=false sbatch update_weather.sh

@@ -1,35 +1,21 @@
 #!/bin/bash
-#SBATCH --job-name=weather-collect
+#SBATCH --job-name=weather-daily
 #SBATCH --partition=ceab
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
-#SBATCH --mem=8G
-#SBATCH --time=12:00:00
-#SBATCH --mail-type=BEGIN,END,FAIL
+#SBATCH --mem=6G
+#SBATCH --time=02:00:00
+#SBATCH --mail-type=FAIL
 #SBATCH --mail-user=johnrbpalmer@gmail.com
-#SBATCH --output=logs/weather_collection_%j.out
-#SBATCH --error=logs/weather_collection_%j.err
+#SBATCH --output=logs/weather_daily_%j.out
+#SBATCH --error=logs/weather_daily_%j.err
 
 # Load required modules
 module load LibTIFF/4.6.0-GCCcore-13.3.0
 module load R/4.4.2-gfbf-2024a
 module load cURL/8.7.1-GCCcore-13.3.0
 module load OpenSSL/3
-
-# Load SSH agent since this is no longer done by default on the cluster
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_rsa
-
-# Set locale environment variables
-export LC_CTYPE=C.UTF-8
-export LC_COLLATE=C.UTF-8
-export LC_TIME=C.UTF-8
-export LC_MESSAGES=C.UTF-8
-export LC_MONETARY=C.UTF-8
-export LC_PAPER=C.UTF-8
-export LC_MEASUREMENT=C.UTF-8
-export LANG=C.UTF-8
 
 # Set working directory
 cd ~/research/weather-data-collector-spain
@@ -41,20 +27,16 @@ mkdir -p logs
 mkdir -p data/output
 
 # Initialize status reporting
-JOB_NAME="weather-hourly"
+JOB_NAME="weather-daily"
 STATUS_SCRIPT="./scripts/update_weather_status.sh"
 START_TIME=$(date +%s)
 
 # Report job started
 $STATUS_SCRIPT "$JOB_NAME" "running" 0 5
 
-# Pull any pending commits
-git pull origin main
+echo "Starting daily weather data collection: $(date)"
 
-echo "Starting weather data collection: $(date)"
-$STATUS_SCRIPT "$JOB_NAME" "running" $(($(date +%s) - START_TIME)) 20
-
-# Priority 1: Municipal forecasts (immediate model needs)
+# Municipal forecasts
 echo "Collecting municipal forecasts..."
 $STATUS_SCRIPT "weather-forecast" "running" $(($(date +%s) - START_TIME)) 25
 R CMD BATCH --no-save --no-restore code/get_forecast_data.R logs/get_forecast_data_$(date +%Y%m%d_%H%M%S).out
@@ -65,7 +47,7 @@ else
     $STATUS_SCRIPT "weather-forecast" "failed" $(($(date +%s) - START_TIME)) 30
 fi
 
-# Priority 2: Hourly observations
+# Hourly observations
 echo "Collecting hourly observations..."
 $STATUS_SCRIPT "$JOB_NAME" "running" $(($(date +%s) - START_TIME)) 50
 R CMD BATCH --no-save --no-restore code/get_latest_data.R logs/get_latest_data_$(date +%Y%m%d_%H%M%S).out
@@ -76,22 +58,7 @@ else
     $STATUS_SCRIPT "weather-hourly" "failed" $(($(date +%s) - START_TIME)) 50
 fi
 
-# Priority 3: Historical data update (optional for regular runs)
-if [ "${SKIP_HISTORICAL:-false}" != "true" ]; then
-    echo "Updating historical data..."
-    $STATUS_SCRIPT "weather-historical" "running" $(($(date +%s) - START_TIME)) 70
-    R CMD BATCH --no-save --no-restore code/get_historical_data.R logs/get_historical_data_$(date +%Y%m%d_%H%M%S).out
-
-    if [ $? -eq 0 ]; then
-        $STATUS_SCRIPT "weather-historical" "completed" $(($(date +%s) - START_TIME)) 100
-    else
-        $STATUS_SCRIPT "weather-historical" "failed" $(($(date +%s) - START_TIME)) 70
-    fi
-else
-    echo "Skipping historical data update (SKIP_HISTORICAL=true)"
-fi
-
-# Priority 4: Generate aggregated datasets
+# Generate aggregated datasets
 echo "Generating aggregated datasets..."
 $STATUS_SCRIPT "weather-aggregation" "running" $(($(date +%s) - START_TIME)) 90
 ./generate_all_datasets.sh
@@ -104,16 +71,8 @@ else
     echo "❌ Dataset generation failed"
 fi
 
-echo "Weather data collection completed: $(date)"
+echo "Daily weather data collection completed: $(date)"
 
 # Final status update
 FINAL_DURATION=$(($(date +%s) - START_TIME))
 $STATUS_SCRIPT "$JOB_NAME" "completed" $FINAL_DURATION 100
-
-# Commit and push results (optional - uncomment if you want to track outputs)
-# git add data/output/*.csv.gz logs/*.out
-# git commit -m "Weather data update: $(date +%Y-%m-%d_%H:%M:%S) (cluster - automated)"
-# git pull origin main
-# git push origin main
-
-# Submit: sbatch update_weather.sh
