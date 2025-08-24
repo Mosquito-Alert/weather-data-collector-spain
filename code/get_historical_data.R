@@ -45,6 +45,10 @@ library(data.table)
 library(curl)
 library(jsonlite)
 
+# Set output data file path
+output_data_file_path = "data/output/daily_station_historical.csv.gz"
+
+
 # If you want to prevent concurrent runs of this script, set PREVENT_CONCURRENT_RUNS to TRUE.
 PREVENT_CONCURRENT_RUNS = FALSE
 
@@ -76,15 +80,15 @@ start_date = as_date("2013-07-01")
 
 # Set up curl handle with API key for authentication and increased timeout
 h <- new_handle()
-handle_setheaders(h, 'api_key' = my_api_key)
+handle_setheaders(h, 'api_key' = get_current_api_key())
 handle_setopt(h, timeout = 60, connecttimeout = 30)  # Increase timeout values
 
 # Generate sequence of all dates to check (from start_date to 4 days before today)
 all_dates = seq.Date(from = start_date, to=today()-4, by = "day")
 
 # Load existing historical weather data
-if(file.exists("data/output/daily_station_historical.csv.gz")){
-stored_weather_daily = fread("data/output/daily_station_historical.csv.gz")
+if(file.exists(output_data_file_path)){
+stored_weather_daily = fread(output_data_file_path)
 } else{stored_weather_daily = NULL}
 
 
@@ -117,6 +121,22 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
       expr = {
         # Request historical daily climatological data for specific date
         req = curl_fetch_memory(paste0('https://opendata.aemet.es/opendata/api/valores/climatologicos/diarios/datos/fechaini/', start_date, 'T00%3A00%3A00UTC/fechafin/', start_date, 'T23%3A59%3A59UTC/todasestaciones'), handle=h)
+        
+        if(req$status_code == 429) {
+          cat("Rate limit - rotating key...\n")
+          rotate_api_key()
+          handle_setheaders(h, 'api_key' = get_current_api_key())
+          Sys.sleep(3)
+          req = curl_fetch_memory(paste0('https://opendata.aemet.es/opendata/api/valores/climatologicos/diarios/datos/fechaini/', start_date, 'T00%3A00%3A00UTC/fechafin/', start_date, 'T23%3A59%3A59UTC/todasestaciones'), handle=h)
+          
+        }
+        
+        if(req$status_code != 200) {
+          cat("API request failed:", req$status_code, "\n")
+          return(NULL)
+        }
+        
+          
         
         wurl = fromJSON(rawToChar(req$content))$datos
         
@@ -162,7 +182,9 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
       },
       error = function(e){ 
         cat("ERROR on date", as.character(start_date), ":", e$message, "\n")
-        Sys.sleep(60)  # Longer sleep on error
+        rotate_api_key()
+        handle_setheaders(h, 'api_key' = get_current_api_key())
+        Sys.sleep(3)
         return(NULL)
       },
       warning = function(w){
@@ -179,8 +201,8 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
   
   print(paste0("Just grabbed ", nrow(weather_daily), " new records"))
   
-  if(file.exists("data/output/daily_station_historical.csv.gz")){
-    stored_weather_daily = fread("data/output/daily_station_historical.csv.gz")
+  if(file.exists(output_data_file_path)){
+    stored_weather_daily = fread(output_data_file_path)
     
     print(paste0("We already had ", nrow(stored_weather_daily), " records stored"))
     
@@ -191,8 +213,8 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
    
    fwrite(weather_daily, "data/output/daily_station_historical.csv.gz")
    
-   print("pausing 60 seconds")
-   Sys.sleep(60)  # Increased pause between chunks
+#   print("pausing 60 seconds")
+#   Sys.sleep(60)  # Increased pause between chunks
    
  })
  

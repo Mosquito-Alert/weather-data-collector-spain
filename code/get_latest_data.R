@@ -46,6 +46,9 @@ library(R.utils)
 # Set locale to UTF-8 for proper encoding handling
 Sys.setlocale("LC_ALL", "en_US.UTF-8")
 
+# Set output data file path
+output_data_file_path = "data/output/hourly_station_ongoing.csv.gz"
+
 # If you want to prevent concurrent runs of this script, set PREVENT_CONCURRENT_RUNS to TRUE.
 PREVENT_CONCURRENT_RUNS = FALSE
 
@@ -143,20 +146,21 @@ if(!is.null(wdia) && nrow(wdia) > 0){
   print(paste0("Downloaded ", nrow(latest_weather), " new rows of data with 7 core variables."))
 
   # Load previous weather data
-  if(file.exists("data/spain_weather_expanded.csv.gz")) {
-    previous_weather = fread("data/spain_weather_expanded.csv.gz")
+  if(file.exists(output_data_file_path)) {
+    previous_weather = fread(output_data_file_path)
+    print(paste0("Previous dataset file has ", nrow(previous_weather), " rows."))
   } else {
     previous_weather = data.table()
     print("Creating new expanded weather dataset file.")
   }
 
   # Combine and deduplicate
-  spain_weather = bind_rows(latest_weather, previous_weather) %>% 
+  spain_weather = bind_rows(latest_weather, previous_weather) %>% filter(!is.na(value)) %>% 
     distinct() %>%
     arrange(desc(fint))
 
   # Save updated data
-  fwrite(as.data.table(spain_weather), "data/output/hourly_station_ongoing.csv.gz")
+  fwrite(spain_weather, output_data_file_path)
   
   print(paste0("Total dataset now contains ", nrow(spain_weather), " rows."))
 } else{

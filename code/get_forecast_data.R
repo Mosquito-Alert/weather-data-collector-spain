@@ -11,7 +11,11 @@ library(lubridate)
 # Load API keys
 source("auth/keys.R")
 
-cat("=== AEMET FORECAST DATA COLLECTION (SIMPLE v2) ===\n")
+# Set testing mode to TRUE and specify N_TEST_MUNICIPALITIES to get forecase for only selected municipalities
+TESTING_MODE = TRUE
+N_TEST_MUNICIPALITIES = 2
+
+cat("=== AEMET FORECAST DATA COLLECTION ===\n")
 cat("Started at:", format(Sys.time()), "\n")
 
 # Function to get municipality forecast using working pattern
@@ -132,12 +136,13 @@ cat("Loading municipality codes...\n")
 municipalities_data = fread("data/input/municipalities.csv.gz")
 cat("Loaded", nrow(municipalities_data), "municipalities\n")
 
-# Use small sample for testing
-SAMPLE_SIZE = 2
-working_municipalities = head(municipalities_data$CUMUN, SAMPLE_SIZE)
-names(working_municipalities) = head(municipalities_data$NAMEUNIT, SAMPLE_SIZE)
+working_municipalities = municipalities_data$CUMUN
+names(working_municipalities) = municipalities_data$NAMEUNIT
 
-cat("Testing with", SAMPLE_SIZE, "municipalities\n\n")
+if(TESTING_MODE){
+  working_municipalities = head(working_municipalities, N_TEST_MUNICIPALITIES)
+  cat("Testing with", N_TEST_MUNICIPALITIES, "municipalities\n\n")
+}
 
 # Collect forecasts
 all_forecasts = list()
