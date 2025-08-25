@@ -2,50 +2,11 @@
 
 This repository provides scripts to download, update, and manage weather data from AEMET weather stations across Spain, producing three comprehensive datasets for analysis and research.
 
-
 ## 📊 Current Data Collection Status
 
-*Last updated: 2025-08-25 21:23:49*
-
-### Dataset 1: Daily Station Data
-- **Records**: 2,250 station-days
-- **Stations**: 838 weather stations
-- **Coverage**: 2025-08-17 to 2025-08-25
-- **Data Quality**: Coverage analysis pending
-- **Latest File**: `daily_station_aggregated_2025-08-25.csv.gz` (0 MB)
-
-### Dataset 2: Municipal Daily Data  
-- **Records**: 2,001 municipality-days
-- **Municipalities**: 724 municipalities
-- **Historical Data**: 1,910 records
-- **Forecast Data**: 91 records (7 days coverage)
-- **Coverage**: 2025-08-17 to 2025-08-31
-- **Data Quality**: Coverage analysis pending
-- **Latest File**: `municipal_aggregated_2025-08-25.csv` (0.3 MB)
-
-### Dataset 3: Hourly Station Data
-- **Records**: 180,393 hourly observations
-- **Stations**: ~752 stations (sample estimate)
-- **Variables**: 7 meteorological measures
-- **Coverage**: 2025-08-25 to 2025-08-25
-- **Recent Activity**: Analysis pending observations (last 30 days)
-- **Archive Size**: 0.8 MB compressed
-
-### 🔄 Collection System Status
-- **Collection Method**: Hybrid system using `climaemet` package + custom API calls
-- **Performance**: ~5.4x faster than previous approach
-- **Schedule**: Daily collection at 2 AM via crontab
-- **Last Gap Analysis**: Not available
-
-### 📈 Data Growth Tracking
-| Dataset | Current Size | Growth Rate | Last Updated |
-|---------|-------------|-------------|--------------|
-| Station Daily | 0 MB | ~281 records/day | 2025-08-25 |
-| Municipal Data | 0.3 MB | ~250 records/day | 2025-08-25 |
-| Hourly Archive | 0.8 MB | ~TBD records/day | 2025-08-25 |
+*This section is automatically updated daily with current dataset statistics.*
 
 ---
-
 
 ## Three Output Datasets
 

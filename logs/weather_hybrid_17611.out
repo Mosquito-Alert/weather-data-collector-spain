@@ -73,3 +73,499 @@ Processing station 81 of 100 in batch 5 : 2946
 Processing station 1 of 100 in batch 6 : 9287F 
 Processing station 21 of 100 in batch 6 : 9367B 
 Processing station 41 of 100 in batch 6 : 9453 
+Processing station 61 of 100 in batch 6 : 9546E 
+Processing station 81 of 100 in batch 6 : 9866E 
+❌ No data collected in batch 6 
+
+=== BATCH 7 of 43 ===
+Processing station 1 of 100 in batch 7 : 9940B 
+Processing station 21 of 100 in batch 7 : 0072A 
+Processing station 41 of 100 in batch 7 : 0241G 
+Processing station 61 of 100 in batch 7 : 0370Y 
+Processing station 81 of 100 in batch 7 : 1047E 
+❌ No data collected in batch 7 
+
+=== BATCH 8 of 43 ===
+Processing station 1 of 100 in batch 8 : 1199B 
+Processing station 21 of 100 in batch 8 : 1340A 
+Processing station 41 of 100 in batch 8 : 4558A 
+Processing station 61 of 100 in batch 8 : 5603E 
+Processing station 81 of 100 in batch 8 : 5834A 
+❌ No data collected in batch 8 
+
+=== BATCH 9 of 43 ===
+Processing station 1 of 100 in batch 9 : 7013 
+Processing station 21 of 100 in batch 9 : 8294 
+Processing station 41 of 100 in batch 9 : 8503G 
+Processing station 61 of 100 in batch 9 : 9271B 
+Processing station 81 of 100 in batch 9 : 1706 
+❌ No data collected in batch 9 
+
+=== BATCH 10 of 43 ===
+Processing station 1 of 100 in batch 10 : 2275 
+Processing station 21 of 100 in batch 10 : 2531E 
+Processing station 41 of 100 in batch 10 : 2879E 
+Processing station 61 of 100 in batch 10 : 3193O 
+Processing station 81 of 100 in batch 10 : 3453 
+❌ No data collected in batch 10 
+
+=== BATCH 11 of 43 ===
+Processing station 1 of 100 in batch 11 : 4032 
+Processing station 21 of 100 in batch 11 : 4142 
+Processing station 41 of 100 in batch 11 : 4383 
+Processing station 61 of 100 in batch 11 : 5008I 
+Processing station 81 of 100 in batch 11 : 2471Y 
+✅ Batch 11 completed
+Duration: 2.71 minutes
+Records in batch: 59 
+Successful stations so far: 35 out of 1100 
+
+=== BATCH 12 of 43 ===
+Processing station 1 of 100 in batch 12 : 2734D 
+Processing station 21 of 100 in batch 12 : 2926B 
+Processing station 41 of 100 in batch 12 : 3127A 
+Processing station 61 of 100 in batch 12 : 3338 
+Processing station 81 of 100 in batch 12 : 3526X 
+✅ Batch 12 completed
+Duration: 1 minutes
+Records in batch: 93 
+Successful stations so far: 51 out of 1200 
+
+=== BATCH 13 of 43 ===
+Processing station 1 of 100 in batch 13 : 4147X 
+Processing station 21 of 100 in batch 13 : 4436Y 
+Processing station 41 of 100 in batch 13 : 4622X 
+Processing station 61 of 100 in batch 13 : 3194U 
+Processing station 81 of 100 in batch 13 : 6205X 
+✅ Batch 13 completed
+Duration: 1.37 minutes
+Records in batch: 89 
+Successful stations so far: 66 out of 1300 
+
+=== BATCH 14 of 43 ===
+Processing station 1 of 100 in batch 14 : 9994X 
+Processing station 21 of 100 in batch 14 : 2048A 
+Processing station 41 of 100 in batch 14 : 5515X 
+Processing station 61 of 100 in batch 14 : 5860H 
+Processing station 81 of 100 in batch 14 : 6056X 
+✅ Batch 14 completed
+Duration: 1.91 minutes
+Records in batch: 54 
+Successful stations so far: 75 out of 1400 
+
+=== BATCH 15 of 43 ===
+Processing station 1 of 100 in batch 15 : 6281X 
+Processing station 21 of 100 in batch 15 : 7138B 
+Processing station 41 of 100 in batch 15 : 8058X 
+Processing station 61 of 100 in batch 15 : 8368U 
+Processing station 81 of 100 in batch 15 : 9001D 
+✅ Batch 15 completed
+Duration: 1.38 minutes
+Records in batch: 108 
+Successful stations so far: 93 out of 1500 
+
+=== BATCH 16 of 43 ===
+Processing station 1 of 100 in batch 16 : 9198X 
+Processing station 21 of 100 in batch 16 : 9299X 
+Processing station 41 of 100 in batch 16 : 9510X 
+Processing station 61 of 100 in batch 16 : 9707 
+Processing station 81 of 100 in batch 16 : 9908X 
+✅ Batch 16 completed
+Duration: 2.12 minutes
+Records in batch: 192 
+Successful stations so far: 125 out of 1600 
+
+=== BATCH 17 of 43 ===
+Processing station 1 of 100 in batch 17 : B248 
+Processing station 21 of 100 in batch 17 : B760X 
+Processing station 41 of 100 in batch 17 : 1700O 
+Processing station 61 of 100 in batch 17 : 0171X 
+Processing station 81 of 100 in batch 17 : 0372C 
+✅ Batch 17 completed
+Duration: 1.51 minutes
+Records in batch: 78 
+Successful stations so far: 138 out of 1700 
+
+=== BATCH 18 of 43 ===
+Processing station 1 of 100 in batch 18 : 1048X 
+Processing station 21 of 100 in batch 18 : 1135C 
+Processing station 41 of 100 in batch 18 : 1279X 
+Processing station 61 of 100 in batch 18 : 1437O 
+Processing station 81 of 100 in batch 18 : 1583X 
+✅ Batch 18 completed
+Duration: 1.39 minutes
+Records in batch: 88 
+Successful stations so far: 153 out of 1800 
+
+=== BATCH 19 of 43 ===
+Processing station 1 of 100 in batch 19 : 2092 
+Processing station 21 of 100 in batch 19 : 4455 
+Processing station 41 of 100 in batch 19 : 4511D 
+Processing station 61 of 100 in batch 19 : 5171A 
+Processing station 81 of 100 in batch 19 : 0017 
+✅ Batch 19 completed
+Duration: 0.98 minutes
+Records in batch: 48 
+Successful stations so far: 161 out of 1900 
+
+=== BATCH 20 of 43 ===
+Processing station 1 of 100 in batch 20 : 0110 
+Processing station 21 of 100 in batch 20 : 0229U 
+Processing station 41 of 100 in batch 20 : 0332F 
+Processing station 61 of 100 in batch 20 : 0396A 
+Processing station 81 of 100 in batch 20 : 1070 
+❌ No data collected in batch 20 
+
+=== BATCH 21 of 43 ===
+Processing station 1 of 100 in batch 21 : 1139D 
+Processing station 21 of 100 in batch 21 : 1216D 
+Processing station 41 of 100 in batch 21 : 1281J 
+Processing station 61 of 100 in batch 21 : 2637D 
+Processing station 81 of 100 in batch 21 : 5522B 
+❌ No data collected in batch 21 
+
+=== BATCH 22 of 43 ===
+Processing station 1 of 100 in batch 22 : 6091D 
+Processing station 21 of 100 in batch 22 : 6173G 
+Processing station 41 of 100 in batch 22 : 6293E 
+Processing station 61 of 100 in batch 22 : 7025 
+Processing station 81 of 100 in batch 22 : 7112 
+❌ No data collected in batch 22 
+
+=== BATCH 23 of 43 ===
+Processing station 1 of 100 in batch 23 : 7154 
+Processing station 21 of 100 in batch 23 : 7207 
+Processing station 41 of 100 in batch 23 : 8099 
+Processing station 61 of 100 in batch 23 : 8206 
+Processing station 81 of 100 in batch 23 : 8347 
+❌ No data collected in batch 23 
+
+=== BATCH 24 of 43 ===
+Processing station 1 of 100 in batch 24 : 9044 
+Processing station 21 of 100 in batch 24 : 9113U 
+Processing station 41 of 100 in batch 24 : 9178O 
+Processing station 61 of 100 in batch 24 : 9223 
+Processing station 81 of 100 in batch 24 : 9258O 
+❌ No data collected in batch 24 
+
+=== BATCH 25 of 43 ===
+Processing station 1 of 100 in batch 25 : 9307A 
+Processing station 21 of 100 in batch 25 : 9366 
+Processing station 41 of 100 in batch 25 : 9425C 
+Processing station 61 of 100 in batch 25 : 9479E 
+Processing station 81 of 100 in batch 25 : 9509D 
+❌ No data collected in batch 25 
+
+=== BATCH 26 of 43 ===
+Processing station 1 of 100 in batch 26 : 9567U 
+Processing station 21 of 100 in batch 26 : 9824I 
+Processing station 41 of 100 in batch 26 : 9886 
+Processing station 61 of 100 in batch 26 : 9914I 
+Processing station 81 of 100 in batch 26 : 4214 
+❌ No data collected in batch 26 
+
+=== BATCH 27 of 43 ===
+Processing station 1 of 100 in batch 27 : 4323 
+Processing station 21 of 100 in batch 27 : 4374 
+Processing station 41 of 100 in batch 27 : 8018A 
+Processing station 61 of 100 in batch 27 : 8043A 
+Processing station 81 of 100 in batch 27 : 8251E 
+❌ No data collected in batch 27 
+
+=== BATCH 28 of 43 ===
+Processing station 1 of 100 in batch 28 : 8294 
+Processing station 21 of 100 in batch 28 : 8319C 
+Processing station 41 of 100 in batch 28 : 8341 
+Processing station 61 of 100 in batch 28 : 8410B 
+Processing station 81 of 100 in batch 28 : 8443A 
+❌ No data collected in batch 28 
+
+=== BATCH 29 of 43 ===
+Processing station 1 of 100 in batch 29 : 8502I 
+Processing station 21 of 100 in batch 29 : 9182I 
+Processing station 41 of 100 in batch 29 : 4263 
+Processing station 61 of 100 in batch 29 : 7038C 
+Processing station 81 of 100 in batch 29 : 2366 
+❌ No data collected in batch 29 
+
+=== BATCH 30 of 43 ===
+Processing station 1 of 100 in batch 30 : 3151I 
+Processing station 21 of 100 in batch 30 : 4159 
+Processing station 41 of 100 in batch 30 : 9632O 
+Processing station 61 of 100 in batch 30 : 9727I 
+Processing station 81 of 100 in batch 30 : 9782O 
+❌ No data collected in batch 30 
+
+=== BATCH 31 of 43 ===
+Processing station 1 of 100 in batch 31 : 9975U 
+Processing station 21 of 100 in batch 31 : B102 
+Processing station 41 of 100 in batch 31 : B249 
+Processing station 61 of 100 in batch 31 : B431 
+Processing station 81 of 100 in batch 31 : B610 
+❌ No data collected in batch 31 
+
+=== BATCH 32 of 43 ===
+Processing station 1 of 100 in batch 32 : B677 
+Processing station 21 of 100 in batch 32 : B804 
+Processing station 41 of 100 in batch 32 : 5012 
+Processing station 61 of 100 in batch 32 : 1105U 
+Processing station 81 of 100 in batch 32 : 6253 
+❌ No data collected in batch 32 
+
+=== BATCH 33 of 43 ===
+Processing station 1 of 100 in batch 33 : 8356U 
+Processing station 21 of 100 in batch 33 : 9401A 
+Processing station 41 of 100 in batch 33 : 4236 
+Processing station 61 of 100 in batch 33 : 8328E 
+Processing station 81 of 100 in batch 33 : 9770A 
+❌ No data collected in batch 33 
+
+=== BATCH 34 of 43 ===
+Processing station 1 of 100 in batch 34 : 4184 
+Processing station 21 of 100 in batch 34 : 4555 
+Processing station 41 of 100 in batch 34 : 5051 
+Processing station 61 of 100 in batch 34 : 5465A 
+Processing station 81 of 100 in batch 34 : 5654A 
+❌ No data collected in batch 34 
+
+=== BATCH 35 of 43 ===
+Processing station 1 of 100 in batch 35 : 5834A 
+Processing station 21 of 100 in batch 35 : 8010A 
+Processing station 41 of 100 in batch 35 : 6055A 
+Processing station 61 of 100 in batch 35 : 7247 
+Processing station 81 of 100 in batch 35 : 1391I 
+✅ Batch 35 completed
+Duration: 2.27 minutes
+Records in batch: 6 
+Successful stations so far: 162 out of 3500 
+
+=== BATCH 36 of 43 ===
+Processing station 1 of 100 in batch 36 : 1569A 
+Processing station 21 of 100 in batch 36 : 1706 
+Processing station 41 of 100 in batch 36 : 2061 
+Processing station 61 of 100 in batch 36 : 2157 
+Processing station 81 of 100 in batch 36 : 2278I 
+❌ No data collected in batch 36 
+
+=== BATCH 37 of 43 ===
+Processing station 1 of 100 in batch 37 : 2358 
+Processing station 21 of 100 in batch 37 : 2432 
+Processing station 41 of 100 in batch 37 : 2519 
+Processing station 61 of 100 in batch 37 : 2625 
+Processing station 81 of 100 in batch 37 : 2716 
+❌ No data collected in batch 37 
+
+=== BATCH 38 of 43 ===
+Processing station 1 of 100 in batch 38 : 2818 
+Processing station 21 of 100 in batch 38 : 2902 
+Processing station 41 of 100 in batch 38 : 3040 
+Processing station 61 of 100 in batch 38 : 3152B 
+Processing station 81 of 100 in batch 38 : 3258D 
+❌ No data collected in batch 38 
+
+=== BATCH 39 of 43 ===
+Processing station 1 of 100 in batch 39 : 3403B 
+Processing station 21 of 100 in batch 39 : 3459 
+Processing station 41 of 100 in batch 39 : 3531 
+Processing station 61 of 100 in batch 39 : 4028 
+Processing station 81 of 100 in batch 39 : 4071 
+❌ No data collected in batch 39 
+
+=== BATCH 40 of 43 ===
+Processing station 1 of 100 in batch 40 : 4128 
+Processing station 21 of 100 in batch 40 : 0388F 
+Processing station 41 of 100 in batch 40 : 1035 
+Processing station 61 of 100 in batch 40 : B430 
+Processing station 81 of 100 in batch 40 : C636K 
+✅ Batch 40 completed
+Duration: 2.43 minutes
+Records in batch: 125 
+Successful stations so far: 183 out of 4000 
+
+=== BATCH 41 of 43 ===
+Processing station 1 of 100 in batch 41 : C689E 
+Processing station 21 of 100 in batch 41 : C038N 
+Processing station 41 of 100 in batch 41 : C415A 
+Processing station 61 of 100 in batch 41 : C449F 
+Processing station 81 of 100 in batch 41 : C619Y 
+✅ Batch 41 completed
+Duration: 2.43 minutes
+Records in batch: 171 
+Successful stations so far: 213 out of 4100 
+
+=== BATCH 42 of 43 ===
+Processing station 1 of 100 in batch 42 : C468F 
+Processing station 21 of 100 in batch 42 : C438H 
+Processing station 41 of 100 in batch 42 : C465N 
+Processing station 61 of 100 in batch 42 : C639F 
+Processing station 81 of 100 in batch 42 : C657E 
+❌ No data collected in batch 42 
+
+=== BATCH 43 of 43 ===
+Processing station 1 of 100 in batch 43 : C669A 
+Processing station 21 of 100 in batch 43 : C037I 
+Processing station 41 of 100 in batch 43 : C138H 
+Processing station 61 of 100 in batch 43 : C248A 
+Processing station 81 of 100 in batch 43 : C419J 
+❌ No data collected in batch 43 
+
+=== FINAL PROCESSING ===
+Total daily records: 1261 
+Stations with data: 202 out of 4300 
+Success rate: 4.7 %
+Data saved to: data/output/station_daily_data_2025-08-25.csv 
+Compressed version saved to: data/output/station_daily_data_2025-08-25.csv.gz 
+
+=== SUMMARY ===
+Stations processed: 202 
+Total station-days: 1261 
+Date range: 2025-08-17 to 2025-08-22 
+        fecha indicativo          nombre  provincia altitud  tmed  prec  tmin
+       <char>     <char>          <char>     <char>  <char> <num> <num> <num>
+1: 2025-08-17       1495 VIGO AEROPUERTO PONTEVEDRA     255  19.8     0  14.4
+2: 2025-08-18       1495 VIGO AEROPUERTO PONTEVEDRA     255  21.6     0  15.5
+3: 2025-08-19       1495 VIGO AEROPUERTO PONTEVEDRA     255  20.0     0  14.8
+   horatmin  tmax horatmax    dir velmedia racha horaracha    sol presMax
+     <char> <num>   <char> <char>    <num> <num>    <char> <char>   <num>
+1:    04:35  25.3    13:01     24      2.8   9.7     15:07   10,9   989.4
+2:    04:24  27.7    12:07     99      4.4   9.7    Varias   11,9   988.8
+3:    06:12  25.2    10:14     26      4.2  10.3     16:56   11,8   988.5
+   horaPresMax presMin horaPresMin hrMedia  hrMax horaHrMax  hrMin horaHrMin
+        <char>   <num>      <char>  <char> <char>    <char> <char>    <char>
+1:      Varias   987.5          05      73     97    Varias     60     13:01
+2:      Varias   987.0          19      75     97     02:57     50     12:13
+3:      Varias   987.0          04      75     96    Varias     49     10:16
+   station_id        collected_at
+       <char>              <POSc>
+1:       1495 2025-08-25 18:50:51
+2:       1495 2025-08-25 18:50:51
+3:       1495 2025-08-25 18:50:51
+
+Completed at: 2025-08-25 20:12:48 
+✅ Dataset 1 completed in 82.38 minutes
+
+=== DATASET 2: MUNICIPAL FORECASTS ===
+Collecting municipal data with 7-day forecasts using climaemet
+=== MUNICIPAL FORECASTS COLLECTION (CLIMAEMET) ===
+Started at: 2025-08-25 20:12:48 
+Loading municipality codes...
+Loaded 8129 municipalities
+Processing 8129 municipalities in 17 batches
+
+=== BATCH 1 of 17 ===
+Collecting forecasts for 500 municipalities...
+Raw forecast collection completed for batch 1 
+Retrieved 1036 municipality-day records
+Processing forecast data...
+✅ Batch 1 completed successfully
+Duration: 8.85 minutes
+Records in batch: 1036 
+Total successful municipalities so far: 148 
+
+=== BATCH 2 of 17 ===
+Collecting forecasts for 500 municipalities...
+Raw forecast collection completed for batch 2 
+Retrieved 665 municipality-day records
+Processing forecast data...
+✅ Batch 2 completed successfully
+Duration: 5.69 minutes
+Records in batch: 665 
+Total successful municipalities so far: 243 
+Estimated remaining time: 85.3 minutes
+
+=== BATCH 3 of 17 ===
+Collecting forecasts for 500 municipalities...
+Raw forecast collection completed for batch 3 
+Retrieved 0 municipality-day records
+Processing forecast data...
+❌ Batch 3 failed: Var 'temperatura' not available in the current dataset. 
+Continuing with next batch...
+
+=== BATCH 4 of 17 ===
+Collecting forecasts for 500 municipalities...
+Raw forecast collection completed for batch 4 
+Retrieved 2345 municipality-day records
+Processing forecast data...
+✅ Batch 4 completed successfully
+Duration: 21.86 minutes
+Records in batch: 2345 
+Total successful municipalities so far: 578 
+Estimated remaining time: 284.2 minutes
+
+=== BATCH 5 of 17 ===
+Collecting forecasts for 500 municipalities...
+Raw forecast collection completed for batch 5 
+Retrieved 1099 municipality-day records
+Processing forecast data...
+✅ Batch 5 completed successfully
+Duration: 8.93 minutes
+Records in batch: 1099 
+Total successful municipalities so far: 735 
+Estimated remaining time: 107.2 minutes
+Saving intermediate results after batch 5 ...
+Intermediate data saved to: data/output/municipal_forecasts_intermediate_2025-08-25_batch5.csv.gz 
+
+=== BATCH 6 of 17 ===
+Collecting forecasts for 500 municipalities...
+Raw forecast collection completed for batch 6 
+Retrieved 434 municipality-day records
+Processing forecast data...
+✅ Batch 6 completed successfully
+Duration: 5.69 minutes
+Records in batch: 434 
+Total successful municipalities so far: 797 
+Estimated remaining time: 62.6 minutes
+
+=== BATCH 7 of 17 ===
+Collecting forecasts for 500 municipalities...
+Raw forecast collection completed for batch 7 
+Retrieved 0 municipality-day records
+Processing forecast data...
+❌ Batch 7 failed: Var 'temperatura' not available in the current dataset. 
+Continuing with next batch...
+
+=== BATCH 8 of 17 ===
+Collecting forecasts for 500 municipalities...
+Raw forecast collection completed for batch 8 
+Retrieved 0 municipality-day records
+Processing forecast data...
+❌ Batch 8 failed: Var 'temperatura' not available in the current dataset. 
+Continuing with next batch...
+
+=== BATCH 9 of 17 ===
+Collecting forecasts for 500 municipalities...
+Raw forecast collection completed for batch 9 
+Retrieved 0 municipality-day records
+Processing forecast data...
+❌ Batch 9 failed: Var 'temperatura' not available in the current dataset. 
+Continuing with next batch...
+
+=== BATCH 10 of 17 ===
+Collecting forecasts for 500 municipalities...
+Raw forecast collection completed for batch 10 
+Retrieved 0 municipality-day records
+Processing forecast data...
+❌ Batch 10 failed: Var 'temperatura' not available in the current dataset. 
+Continuing with next batch...
+
+=== BATCH 11 of 17 ===
+Collecting forecasts for 500 municipalities...
+Raw forecast collection completed for batch 11 
+Retrieved 0 municipality-day records
+Processing forecast data...
+❌ Batch 11 failed: Var 'temperatura' not available in the current dataset. 
+Continuing with next batch...
+
+=== BATCH 12 of 17 ===
+Collecting forecasts for 500 municipalities...
+Raw forecast collection completed for batch 12 
+Retrieved 1498 municipality-day records
+Processing forecast data...
+✅ Batch 12 completed successfully
+Duration: 14.76 minutes
+Records in batch: 1498 
+Total successful municipalities so far: 1011 
+Estimated remaining time: 73.8 minutes
+
+=== BATCH 13 of 17 ===
+Collecting forecasts for 500 municipalities...
