@@ -1,0 +1,30 @@
+# HYBRID WEATHER DATA COLLECTION CRONTAB
+# Optimized approach using climaemet for forecasts (48x faster)
+# Expected total runtime: 2-4 hours vs 33+ hours with old approach
+
+# Daily collection at 2 AM - All three datasets in one efficient job
+0 2 * * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch update_weather_hybrid.sh
+
+# Weekly historical update (Sundays at 4 AM) - Keep existing approach
+0 4 * * 0 cd /home/j.palmer/research/weather-data-collector-spain && sbatch update_historical_weather.sh
+
+# Monthly priority municipal data (1st of month at 6 AM) - Keep existing
+0 6 1 * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch priority_municipal_data.sh
+
+# Quarterly dataset generation (1st day of quarter at 8 AM) - Keep existing
+0 8 1 1,4,7,10 * cd /home/j.palmer/research/weather-data-collector-spain && sbatch generate_all_datasets.sh
+
+# CHANGES FROM PREVIOUS CRONTAB:
+# - Removed separate hourly/daily/forecast jobs (now combined in hybrid approach)
+# - Single daily job collects all three datasets efficiently
+# - Reduced from 3 daily jobs to 1 daily job
+# - Expected completion: 2-4 hours instead of 33+ hours for forecasts alone
+
+# To install this crontab:
+# crontab crontab_hybrid.txt
+
+# To view current crontab:
+# crontab -l
+
+# To edit crontab:
+# crontab -e

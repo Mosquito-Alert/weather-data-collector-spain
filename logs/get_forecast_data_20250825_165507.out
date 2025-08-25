@@ -1,0 +1,1610 @@
+
+R version 4.4.2 (2024-10-31) -- "Pile of Leaves"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '~/research/weather-data-collector-spain' loaded. [renv 1.1.4]
+> #!/usr/bin/env Rscript
+> 
+> # Simple forecast data collection based on proven working patterns
+> library(jsonlite)
+> library(httr)      # Use httr like in the working script
+> library(curl)
+Using libcurl 8.7.1 with OpenSSL/3.2.2
+
+Attaching package: ‘curl’
+
+The following object is masked from ‘package:httr’:
+
+    handle_reset
+
+> library(dplyr)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> library(data.table)
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+> library(lubridate)
+
+Attaching package: ‘lubridate’
+
+The following objects are masked from ‘package:data.table’:
+
+    hour, isoweek, mday, minute, month, quarter, second, wday, week,
+    yday, year
+
+The following objects are masked from ‘package:base’:
+
+    date, intersect, setdiff, union
+
+> 
+> # Load API keys
+> source("auth/keys.R")
+> 
+> # Set testing mode to TRUE and specify N_TEST_MUNICIPALITIES to get forecase for only selected municipalities
+> TESTING_MODE = FALSE
+> N_TEST_MUNICIPALITIES = 2
+> 
+> cat("=== AEMET FORECAST DATA COLLECTION ===\n")
+=== AEMET FORECAST DATA COLLECTION ===
+> cat("Started at:", format(Sys.time()), "\n")
+Started at: 2025-08-25 16:55:23 
+> 
+> # Function to get municipality forecast using working pattern
+> get_municipality_forecast_v2 = function(municipio_code, municipio_name = NULL) {
++   tryCatch({
++     cat("Processing", municipio_code, "\n")
++     
++     # Initialize curl handle with current API key
++     h = new_handle()
++     handle_setheaders(h, 'api_key' = get_current_api_key())
++     
++     # Request forecast data URL
++     response1 = curl_fetch_memory(
++       paste0('https://opendata.aemet.es/opendata/api/prediccion/especifica/municipio/diaria/', municipio_code), 
++       handle = h
++     )
++     
++     if(response1$status_code == 429) {
++       cat("Rate limit - rotating key...\n")
++       rotate_api_key()
++       handle_setheaders(h, 'api_key' = get_current_api_key())
++       Sys.sleep(3)
++       
++       response1 = curl_fetch_memory(
++         paste0('https://opendata.aemet.es/opendata/api/prediccion/especifica/municipio/diaria/', municipio_code), 
++         handle = h
++       )
++     }
++     
++     if(response1$status_code != 200) {
++       cat("API request failed:", response1$status_code, "\n")
++       return(NULL)
++     }
++     
++     # Parse response to get data URL
++     response_content = fromJSON(rawToChar(response1$content))
++     
++     if(!"datos" %in% names(response_content)) {
++       cat("No data URL in response\n")
++       return(NULL)
++     }
++     
++     # Fetch actual forecast data
++     Sys.sleep(1)
++     response2 = curl_fetch_memory(response_content$datos)
++     
++     if(response2$status_code != 200) {
++       cat("Data request failed:", response2$status_code, "\n")
++       return(NULL)
++     }
++     
++     # Parse forecast data using your working approach
++     this_string = rawToChar(response2$content)
++     Encoding(this_string) = "latin1"
++     forecast_data = fromJSON(this_string)
++     
++     # Extract municipality info
++     municipio_nombre = forecast_data$nombre
++     provincia = forecast_data$provincia
++     elaborado = forecast_data$elaborado
++     
++     # Process all 7 days at once (wdia[[1]] contains vectors for all days)
++             wdia = forecast_data$prediccion$dia
++             
++             # Extract vectors for all 7 days using your proven pattern
++             fechas = as.Date(wdia[[1]]$fecha)  # Direct conversion using as.Date
++             temp_max = wdia[[1]]$temperatura$maxima
++             temp_min = wdia[[1]]$temperatura$minima
++             temp_avg = rowMeans(cbind(temp_max, temp_min), na.rm = TRUE)
++             
++             # Extract additional variables following your pattern
++             humid_max = if("humedadRelativa" %in% names(wdia[[1]])) {
++               wdia[[1]]$humedadRelativa$maxima
++             } else rep(NA, length(fechas))
++             
++             humid_min = if("humedadRelativa" %in% names(wdia[[1]])) {
++               wdia[[1]]$humedadRelativa$minima
++             } else rep(NA, length(fechas))
++             
++             # Wind data (following your unlist/lapply pattern)
++             wind_speed = if("viento" %in% names(wdia[[1]])) {
++               unlist(lapply(wdia[[1]]$viento, function(x) {
++                 if(is.list(x) && "velocidad" %in% names(x)) {
++                   mean(x$velocidad, na.rm = TRUE)
++                 } else NA
++               }))
++             } else rep(NA, length(fechas))
++             
++             cat("Extracted", length(fechas), "forecast days\n")
++             cat("First day - Date:", as.character(fechas[1]), "Temp max:", temp_max[1], "Temp min:", temp_min[1], "Temp avg:", temp_avg[1], "\n")
++             
++             # Create result data frame with all 7 days
++             result = data.frame(
++               municipio_id = municipio_code,
++               municipio_nombre = forecast_data$nombre,
++               provincia = forecast_data$provincia,
++               elaborado = forecast_data$elaborado,
++               fecha = fechas,
++               temp_max = temp_max,
++               temp_min = temp_min, 
++               temp_avg = temp_avg,
++               humid_max = humid_max,
++               humid_min = humid_min,
++               wind_speed = wind_speed,
++               stringsAsFactors = FALSE
++             )
++             
++             return(result)
++     
++   }, error = function(e) {
++     cat("✗ ERROR:", e$message, "\n")
++     return(NULL)
++   })
++ }
+> 
+> # Load municipality data
+> cat("Loading municipality codes...\n")
+Loading municipality codes...
+> municipalities_data = fread("data/input/municipalities.csv.gz")
+> cat("Loaded", nrow(municipalities_data), "municipalities\n")
+Loaded 8129 municipalities
+> 
+> working_municipalities = municipalities_data$CUMUN
+> names(working_municipalities) = municipalities_data$NAMEUNIT
+> 
+> if(TESTING_MODE){
++   working_municipalities = head(working_municipalities, N_TEST_MUNICIPALITIES)
++   cat("Testing with", N_TEST_MUNICIPALITIES, "municipalities\n\n")
++ }
+> 
+> # Collect forecasts
+> all_forecasts = list()
+> successful_collections = 0
+> 
+> for(i in seq_along(working_municipalities)) {
++   city = names(working_municipalities)[i]
++   code = working_municipalities[i]
++   
++   cat("Municipality", i, "of", length(working_municipalities), ":", city, "(", code, ")\n")
++   
++   if(i > 1) {
++     cat("Waiting 15 seconds...\n")
++     Sys.sleep(15)  # Longer delay to avoid rate limits
++   }
++   
++   forecast_data = get_municipality_forecast_v2(code, city)
++   
++   if(!is.null(forecast_data)) {
++     all_forecasts[[code]] = forecast_data
++     successful_collections = successful_collections + 1
++   }
++   
++   cat("\n")
++ }
+Municipality 1 of 8129 : Solórzano ( 39084 )
+Processing 39084 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 2 of 8129 : Pino del Oro ( 49157 )
+Waiting 15 seconds...
+Processing 49157 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 3 of 8129 : Suances ( 39085 )
+Waiting 15 seconds...
+Processing 39085 
+No data URL in response
+
+Municipality 4 of 8129 : El Piñero ( 49158 )
+Waiting 15 seconds...
+Processing 49158 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 15 Temp avg: 25 
+
+Municipality 5 of 8129 : Los Tojos ( 39086 )
+Waiting 15 seconds...
+Processing 39086 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 29 Temp min: 14 Temp avg: 21.5 
+
+Municipality 6 of 8129 : Torrelavega ( 39087 )
+Waiting 15 seconds...
+Processing 39087 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 25 Temp min: 17 Temp avg: 21 
+
+Municipality 7 of 8129 : Pobladura del Valle ( 49159 )
+Waiting 15 seconds...
+Processing 49159 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 14 Temp avg: 24 
+
+Municipality 8 of 8129 : Pobladura de Valderaduey ( 49160 )
+Waiting 15 seconds...
+Processing 49160 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 15 Temp avg: 25 
+
+Municipality 9 of 8129 : Salvacañete ( 16189 )
+Waiting 15 seconds...
+Processing 16189 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 31 Temp min: 14 Temp avg: 22.5 
+
+Municipality 10 of 8129 : Aras de los Olmos ( 46041 )
+Waiting 15 seconds...
+Processing 46041 
+Rate limit - rotating key...
+Rotated from API key: jrp9@cornell.edu to: activityspacelab@protonmail.com 
+API request failed: 429 
+
+Municipality 11 of 8129 : Porto ( 49162 )
+Waiting 15 seconds...
+Processing 49162 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 28 Temp min: 14 Temp avg: 21 
+
+Municipality 12 of 8129 : Camarena ( 45031 )
+Waiting 15 seconds...
+Processing 45031 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 21 Temp avg: 28 
+
+Municipality 13 of 8129 : Pozoantiguo ( 49163 )
+Waiting 15 seconds...
+Processing 49163 
+Rate limit - rotating key...
+Rotated from API key: activityspacelab@protonmail.com to: johnrbpalmer@gmail.com 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 15 Temp avg: 25 
+
+Municipality 14 of 8129 : Pozuelo de Tábara ( 49164 )
+Waiting 15 seconds...
+Processing 49164 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 15 Temp avg: 24 
+
+Municipality 15 of 8129 : Prado ( 49165 )
+Waiting 15 seconds...
+Processing 49165 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 14 Temp avg: 24.5 
+
+Municipality 16 of 8129 : Camarenilla ( 45032 )
+Waiting 15 seconds...
+Processing 45032 
+Rate limit - rotating key...
+Rotated from API key: johnrbpalmer@gmail.com to: jrp9@cornell.edu 
+API request failed: 429 
+
+Municipality 17 of 8129 : Redován ( 3111 )
+Waiting 15 seconds...
+Processing 3111 
+No data URL in response
+
+Municipality 18 of 8129 : Puebla de Sanabria ( 49166 )
+Waiting 15 seconds...
+Processing 49166 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 30 Temp min: 9 Temp avg: 19.5 
+
+Municipality 19 of 8129 : Pueblica de Valverde ( 49167 )
+Waiting 15 seconds...
+Processing 49167 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 14 Temp avg: 23.5 
+
+Municipality 20 of 8129 : Quintanilla del Monte ( 49168 )
+Waiting 15 seconds...
+Processing 49168 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 14 Temp avg: 24.5 
+
+Municipality 21 of 8129 : Quintanilla del Olmo ( 49169 )
+Waiting 15 seconds...
+Processing 49169 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 14 Temp avg: 24.5 
+
+Municipality 22 of 8129 : Quintanilla de Urz ( 49170 )
+Waiting 15 seconds...
+Processing 49170 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 23 of 8129 : Quiruelas de Vidriales ( 49171 )
+Waiting 15 seconds...
+Processing 49171 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 14 Temp avg: 24 
+
+Municipality 24 of 8129 : Rabanales ( 49172 )
+Waiting 15 seconds...
+Processing 49172 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 13 Temp avg: 23 
+
+Municipality 25 of 8129 : Rábano de Aliste ( 49173 )
+Waiting 15 seconds...
+Processing 49173 
+No data URL in response
+
+Municipality 26 of 8129 : Requejo ( 49174 )
+Waiting 15 seconds...
+Processing 49174 
+Data request failed: 500 
+
+Municipality 27 of 8129 : Revellinos ( 49175 )
+Waiting 15 seconds...
+Processing 49175 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 13 Temp avg: 24 
+
+Municipality 28 of 8129 : la Romana ( 3114 )
+Waiting 15 seconds...
+Processing 3114 
+No data URL in response
+
+Municipality 29 of 8129 : Sagra ( 3115 )
+Waiting 15 seconds...
+Processing 3115 
+Rate limit - rotating key...
+Rotated from API key: jrp9@cornell.edu to: activityspacelab@protonmail.com 
+No data URL in response
+
+Municipality 30 of 8129 : Salinas ( 3116 )
+Waiting 15 seconds...
+Processing 3116 
+No data URL in response
+
+Municipality 31 of 8129 : Sanet y Negrals ( 3117 )
+Waiting 15 seconds...
+Processing 3117 
+Rate limit - rotating key...
+Rotated from API key: activityspacelab@protonmail.com to: johnrbpalmer@gmail.com 
+API request failed: 429 
+
+Municipality 32 of 8129 : San Fulgencio ( 3118 )
+Waiting 15 seconds...
+Processing 3118 
+No data URL in response
+
+Municipality 33 of 8129 : Riofrío de Aliste ( 49176 )
+Waiting 15 seconds...
+Processing 49176 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 32 Temp min: 14 Temp avg: 23 
+
+Municipality 34 of 8129 : Sant Joan d'Alacant ( 3119 )
+Waiting 15 seconds...
+Processing 3119 
+No data URL in response
+
+Municipality 35 of 8129 : Rionegro del Puente ( 49177 )
+Waiting 15 seconds...
+Processing 49177 
+Rate limit - rotating key...
+Rotated from API key: johnrbpalmer@gmail.com to: jrp9@cornell.edu 
+API request failed: 429 
+
+Municipality 36 of 8129 : Roales ( 49178 )
+Waiting 15 seconds...
+Processing 49178 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 15 Temp avg: 25 
+
+Municipality 37 of 8129 : San Miguel de Salinas ( 3120 )
+Waiting 15 seconds...
+Processing 3120 
+No data URL in response
+
+Municipality 38 of 8129 : Santa Pola ( 3121 )
+Waiting 15 seconds...
+Processing 3121 
+No data URL in response
+
+Municipality 39 of 8129 : Robleda-Cervantes ( 49179 )
+Waiting 15 seconds...
+Processing 49179 
+Rate limit - rotating key...
+Rotated from API key: jrp9@cornell.edu to: activityspacelab@protonmail.com 
+API request failed: 429 
+
+Municipality 40 of 8129 : Roelos de Sayago ( 49180 )
+Waiting 15 seconds...
+Processing 49180 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 14 Temp avg: 24 
+
+Municipality 41 of 8129 : Rosinos de la Requejada ( 49181 )
+Waiting 15 seconds...
+Processing 49181 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 29 Temp min: 9 Temp avg: 19 
+
+Municipality 42 of 8129 : Salce ( 49183 )
+Waiting 15 seconds...
+Processing 49183 
+Rate limit - rotating key...
+Rotated from API key: activityspacelab@protonmail.com to: johnrbpalmer@gmail.com 
+API request failed: 429 
+
+Municipality 43 of 8129 : Samir de los Caños ( 49184 )
+Waiting 15 seconds...
+Processing 49184 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 14 Temp avg: 23.5 
+
+Municipality 44 of 8129 : San Agustín del Pozo ( 49185 )
+Waiting 15 seconds...
+Processing 49185 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 13 Temp avg: 24 
+
+Municipality 45 of 8129 : Alcudia de Veo ( 12006 )
+Waiting 15 seconds...
+Processing 12006 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 46 of 8129 : Novelda ( 3093 )
+Waiting 15 seconds...
+Processing 3093 
+No data URL in response
+
+Municipality 47 of 8129 : Alfondeguilla ( 12007 )
+Waiting 15 seconds...
+Processing 12007 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 31 Temp min: 20 Temp avg: 25.5 
+
+Municipality 48 of 8129 : Algimia de Almonacid ( 12008 )
+Waiting 15 seconds...
+Processing 12008 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 31 Temp min: 18 Temp avg: 24.5 
+
+Municipality 49 of 8129 : Almassora ( 12009 )
+Waiting 15 seconds...
+Processing 12009 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 50 of 8129 : Almedíjar ( 12010 )
+Waiting 15 seconds...
+Processing 12010 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 51 of 8129 : Almenara ( 12011 )
+Waiting 15 seconds...
+Processing 12011 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 31 Temp min: 22 Temp avg: 26.5 
+
+Municipality 52 of 8129 : Altura ( 12012 )
+Waiting 15 seconds...
+Processing 12012 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 19 Temp avg: 26 
+
+Municipality 53 of 8129 : Arañuel ( 12013 )
+Waiting 15 seconds...
+Processing 12013 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 54 of 8129 : Ares del Maestrat ( 12014 )
+Waiting 15 seconds...
+Processing 12014 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 55 of 8129 : Duesaigües ( 43053 )
+Waiting 15 seconds...
+Processing 43053 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 32 Temp min: 21 Temp avg: 26.5 
+
+Municipality 56 of 8129 : Ginestar ( 43067 )
+Waiting 15 seconds...
+Processing 43067 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 36 Temp min: 22 Temp avg: 29 
+
+Municipality 57 of 8129 : Godall ( 43068 )
+Waiting 15 seconds...
+Processing 43068 
+Rate limit - rotating key...
+Rotated from API key: johnrbpalmer@gmail.com to: jrp9@cornell.edu 
+API request failed: 429 
+
+Municipality 58 of 8129 : Gratallops ( 43069 )
+Waiting 15 seconds...
+Processing 43069 
+Rate limit - rotating key...
+Rotated from API key: jrp9@cornell.edu to: activityspacelab@protonmail.com 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 21 Temp avg: 27.5 
+
+Municipality 59 of 8129 : Serra de Daró ( 17191 )
+Waiting 15 seconds...
+Processing 17191 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 60 of 8129 : Setcases ( 17192 )
+Waiting 15 seconds...
+Processing 17192 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 61 of 8129 : Sils ( 17193 )
+Waiting 15 seconds...
+Processing 17193 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 20 Temp avg: 26.5 
+
+Municipality 62 of 8129 : Susqueda ( 17194 )
+Waiting 15 seconds...
+Processing 17194 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 17 Temp avg: 25 
+
+Municipality 63 of 8129 : San Cebrián de Castro ( 49186 )
+Waiting 15 seconds...
+Processing 49186 
+Rate limit - rotating key...
+Rotated from API key: activityspacelab@protonmail.com to: johnrbpalmer@gmail.com 
+API request failed: 429 
+
+Municipality 64 of 8129 : San Cristóbal de Entreviñas ( 49187 )
+Waiting 15 seconds...
+Processing 49187 
+Rate limit - rotating key...
+Rotated from API key: johnrbpalmer@gmail.com to: jrp9@cornell.edu 
+API request failed: 429 
+
+Municipality 65 of 8129 : San Esteban del Molar ( 49188 )
+Waiting 15 seconds...
+Processing 49188 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 13 Temp avg: 23.5 
+
+Municipality 66 of 8129 : San Justo ( 49189 )
+Waiting 15 seconds...
+Processing 49189 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 29 Temp min: 9 Temp avg: 19 
+
+Municipality 67 of 8129 : San Martín de Valderaduey ( 49190 )
+Waiting 15 seconds...
+Processing 49190 
+Rate limit - rotating key...
+Rotated from API key: jrp9@cornell.edu to: activityspacelab@protonmail.com 
+API request failed: 429 
+
+Municipality 68 of 8129 : San Miguel de la Ribera ( 49191 )
+Waiting 15 seconds...
+Processing 49191 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 15 Temp avg: 25 
+
+Municipality 69 of 8129 : San Miguel del Valle ( 49192 )
+Waiting 15 seconds...
+Processing 49192 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 14 Temp avg: 24 
+
+Municipality 70 of 8129 : San Pedro de Ceque ( 49193 )
+Waiting 15 seconds...
+Processing 49193 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 14 Temp avg: 23.5 
+
+Municipality 71 of 8129 : San Pedro de la Nave-Almendra ( 49194 )
+Waiting 15 seconds...
+Processing 49194 
+Rate limit - rotating key...
+Rotated from API key: activityspacelab@protonmail.com to: johnrbpalmer@gmail.com 
+API request failed: 429 
+
+Municipality 72 of 8129 : Santa Clara de Avedillo ( 49197 )
+Waiting 15 seconds...
+Processing 49197 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 15 Temp avg: 24.5 
+
+Municipality 73 of 8129 : Santa Colomba de las Monjas ( 49199 )
+Waiting 15 seconds...
+Processing 49199 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 74 of 8129 : Santa Cristina de la Polvorosa ( 49200 )
+Waiting 15 seconds...
+Processing 49200 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 75 of 8129 : Santa Croya de Tera ( 49201 )
+Waiting 15 seconds...
+Processing 49201 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 14 Temp avg: 23.5 
+
+Municipality 76 of 8129 : Argelita ( 12015 )
+Waiting 15 seconds...
+Processing 12015 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 77 of 8129 : Santa Eufemia del Barco ( 49202 )
+Waiting 15 seconds...
+Processing 49202 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 78 of 8129 : Santa María de la Vega ( 49203 )
+Waiting 15 seconds...
+Processing 49203 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 79 of 8129 : Santa María de Valverde ( 49204 )
+Waiting 15 seconds...
+Processing 49204 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 14 Temp avg: 23.5 
+
+Municipality 80 of 8129 : Santibáñez de Tera ( 49205 )
+Waiting 15 seconds...
+Processing 49205 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 14 Temp avg: 23.5 
+
+Municipality 81 of 8129 : Maspujols ( 43081 )
+Waiting 15 seconds...
+Processing 43081 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 32 Temp min: 21 Temp avg: 26.5 
+
+Municipality 82 of 8129 : Santibáñez de Vidriales ( 49206 )
+Waiting 15 seconds...
+Processing 49206 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 32 Temp min: 13 Temp avg: 22.5 
+
+Municipality 83 of 8129 : Santovenia ( 49207 )
+Waiting 15 seconds...
+Processing 49207 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 84 of 8129 : San Vicente de la Cabeza ( 49208 )
+Waiting 15 seconds...
+Processing 49208 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 85 of 8129 : Artana ( 12016 )
+Waiting 15 seconds...
+Processing 12016 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 32 Temp min: 20 Temp avg: 26 
+
+Municipality 86 of 8129 : San Vitero ( 49209 )
+Waiting 15 seconds...
+Processing 49209 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 32 Temp min: 13 Temp avg: 22.5 
+
+Municipality 87 of 8129 : Sanzoles ( 49210 )
+Waiting 15 seconds...
+Processing 49210 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 15 Temp avg: 25 
+
+Municipality 88 of 8129 : Tábara ( 49214 )
+Waiting 15 seconds...
+Processing 49214 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 89 of 8129 : Tapioles ( 49216 )
+Waiting 15 seconds...
+Processing 49216 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 90 of 8129 : Toro ( 49219 )
+Waiting 15 seconds...
+Processing 49219 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 91 of 8129 : La Torre del Valle ( 49220 )
+Waiting 15 seconds...
+Processing 49220 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 92 of 8129 : Torregamones ( 49221 )
+Waiting 15 seconds...
+Processing 49221 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 15 Temp avg: 24.5 
+
+Municipality 93 of 8129 : Ayódar ( 12017 )
+Waiting 15 seconds...
+Processing 12017 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 94 of 8129 : Torres del Carrizal ( 49222 )
+Waiting 15 seconds...
+Processing 49222 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 95 of 8129 : Trabazos ( 49223 )
+Waiting 15 seconds...
+Processing 49223 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 96 of 8129 : Trefacio ( 49224 )
+Waiting 15 seconds...
+Processing 49224 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 97 of 8129 : Uña de Quintana ( 49225 )
+Waiting 15 seconds...
+Processing 49225 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 14 Temp avg: 23.5 
+
+Municipality 98 of 8129 : Vadillo de la Guareña ( 49226 )
+Waiting 15 seconds...
+Processing 49226 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 99 of 8129 : Valcabado ( 49227 )
+Waiting 15 seconds...
+Processing 49227 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 16 Temp avg: 25.5 
+
+Municipality 100 of 8129 : Valdefinjas ( 49228 )
+Waiting 15 seconds...
+Processing 49228 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 14 Temp avg: 24.5 
+
+Municipality 101 of 8129 : Valdescorriel ( 49229 )
+Waiting 15 seconds...
+Processing 49229 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 14 Temp avg: 24 
+
+Municipality 102 of 8129 : Vallesa de la Guareña ( 49230 )
+Waiting 15 seconds...
+Processing 49230 
+Rate limit - rotating key...
+Rotated from API key: johnrbpalmer@gmail.com to: jrp9@cornell.edu 
+API request failed: 429 
+
+Municipality 103 of 8129 : Vega de Tera ( 49231 )
+Waiting 15 seconds...
+Processing 49231 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 14 Temp avg: 23.5 
+
+Municipality 104 of 8129 : Vega de Villalobos ( 49232 )
+Waiting 15 seconds...
+Processing 49232 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 14 Temp avg: 24 
+
+Municipality 105 of 8129 : Vegalatrave ( 49233 )
+Waiting 15 seconds...
+Processing 49233 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 15 Temp avg: 24.5 
+
+Municipality 106 of 8129 : Venialbo ( 49234 )
+Waiting 15 seconds...
+Processing 49234 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 15 Temp avg: 25 
+
+Municipality 107 of 8129 : Azuébar ( 12018 )
+Waiting 15 seconds...
+Processing 12018 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 32 Temp min: 19 Temp avg: 25.5 
+
+Municipality 108 of 8129 : Vezdemarbán ( 49235 )
+Waiting 15 seconds...
+Processing 49235 
+Data request failed: 500 
+
+Municipality 109 of 8129 : Vidayanes ( 49236 )
+Waiting 15 seconds...
+Processing 49236 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 110 of 8129 : Barracas ( 12020 )
+Waiting 15 seconds...
+Processing 12020 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 29 Temp min: 16 Temp avg: 22.5 
+
+Municipality 111 of 8129 : Betxí ( 12021 )
+Waiting 15 seconds...
+Processing 12021 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 21 Temp avg: 27 
+
+Municipality 112 of 8129 : Imotz ( 31126 )
+Waiting 15 seconds...
+Processing 31126 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 17 Temp avg: 25 
+
+Municipality 113 of 8129 : Irañeta ( 31127 )
+Waiting 15 seconds...
+Processing 31127 
+No data URL in response
+
+Municipality 114 of 8129 : Isaba/Izaba ( 31128 )
+Waiting 15 seconds...
+Processing 31128 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 32 Temp min: 14 Temp avg: 23 
+
+Municipality 115 of 8129 : Ituren ( 31129 )
+Waiting 15 seconds...
+Processing 31129 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 18 Temp avg: 26 
+
+Municipality 116 of 8129 : Canet lo Roig ( 12036 )
+Waiting 15 seconds...
+Processing 12036 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 32 Temp min: 21 Temp avg: 26.5 
+
+Municipality 117 of 8129 : Videmala ( 49237 )
+Waiting 15 seconds...
+Processing 49237 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 118 of 8129 : Villabrázaro ( 49238 )
+Waiting 15 seconds...
+Processing 49238 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 119 of 8129 : Villabuena del Puente ( 49239 )
+Waiting 15 seconds...
+Processing 49239 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 120 of 8129 : Iturmendi ( 31130 )
+Waiting 15 seconds...
+Processing 31130 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 121 of 8129 : Villadepera ( 49240 )
+Waiting 15 seconds...
+Processing 49240 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 122 of 8129 : Villaescusa ( 49241 )
+Waiting 15 seconds...
+Processing 49241 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 123 of 8129 : Villafáfila ( 49242 )
+Waiting 15 seconds...
+Processing 49242 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 124 of 8129 : Villaferrueña ( 49243 )
+Waiting 15 seconds...
+Processing 49243 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 14 Temp avg: 23.5 
+
+Municipality 125 of 8129 : Villageriz ( 49244 )
+Waiting 15 seconds...
+Processing 49244 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 126 of 8129 : Villalazán ( 49245 )
+Waiting 15 seconds...
+Processing 49245 
+✗ ERROR: 'x' must be an array of at least two dimensions 
+
+Municipality 127 of 8129 : Villalba de la Lampreana ( 49246 )
+Waiting 15 seconds...
+Processing 49246 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 128 of 8129 : Villalcampo ( 49247 )
+Waiting 15 seconds...
+Processing 49247 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 129 of 8129 : Villalobos ( 49248 )
+Waiting 15 seconds...
+Processing 49248 
+Data request failed: 500 
+
+Municipality 130 of 8129 : Villalonso ( 49249 )
+Waiting 15 seconds...
+Processing 49249 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 36 Temp min: 15 Temp avg: 25.5 
+
+Municipality 131 of 8129 : Murillo el Cuende ( 31178 )
+Waiting 15 seconds...
+Processing 31178 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 21 Temp avg: 28 
+
+Municipality 132 of 8129 : Sant Pere de Ribes ( 8231 )
+Waiting 15 seconds...
+Processing 8231 
+No data URL in response
+
+Municipality 133 of 8129 : Murillo el Fruto ( 31179 )
+Waiting 15 seconds...
+Processing 31179 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 21 Temp avg: 28 
+
+Municipality 134 of 8129 : Muruzábal ( 31180 )
+Waiting 15 seconds...
+Processing 31180 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 36 Temp min: 19 Temp avg: 27.5 
+
+Municipality 135 of 8129 : San Lorenzo de la Parrilla ( 16191 )
+Waiting 15 seconds...
+Processing 16191 
+Data request failed: 500 
+
+Municipality 136 of 8129 : Castell de Cabres ( 12037 )
+Waiting 15 seconds...
+Processing 12037 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 26 Temp min: 16 Temp avg: 21 
+
+Municipality 137 of 8129 : San Martín de Boniches ( 16192 )
+Waiting 15 seconds...
+Processing 16192 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 30 Temp min: 15 Temp avg: 22.5 
+
+Municipality 138 of 8129 : Villalpando ( 49250 )
+Waiting 15 seconds...
+Processing 49250 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 14 Temp avg: 24.5 
+
+Municipality 139 of 8129 : Villalube ( 49251 )
+Waiting 15 seconds...
+Processing 49251 
+No data URL in response
+
+Municipality 140 of 8129 : San Pedro Palmiches ( 16193 )
+Waiting 15 seconds...
+Processing 16193 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 20 Temp avg: 27 
+
+Municipality 141 of 8129 : Villamayor de Campos ( 49252 )
+Waiting 15 seconds...
+Processing 49252 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 14 Temp avg: 24.5 
+
+Municipality 142 of 8129 : Villamor de los Escuderos ( 49255 )
+Waiting 15 seconds...
+Processing 49255 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 15 Temp avg: 24.5 
+
+Municipality 143 of 8129 : Villanázar ( 49256 )
+Waiting 15 seconds...
+Processing 49256 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 144 of 8129 : Villanueva de Azoague ( 49257 )
+Waiting 15 seconds...
+Processing 49257 
+No data URL in response
+
+Municipality 145 of 8129 : Villanueva de Campeán ( 49258 )
+Waiting 15 seconds...
+Processing 49258 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 146 of 8129 : Villanueva de las Peras ( 49259 )
+Waiting 15 seconds...
+Processing 49259 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 14 Temp avg: 23.5 
+
+Municipality 147 of 8129 : Villanueva del Campo ( 49260 )
+Waiting 15 seconds...
+Processing 49260 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 14 Temp avg: 24 
+
+Municipality 148 of 8129 : Tresviso ( 39088 )
+Waiting 15 seconds...
+Processing 39088 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 149 of 8129 : Tudanca ( 39089 )
+Waiting 15 seconds...
+Processing 39089 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 150 of 8129 : Udías ( 39090 )
+Waiting 15 seconds...
+Processing 39090 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 151 of 8129 : Valdáliga ( 39091 )
+Waiting 15 seconds...
+Processing 39091 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 152 of 8129 : Valdeolea ( 39092 )
+Waiting 15 seconds...
+Processing 39092 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 153 of 8129 : Villaralbo ( 49261 )
+Waiting 15 seconds...
+Processing 49261 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 154 of 8129 : Valdeprado del Río ( 39093 )
+Waiting 15 seconds...
+Processing 39093 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 32 Temp min: 11 Temp avg: 21.5 
+
+Municipality 155 of 8129 : Valderredible ( 39094 )
+Waiting 15 seconds...
+Processing 39094 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 10 Temp avg: 22.5 
+
+Municipality 156 of 8129 : Val de San Vicente ( 39095 )
+Waiting 15 seconds...
+Processing 39095 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 157 of 8129 : Vega de Liébana ( 39096 )
+Waiting 15 seconds...
+Processing 39096 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 16 Temp avg: 24.5 
+
+Municipality 158 of 8129 : Villardeciervos ( 49262 )
+Waiting 15 seconds...
+Processing 49262 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 32 Temp min: 10 Temp avg: 21 
+
+Municipality 159 of 8129 : Villar de Fallaves ( 49263 )
+Waiting 15 seconds...
+Processing 49263 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 15 Temp avg: 25 
+
+Municipality 160 of 8129 : Villar del Buey ( 49264 )
+Waiting 15 seconds...
+Processing 49264 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 14 Temp avg: 24.5 
+
+Municipality 161 of 8129 : Villardiegua de la Ribera ( 49265 )
+Waiting 15 seconds...
+Processing 49265 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 15 Temp avg: 24.5 
+
+Municipality 162 of 8129 : Villárdiga ( 49266 )
+Waiting 15 seconds...
+Processing 49266 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 163 of 8129 : Villardondiego ( 49267 )
+Waiting 15 seconds...
+Processing 49267 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 164 of 8129 : Laguna de Cameros ( 26082 )
+Waiting 15 seconds...
+Processing 26082 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 165 of 8129 : Villarrín de Campos ( 49268 )
+Waiting 15 seconds...
+Processing 49268 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 14 Temp avg: 24.5 
+
+Municipality 166 of 8129 : Villaseco del Pan ( 49269 )
+Waiting 15 seconds...
+Processing 49269 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 15 Temp avg: 25 
+
+Municipality 167 of 8129 : Villavendimio ( 49270 )
+Waiting 15 seconds...
+Processing 49270 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 36 Temp min: 14 Temp avg: 25 
+
+Municipality 168 of 8129 : Villaveza del Agua ( 49271 )
+Waiting 15 seconds...
+Processing 49271 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 14 Temp avg: 24 
+
+Municipality 169 of 8129 : Villaveza de Valverde ( 49272 )
+Waiting 15 seconds...
+Processing 49272 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 14 Temp avg: 24 
+
+Municipality 170 of 8129 : Viñas ( 49273 )
+Waiting 15 seconds...
+Processing 49273 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 12 Temp avg: 22.5 
+
+Municipality 171 of 8129 : Zamora ( 49275 )
+Waiting 15 seconds...
+Processing 49275 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 16 Temp avg: 25 
+
+Municipality 172 of 8129 : Abengibre ( 2001 )
+Waiting 15 seconds...
+Processing 2001 
+No data URL in response
+
+Municipality 173 of 8129 : Alatoz ( 2002 )
+Waiting 15 seconds...
+Processing 2002 
+No data URL in response
+
+Municipality 174 of 8129 : Albacete ( 2003 )
+Waiting 15 seconds...
+Processing 2003 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 175 of 8129 : Albatana ( 2004 )
+Waiting 15 seconds...
+Processing 2004 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 176 of 8129 : Leza de Río Leza ( 26088 )
+Waiting 15 seconds...
+Processing 26088 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 177 of 8129 : Muro de Aguas ( 26100 )
+Waiting 15 seconds...
+Processing 26100 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 178 of 8129 : Muro en Cameros ( 26101 )
+Waiting 15 seconds...
+Processing 26101 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 31 Temp min: 14 Temp avg: 22.5 
+
+Municipality 179 of 8129 : Alborea ( 2005 )
+Waiting 15 seconds...
+Processing 2005 
+No data URL in response
+
+Municipality 180 of 8129 : Alcadozo ( 2006 )
+Waiting 15 seconds...
+Processing 2006 
+No data URL in response
+
+Municipality 181 of 8129 : Alcalá del Júcar ( 2007 )
+Waiting 15 seconds...
+Processing 2007 
+No data URL in response
+
+Municipality 182 of 8129 : Alcaraz ( 2008 )
+Waiting 15 seconds...
+Processing 2008 
+No data URL in response
+
+Municipality 183 of 8129 : Nestares ( 26106 )
+Waiting 15 seconds...
+Processing 26106 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 184 of 8129 : Almansa ( 2009 )
+Waiting 15 seconds...
+Processing 2009 
+No data URL in response
+
+Municipality 185 of 8129 : Alpera ( 2010 )
+Waiting 15 seconds...
+Processing 2010 
+No data URL in response
+
+Municipality 186 of 8129 : El Masroig ( 43082 )
+Waiting 15 seconds...
+Processing 43082 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 21 Temp avg: 28 
+
+Municipality 187 of 8129 : Santa Margarida i els Monjos ( 8251 )
+Waiting 15 seconds...
+Processing 8251 
+No data URL in response
+
+Municipality 188 of 8129 : Barberà del Vallès ( 8252 )
+Waiting 15 seconds...
+Processing 8252 
+No data URL in response
+
+Municipality 189 of 8129 : Santa Maria de Besora ( 8253 )
+Waiting 15 seconds...
+Processing 8253 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 190 of 8129 : L'Esquirol ( 8254 )
+Waiting 15 seconds...
+Processing 8254 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 191 of 8129 : Santa Maria de Martorelles ( 8256 )
+Waiting 15 seconds...
+Processing 8256 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 192 of 8129 : Sentmenat ( 8267 )
+Waiting 15 seconds...
+Processing 8267 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 193 of 8129 : El Milà ( 43083 )
+Waiting 15 seconds...
+Processing 43083 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 194 of 8129 : El Morell ( 43095 )
+Waiting 15 seconds...
+Processing 43095 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 195 of 8129 : Loranca de Tajuña ( 19160 )
+Waiting 15 seconds...
+Processing 19160 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 196 of 8129 : La Morera de Montsant ( 43096 )
+Waiting 15 seconds...
+Processing 43096 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 197 of 8129 : Lupiana ( 19161 )
+Waiting 15 seconds...
+Processing 19161 
+Data request failed: 500 
+
+Municipality 198 of 8129 : Luzaga ( 19162 )
+Waiting 15 seconds...
+Processing 19162 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 199 of 8129 : Luzón ( 19163 )
+Waiting 15 seconds...
+Processing 19163 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 200 of 8129 : Malaguilla ( 19167 )
+Waiting 15 seconds...
+Processing 19167 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 18 Temp avg: 26 
+
+Municipality 201 of 8129 : La Nou de Gaià ( 43097 )
+Waiting 15 seconds...
+Processing 43097 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 31 Temp min: 22 Temp avg: 26.5 
+
+Municipality 202 of 8129 : Mandayona ( 19168 )
+Waiting 15 seconds...
+Processing 19168 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 18 Temp avg: 26 
+
+Municipality 203 of 8129 : Mantiel ( 19169 )
+Waiting 15 seconds...
+Processing 19169 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 32 Temp min: 17 Temp avg: 24.5 
+
+Municipality 204 of 8129 : Mazarete ( 19175 )
+Waiting 15 seconds...
+Processing 19175 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 30 Temp min: 16 Temp avg: 23 
+
+Municipality 205 of 8129 : Mazuecos ( 19176 )
+Waiting 15 seconds...
+Processing 19176 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 35 Temp min: 21 Temp avg: 28 
+
+Municipality 206 of 8129 : Medranda ( 19177 )
+Waiting 15 seconds...
+Processing 19177 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 18 Temp avg: 25.5 
+
+Municipality 207 of 8129 : Megina ( 19178 )
+Waiting 15 seconds...
+Processing 19178 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 30 Temp min: 17 Temp avg: 23.5 
+
+Municipality 208 of 8129 : Saceruela ( 13073 )
+Waiting 15 seconds...
+Processing 13073 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 209 of 8129 : San Carlos del Valle ( 13074 )
+Waiting 15 seconds...
+Processing 13074 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 210 of 8129 : La Solana ( 13079 )
+Waiting 15 seconds...
+Processing 13079 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 37 Temp min: 21 Temp avg: 29 
+
+Municipality 211 of 8129 : Membrillera ( 19179 )
+Waiting 15 seconds...
+Processing 19179 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 18 Temp avg: 25.5 
+
+Municipality 212 of 8129 : Terrinches ( 13081 )
+Waiting 15 seconds...
+Processing 13081 
+Rate limit - rotating key...
+Rotated from API key: jrp9@cornell.edu to: activityspacelab@protonmail.com 
+API request failed: 429 
+
+Municipality 213 of 8129 : Tomelloso ( 13082 )
+Waiting 15 seconds...
+Processing 13082 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 37 Temp min: 20 Temp avg: 28.5 
+
+Municipality 214 of 8129 : Miedes de Atienza ( 19181 )
+Waiting 15 seconds...
+Processing 19181 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 30 Temp min: 16 Temp avg: 23 
+
+Municipality 215 of 8129 : La Mierla ( 19182 )
+Waiting 15 seconds...
+Processing 19182 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 216 of 8129 : Milmarcos ( 19183 )
+Waiting 15 seconds...
+Processing 19183 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 217 of 8129 : Millana ( 19184 )
+Waiting 15 seconds...
+Processing 19184 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 33 Temp min: 19 Temp avg: 26 
+
+Municipality 218 of 8129 : Les Piles ( 43105 )
+Waiting 15 seconds...
+Processing 43105 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 28 Temp min: 16 Temp avg: 22 
+
+Municipality 219 of 8129 : La Miñosa ( 19185 )
+Waiting 15 seconds...
+Processing 19185 
+Rate limit - rotating key...
+Rotated from API key: activityspacelab@protonmail.com to: johnrbpalmer@gmail.com 
+API request failed: 429 
+
+Municipality 220 of 8129 : Mirabueno ( 19186 )
+Waiting 15 seconds...
+Processing 19186 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 221 of 8129 : Torrenueva ( 13085 )
+Waiting 15 seconds...
+Processing 13085 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 37 Temp min: 21 Temp avg: 29 
+
+Municipality 222 of 8129 : Valenzuela de Calatrava ( 13088 )
+Waiting 15 seconds...
+Processing 13088 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 223 of 8129 : Miralrío ( 19187 )
+Waiting 15 seconds...
+Processing 19187 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 32 Temp min: 17 Temp avg: 24.5 
+
+Municipality 224 of 8129 : Mochales ( 19188 )
+Waiting 15 seconds...
+Processing 19188 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 32 Temp min: 18 Temp avg: 25 
+
+Municipality 225 of 8129 : Ayna ( 2011 )
+Waiting 15 seconds...
+Processing 2011 
+No data URL in response
+
+Municipality 226 of 8129 : Balazote ( 2012 )
+Waiting 15 seconds...
+Processing 2012 
+No data URL in response
+
+Municipality 227 of 8129 : Mohernando ( 19189 )
+Waiting 15 seconds...
+Processing 19189 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 34 Temp min: 18 Temp avg: 26 
+
+Municipality 228 of 8129 : El Pla de Santa Maria ( 43108 )
+Waiting 15 seconds...
+Processing 43108 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 31 Temp min: 20 Temp avg: 25.5 
+
+Municipality 229 of 8129 : La Pobla de Mafumet ( 43109 )
+Waiting 15 seconds...
+Processing 43109 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 32 Temp min: 22 Temp avg: 27 
+
+Municipality 230 of 8129 : La Pobla de Massaluca ( 43110 )
+Waiting 15 seconds...
+Processing 43110 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 231 of 8129 : Castellnovo ( 12039 )
+Waiting 15 seconds...
+Processing 12039 
+✗ ERROR: Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0 
+
+Municipality 232 of 8129 : Castelló de la Plana ( 12040 )
+Waiting 15 seconds...
+Processing 12040 
+Extracted 7 forecast days
+First day - Date: 2025-08-25 Temp max: 32 Temp min: 24 Temp avg: 28 
+
+Municipality 233 of 8129 : Bellús ( 46049 )
+Waiting 15 seconds...
