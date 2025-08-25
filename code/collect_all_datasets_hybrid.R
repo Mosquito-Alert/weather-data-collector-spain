@@ -67,15 +67,45 @@ if(COLLECT_HOURLY_DATA) {
   }, error = function(e) {
     cat("❌ Dataset 3 failed:", e$message, "\n\n")
     dataset3_end = Sys.time()
+    dataset3_end = Sys.time()
     times$hourly_data = as.numeric(difftime(dataset3_end, dataset3_start, units = "mins"))
-  })
-}
     cat("✅ Dataset 3 completed in", round(times$hourly_data, 2), "minutes\n\n")
   }, error = function(e) {
     cat("❌ Dataset 3 failed:", e$message, "\n\n")
-    times$hourly_data = NA
+    dataset3_end = Sys.time()
+    times$hourly_data = as.numeric(difftime(dataset3_end, dataset3_start, units = "mins"))
   })
 }
+
+# === POST-COLLECTION GAP ANALYSIS AND MONITORING ===
+cat("=== POST-COLLECTION ANALYSIS ===\n")
+
+# Run gap analysis
+cat("Running gap analysis...\n")
+tryCatch({
+  source("code/check_data_gaps.R")
+  cat("✅ Gap analysis completed.\n")
+}, error = function(e) {
+  cat("❌ Gap analysis failed:", e$message, "\n")
+})
+
+# Update data summary
+cat("Updating data summary...\n")
+tryCatch({
+  source("code/generate_data_summary.R")
+  cat("✅ Data summary updated.\n")
+}, error = function(e) {
+  cat("❌ Data summary failed:", e$message, "\n")
+})
+
+# Update README with current status
+cat("Updating README with latest data status...\n")
+tryCatch({
+  source("code/update_readme_with_summary.R")
+  cat("✅ README updated with current data status.\n")
+}, error = function(e) {
+  cat("❌ README update failed:", e$message, "\n")
+})
 
 # Final summary
 end_time = Sys.time()
