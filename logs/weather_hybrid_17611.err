@@ -15756,3 +15756,4073 @@ Waiting 15s for retry backoff ■■■■■■■■■■■■■■■■�
 Waiting 15s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
 Waiting 15s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   
 Waiting 15s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 2s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 2s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 8s for retry backoff ■■■■■■■■                        
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 19s for retry backoff ■■■■■                           
+Waiting 19s for retry backoff ■■■■■■■■■■                      
+Waiting 19s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 19s for retry backoff ■■■■■■■■■■■■■■■■■■■■            
+Waiting 19s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■       
+Waiting 19s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 19s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 60s for retry backoff ■■                              
+Waiting 60s for retry backoff ■■■■                            
+Waiting 60s for retry backoff ■■■■■                           
+Waiting 60s for retry backoff ■■■■■■■                         
+Waiting 60s for retry backoff ■■■■■■■■                        
+Waiting 60s for retry backoff ■■■■■■■■■■                      
+Waiting 60s for retry backoff ■■■■■■■■■■■                     
+Waiting 60s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 60s for retry backoff ■■■■■■■■■■■■■■                  
+Waiting 60s for retry backoff ■■■■■■■■■■■■■■■■                
+Waiting 60s for retry backoff ■■■■■■■■■■■■■■■■■               
+Waiting 60s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 60s for retry backoff ■■■■■■■■■■■■■■■■■■■■            
+Waiting 60s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■          
+Waiting 60s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 60s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■       
+Waiting 60s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■      
+Waiting 60s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■    
+Waiting 60s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   
+Waiting 60s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 60s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '25912' returned an error
+Return NULL for this query
+
+AEMET API call for '25913' returned an error
+Return NULL for this query
+
+AEMET API call for '53055' returned an error
+Return NULL for this query
+
+AEMET API call for '25250' returned an error
+Return NULL for this query
+
+AEMET API call for '26183' returned an error
+Return NULL for this query
+
+AEMET API call for '25254' returned an error
+Return NULL for this query
+
+AEMET API call for '25255' returned an error
+Return NULL for this query
+
+AEMET API call for '43002' returned an error
+Return NULL for this query
+
+AEMET API call for '25901' returned an error
+Return NULL for this query
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 2s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 2s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 3s for retry backoff ■■■■■■■■■■■■                    
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 18s for retry backoff ■■■                             
+Waiting 18s for retry backoff ■■■■■■■■                        
+Waiting 18s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 18s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 18s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■        
+Waiting 18s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   
+Waiting 18s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 58s for retry backoff ■■                              
+Waiting 58s for retry backoff ■■■                             
+Waiting 58s for retry backoff ■■■■■                           
+Waiting 58s for retry backoff ■■■■■■■                         
+Waiting 58s for retry backoff ■■■■■■■■                        
+Waiting 58s for retry backoff ■■■■■■■■■■                      
+Waiting 58s for retry backoff ■■■■■■■■■■■                     
+Waiting 58s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 58s for retry backoff ■■■■■■■■■■■■■■                  
+Waiting 58s for retry backoff ■■■■■■■■■■■■■■■■                
+Waiting 58s for retry backoff ■■■■■■■■■■■■■■■■■■              
+Waiting 58s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 58s for retry backoff ■■■■■■■■■■■■■■■■■■■■■           
+Waiting 58s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■          
+Waiting 58s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■        
+Waiting 58s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■       
+Waiting 58s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■     
+Waiting 58s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   
+Waiting 58s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 58s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '43028' returned an error
+Return NULL for this query
+
+AEMET API call for '43029' returned an error
+Return NULL for this query
+
+AEMET API call for '43030' returned an error
+Return NULL for this query
+
+AEMET API call for '43032' returned an error
+Return NULL for this query
+
+AEMET API call for '43033' returned an error
+Return NULL for this query
+
+AEMET API call for '43039' returned an error
+Return NULL for this query
+
+AEMET API call for '43040' returned an error
+Return NULL for this query
+
+AEMET API call for '43041' returned an error
+Return NULL for this query
+
+AEMET API call for '43042' returned an error
+Return NULL for this query
+
+AEMET API call for '43043' returned an error
+Return NULL for this query
+
+AEMET API call for '43044' returned an error
+Return NULL for this query
+
+AEMET API call for '43045' returned an error
+Return NULL for this query
+
+AEMET API call for '43046' returned an error
+Return NULL for this query
+
+AEMET API call for '43047' returned an error
+Return NULL for this query
+
+AEMET API call for '43048' returned an error
+Return NULL for this query
+
+AEMET API call for '43059' returned an error
+Return NULL for this query
+
+AEMET API call for '43060' returned an error
+Return NULL for this query
+
+AEMET API call for '43049' returned an error
+Return NULL for this query
+
+AEMET API call for '43050' returned an error
+Return NULL for this query
+
+AEMET API call for '43051' returned an error
+Return NULL for this query
+
+AEMET API call for '43052' returned an error
+Return NULL for this query
+
+AEMET API call for '43054' returned an error
+Return NULL for this query
+
+AEMET API call for '43055' returned an error
+Return NULL for this query
+
+AEMET API call for '43058' returned an error
+Return NULL for this query
+
+AEMET API call for '43061' returned an error
+Return NULL for this query
+
+AEMET API call for '43062' returned an error
+Return NULL for this query
+
+AEMET API call for '43063' returned an error
+Return NULL for this query
+
+AEMET API call for '43064' returned an error
+Return NULL for this query
+
+AEMET API call for '43065' returned an error
+Return NULL for this query
+
+AEMET API call for '43066' returned an error
+Return NULL for this query
+
+AEMET API call for '43070' returned an error
+Return NULL for this query
+
+AEMET API call for '43079' returned an error
+Return NULL for this query
+
+AEMET API call for '43071' returned an error
+Return NULL for this query
+
+AEMET API call for '43072' returned an error
+Return NULL for this query
+
+AEMET API call for '43073' returned an error
+Return NULL for this query
+
+AEMET API call for '43074' returned an error
+Return NULL for this query
+
+AEMET API call for '43075' returned an error
+Return NULL for this query
+
+AEMET API call for '43076' returned an error
+Return NULL for this query
+
+AEMET API call for '43080' returned an error
+Return NULL for this query
+
+AEMET API call for '43077' returned an error
+Return NULL for this query
+
+AEMET API call for '43078' returned an error
+Return NULL for this query
+
+AEMET API call for '43084' returned an error
+Return NULL for this query
+
+AEMET API call for '43089' returned an error
+Return NULL for this query
+
+AEMET API call for '43085' returned an error
+Return NULL for this query
+
+AEMET API call for '43086' returned an error
+Return NULL for this query
+
+AEMET API call for '43088' returned an error
+Return NULL for this query
+
+AEMET API call for '43090' returned an error
+Return NULL for this query
+
+AEMET API call for '43126' returned an error
+Return NULL for this query
+
+AEMET API call for '43091' returned an error
+Return NULL for this query
+
+AEMET API call for '43092' returned an error
+Return NULL for this query
+
+AEMET API call for '43093' returned an error
+Return NULL for this query
+
+AEMET API call for '43094' returned an error
+Return NULL for this query
+
+AEMET API call for '43098' returned an error
+Return NULL for this query
+
+AEMET API call for '43099' returned an error
+Return NULL for this query
+
+AEMET API call for '43100' returned an error
+Return NULL for this query
+
+AEMET API call for '43101' returned an error
+Return NULL for this query
+
+AEMET API call for '43102' returned an error
+Return NULL for this query
+
+AEMET API call for '43147' returned an error
+Return NULL for this query
+
+AEMET API call for '43148' returned an error
+Return NULL for this query
+
+AEMET API call for '43149' returned an error
+Return NULL for this query
+
+AEMET API call for '43150' returned an error
+Return NULL for this query
+
+AEMET API call for '43151' returned an error
+Return NULL for this query
+
+AEMET API call for '43103' returned an error
+Return NULL for this query
+
+AEMET API call for '43104' returned an error
+Return NULL for this query
+
+AEMET API call for '43106' returned an error
+Return NULL for this query
+
+AEMET API call for '43107' returned an error
+Return NULL for this query
+
+AEMET API call for '43111' returned an error
+Return NULL for this query
+
+AEMET API call for '43112' returned an error
+Return NULL for this query
+
+AEMET API call for '46035' returned an error
+Return NULL for this query
+
+AEMET API call for '43113' returned an error
+Return NULL for this query
+
+AEMET API call for '43114' returned an error
+Return NULL for this query
+
+AEMET API call for '43115' returned an error
+Return NULL for this query
+
+AEMET API call for '43116' returned an error
+Return NULL for this query
+
+AEMET API call for '43117' returned an error
+Return NULL for this query
+
+AEMET API call for '3004' returned an error
+Return NULL for this query
+
+AEMET API call for '43118' returned an error
+Return NULL for this query
+
+AEMET API call for '46036' returned an error
+Return NULL for this query
+
+AEMET API call for '43119' returned an error
+Return NULL for this query
+
+AEMET API call for '3010' returned an error
+Return NULL for this query
+
+AEMET API call for '3011' returned an error
+Return NULL for this query
+
+AEMET API call for '43120' returned an error
+Return NULL for this query
+
+AEMET API call for '43121' returned an error
+Return NULL for this query
+
+AEMET API call for '43122' returned an error
+Return NULL for this query
+
+AEMET API call for '43123' returned an error
+Return NULL for this query
+
+AEMET API call for '43124' returned an error
+Return NULL for this query
+
+AEMET API call for '43125' returned an error
+Return NULL for this query
+
+AEMET API call for '43127' returned an error
+Return NULL for this query
+
+AEMET API call for '43152' returned an error
+Return NULL for this query
+
+AEMET API call for '43128' returned an error
+Return NULL for this query
+
+AEMET API call for '43129' returned an error
+Return NULL for this query
+
+AEMET API call for '43130' returned an error
+Return NULL for this query
+
+AEMET API call for '43158' returned an error
+Return NULL for this query
+
+AEMET API call for '46037' returned an error
+Return NULL for this query
+
+AEMET API call for '43131' returned an error
+Return NULL for this query
+
+AEMET API call for '43132' returned an error
+Return NULL for this query
+
+AEMET API call for '43133' returned an error
+Return NULL for this query
+
+AEMET API call for '43134' returned an error
+Return NULL for this query
+
+AEMET API call for '43135' returned an error
+Return NULL for this query
+
+AEMET API call for '43136' returned an error
+Return NULL for this query
+
+AEMET API call for '43137' returned an error
+Return NULL for this query
+
+AEMET API call for '43164' returned an error
+Return NULL for this query
+
+AEMET API call for '43138' returned an error
+Return NULL for this query
+
+AEMET API call for '43170' returned an error
+Return NULL for this query
+
+AEMET API call for '43171' returned an error
+Return NULL for this query
+
+AEMET API call for '43139' returned an error
+Return NULL for this query
+
+AEMET API call for '43140' returned an error
+Return NULL for this query
+
+AEMET API call for '43141' returned an error
+Return NULL for this query
+
+AEMET API call for '43142' returned an error
+Return NULL for this query
+
+AEMET API call for '43172' returned an error
+Return NULL for this query
+
+AEMET API call for '43143' returned an error
+Return NULL for this query
+
+AEMET API call for '43144' returned an error
+Return NULL for this query
+
+AEMET API call for '43173' returned an error
+Return NULL for this query
+
+AEMET API call for '43145' returned an error
+Return NULL for this query
+
+AEMET API call for '43146' returned an error
+Return NULL for this query
+
+AEMET API call for '43153' returned an error
+Return NULL for this query
+
+AEMET API call for '3066' returned an error
+Return NULL for this query
+
+AEMET API call for '43154' returned an error
+Return NULL for this query
+
+AEMET API call for '43155' returned an error
+Return NULL for this query
+
+AEMET API call for '3012' returned an error
+Return NULL for this query
+
+AEMET API call for '43156' returned an error
+Return NULL for this query
+
+AEMET API call for '43157' returned an error
+Return NULL for this query
+
+AEMET API call for '43159' returned an error
+Return NULL for this query
+
+AEMET API call for '43160' returned an error
+Return NULL for this query
+
+AEMET API call for '43903' returned an error
+Return NULL for this query
+
+AEMET API call for '43161' returned an error
+Return NULL for this query
+
+AEMET API call for '43162' returned an error
+Return NULL for this query
+
+AEMET API call for '43163' returned an error
+Return NULL for this query
+
+AEMET API call for '3001' returned an error
+Return NULL for this query
+
+AEMET API call for '43165' returned an error
+Return NULL for this query
+
+AEMET API call for '43166' returned an error
+Return NULL for this query
+
+AEMET API call for '3067' returned an error
+Return NULL for this query
+
+AEMET API call for '43167' returned an error
+Return NULL for this query
+
+AEMET API call for '43168' returned an error
+Return NULL for this query
+
+AEMET API call for '43169' returned an error
+Return NULL for this query
+
+AEMET API call for '3013' returned an error
+Return NULL for this query
+
+AEMET API call for '3014' returned an error
+Return NULL for this query
+
+AEMET API call for '43174' returned an error
+Return NULL for this query
+
+AEMET API call for '43175' returned an error
+Return NULL for this query
+
+AEMET API call for '43176' returned an error
+Return NULL for this query
+
+AEMET API call for '43177' returned an error
+Return NULL for this query
+
+AEMET API call for '43178' returned an error
+Return NULL for this query
+
+AEMET API call for '43901' returned an error
+Return NULL for this query
+
+AEMET API call for '43902' returned an error
+Return NULL for this query
+
+AEMET API call for '3017' returned an error
+Return NULL for this query
+
+AEMET API call for '3018' returned an error
+Return NULL for this query
+
+AEMET API call for '43904' returned an error
+Return NULL for this query
+
+AEMET API call for '43905' returned an error
+Return NULL for this query
+
+AEMET API call for '43906' returned an error
+Return NULL for this query
+
+AEMET API call for '43907' returned an error
+Return NULL for this query
+
+AEMET API call for '3002' returned an error
+Return NULL for this query
+
+AEMET API call for '3003' returned an error
+Return NULL for this query
+
+AEMET API call for '3005' returned an error
+Return NULL for this query
+
+AEMET API call for '3019' returned an error
+Return NULL for this query
+
+AEMET API call for '3009' returned an error
+Return NULL for this query
+
+AEMET API call for '3015' returned an error
+Return NULL for this query
+
+AEMET API call for '3016' returned an error
+Return NULL for this query
+
+AEMET API call for '3021' returned an error
+Return NULL for this query
+
+AEMET API call for '3022' returned an error
+Return NULL for this query
+
+AEMET API call for '3023' returned an error
+Return NULL for this query
+
+AEMET API call for '3024' returned an error
+Return NULL for this query
+
+AEMET API call for '3025' returned an error
+Return NULL for this query
+
+AEMET API call for '3042' returned an error
+Return NULL for this query
+
+AEMET API call for '3068' returned an error
+Return NULL for this query
+
+AEMET API call for '3043' returned an error
+Return NULL for this query
+
+AEMET API call for '3044' returned an error
+Return NULL for this query
+
+AEMET API call for '3045' returned an error
+Return NULL for this query
+
+AEMET API call for '3046' returned an error
+Return NULL for this query
+
+AEMET API call for '3047' returned an error
+Return NULL for this query
+
+AEMET API call for '46039' returned an error
+Return NULL for this query
+
+AEMET API call for '3053' returned an error
+Return NULL for this query
+
+AEMET API call for '3135' returned an error
+Return NULL for this query
+
+AEMET API call for '3056' returned an error
+Return NULL for this query
+
+AEMET API call for '3057' returned an error
+Return NULL for this query
+
+AEMET API call for '3058' returned an error
+Return NULL for this query
+
+AEMET API call for '3059' returned an error
+Return NULL for this query
+
+AEMET API call for '3060' returned an error
+Return NULL for this query
+
+AEMET API call for '3061' returned an error
+Return NULL for this query
+
+AEMET API call for '3075' returned an error
+Return NULL for this query
+
+AEMET API call for '3076' returned an error
+Return NULL for this query
+
+AEMET API call for '3138' returned an error
+Return NULL for this query
+
+AEMET API call for '3139' returned an error
+Return NULL for this query
+
+AEMET API call for '3081' returned an error
+Return NULL for this query
+
+AEMET API call for '3082' returned an error
+Return NULL for this query
+
+AEMET API call for '3083' returned an error
+Return NULL for this query
+
+AEMET API call for '3084' returned an error
+Return NULL for this query
+
+AEMET API call for '3094' returned an error
+Return NULL for this query
+
+AEMET API call for '3095' returned an error
+Return NULL for this query
+
+AEMET API call for '3098' returned an error
+Return NULL for this query
+
+AEMET API call for '3099' returned an error
+Return NULL for this query
+
+AEMET API call for '3100' returned an error
+Return NULL for this query
+
+AEMET API call for '3102' returned an error
+Return NULL for this query
+
+AEMET API call for '3106' returned an error
+Return NULL for this query
+
+AEMET API call for '3103' returned an error
+Return NULL for this query
+
+AEMET API call for '3104' returned an error
+Return NULL for this query
+
+AEMET API call for '3110' returned an error
+Return NULL for this query
+
+AEMET API call for '3903' returned an error
+Return NULL for this query
+
+AEMET API call for '3105' returned an error
+Return NULL for this query
+
+AEMET API call for '3904' returned an error
+Return NULL for this query
+
+AEMET API call for '3107' returned an error
+Return NULL for this query
+
+AEMET API call for '3109' returned an error
+Return NULL for this query
+
+AEMET API call for '3112' returned an error
+Return NULL for this query
+
+AEMET API call for '3113' returned an error
+Return NULL for this query
+
+AEMET API call for '3122' returned an error
+Return NULL for this query
+
+AEMET API call for '3123' returned an error
+Return NULL for this query
+
+AEMET API call for '3124' returned an error
+Return NULL for this query
+
+AEMET API call for '3125' returned an error
+Return NULL for this query
+
+AEMET API call for '3127' returned an error
+Return NULL for this query
+
+AEMET API call for '3128' returned an error
+Return NULL for this query
+
+AEMET API call for '3131' returned an error
+Return NULL for this query
+
+AEMET API call for '3129' returned an error
+Return NULL for this query
+
+AEMET API call for '3130' returned an error
+Return NULL for this query
+
+AEMET API call for '3132' returned an error
+Return NULL for this query
+
+AEMET API call for '3133' returned an error
+Return NULL for this query
+
+AEMET API call for '3134' returned an error
+Return NULL for this query
+
+AEMET API call for '3136' returned an error
+Return NULL for this query
+
+AEMET API call for '3137' returned an error
+Return NULL for this query
+
+AEMET API call for '3140' returned an error
+Return NULL for this query
+
+AEMET API call for '3901' returned an error
+Return NULL for this query
+
+AEMET API call for '3902' returned an error
+Return NULL for this query
+
+AEMET API call for '12001' returned an error
+Return NULL for this query
+
+AEMET API call for '12002' returned an error
+Return NULL for this query
+
+AEMET API call for '12003' returned an error
+Return NULL for this query
+
+AEMET API call for '12004' returned an error
+Return NULL for this query
+
+AEMET API call for '12005' returned an error
+Return NULL for this query
+
+AEMET API call for '12034' returned an error
+Return NULL for this query
+
+AEMET API call for '12022' returned an error
+Return NULL for this query
+
+AEMET API call for '12024' returned an error
+Return NULL for this query
+
+AEMET API call for '12025' returned an error
+Return NULL for this query
+
+AEMET API call for '12026' returned an error
+Return NULL for this query
+
+AEMET API call for '12027' returned an error
+Return NULL for this query
+
+AEMET API call for '12028' returned an error
+Return NULL for this query
+
+AEMET API call for '12029' returned an error
+Return NULL for this query
+
+AEMET API call for '12031' returned an error
+Return NULL for this query
+
+AEMET API call for '12032' returned an error
+Return NULL for this query
+
+AEMET API call for '12033' returned an error
+Return NULL for this query
+
+AEMET API call for '12055' returned an error
+Return NULL for this query
+
+AEMET API call for '12038' returned an error
+Return NULL for this query
+
+AEMET API call for '12041' returned an error
+Return NULL for this query
+
+AEMET API call for '12042' returned an error
+Return NULL for this query
+
+AEMET API call for '12043' returned an error
+Return NULL for this query
+
+AEMET API call for '12056' returned an error
+Return NULL for this query
+
+AEMET API call for '12045' returned an error
+Return NULL for this query
+
+AEMET API call for '12046' returned an error
+Return NULL for this query
+
+AEMET API call for '12048' returned an error
+Return NULL for this query
+
+AEMET API call for '12057' returned an error
+Return NULL for this query
+
+AEMET API call for '12049' returned an error
+Return NULL for this query
+
+AEMET API call for '12058' returned an error
+Return NULL for this query
+
+AEMET API call for '53083' returned an error
+Return NULL for this query
+
+AEMET API call for '12050' returned an error
+Return NULL for this query
+
+AEMET API call for '12051' returned an error
+Return NULL for this query
+
+AEMET API call for '12131' returned an error
+Return NULL for this query
+
+AEMET API call for '12052' returned an error
+Return NULL for this query
+
+AEMET API call for '12053' returned an error
+Return NULL for this query
+
+AEMET API call for '12137' returned an error
+Return NULL for this query
+
+AEMET API call for '12061' returned an error
+Return NULL for this query
+
+AEMET API call for '12073' returned an error
+Return NULL for this query
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 3s for retry backoff ■■■■■■■■■■■■                    
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■      
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■■■■              
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 3s for retry backoff ■■■■■■■■■■■                     
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 32s for retry backoff ■■                              
+Waiting 32s for retry backoff ■■■■■                           
+Waiting 32s for retry backoff ■■■■■■■■                        
+Waiting 32s for retry backoff ■■■■■■■■■■■                     
+Waiting 32s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 32s for retry backoff ■■■■■■■■■■■■■■■■                
+Waiting 32s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 32s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■          
+Waiting 32s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■       
+Waiting 32s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■    
+Waiting 32s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 32s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '12085' returned an error
+Return NULL for this query
+
+AEMET API call for '12087' returned an error
+Return NULL for this query
+
+AEMET API call for '12093' returned an error
+Return NULL for this query
+
+AEMET API call for '12096' returned an error
+Return NULL for this query
+
+AEMET API call for '12097' returned an error
+Return NULL for this query
+
+AEMET API call for '12100' returned an error
+Return NULL for this query
+
+AEMET API call for '12098' returned an error
+Return NULL for this query
+
+AEMET API call for '12099' returned an error
+Return NULL for this query
+
+AEMET API call for '12105' returned an error
+Return NULL for this query
+
+AEMET API call for '12114' returned an error
+Return NULL for this query
+
+AEMET API call for '12111' returned an error
+Return NULL for this query
+
+AEMET API call for '12112' returned an error
+Return NULL for this query
+
+AEMET API call for '12113' returned an error
+Return NULL for this query
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 6s for retry backoff ■■■■■■                          
+Waiting 6s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■          
+Waiting 6s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■    
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 20s for retry backoff ■■■■                            
+Waiting 20s for retry backoff ■■■■■■■■■                       
+Waiting 20s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 20s for retry backoff ■■■■■■■■■■■■■■■■■■              
+Waiting 20s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 20s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■     
+Waiting 20s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '46022' returned an error
+Return NULL for this query
+
+AEMET API call for '46023' returned an error
+Return NULL for this query
+
+AEMET API call for '46053' returned an error
+Return NULL for this query
+
+AEMET API call for '46026' returned an error
+Return NULL for this query
+
+AEMET API call for '46027' returned an error
+Return NULL for this query
+
+AEMET API call for '46028' returned an error
+Return NULL for this query
+
+AEMET API call for '46029' returned an error
+Return NULL for this query
+
+AEMET API call for '46030' returned an error
+Return NULL for this query
+
+AEMET API call for '46031' returned an error
+Return NULL for this query
+
+AEMET API call for '46054' returned an error
+Return NULL for this query
+
+AEMET API call for '46038' returned an error
+Return NULL for this query
+
+AEMET API call for '46055' returned an error
+Return NULL for this query
+
+AEMET API call for '46042' returned an error
+Return NULL for this query
+
+AEMET API call for '46043' returned an error
+Return NULL for this query
+
+AEMET API call for '46044' returned an error
+Return NULL for this query
+
+AEMET API call for '46064' returned an error
+Return NULL for this query
+
+AEMET API call for '46045' returned an error
+Return NULL for this query
+
+AEMET API call for '46046' returned an error
+Return NULL for this query
+
+AEMET API call for '46047' returned an error
+Return NULL for this query
+
+AEMET API call for '46048' returned an error
+Return NULL for this query
+
+AEMET API call for '46065' returned an error
+Return NULL for this query
+
+AEMET API call for '46066' returned an error
+Return NULL for this query
+
+AEMET API call for '46051' returned an error
+Return NULL for this query
+
+AEMET API call for '46052' returned an error
+Return NULL for this query
+
+AEMET API call for '26012' returned an error
+Return NULL for this query
+
+AEMET API call for '46062' returned an error
+Return NULL for this query
+
+AEMET API call for '46063' returned an error
+Return NULL for this query
+
+AEMET API call for '26013' returned an error
+Return NULL for this query
+
+AEMET API call for '46067' returned an error
+Return NULL for this query
+
+AEMET API call for '46068' returned an error
+Return NULL for this query
+
+AEMET API call for '46069' returned an error
+Return NULL for this query
+
+AEMET API call for '26015' returned an error
+Return NULL for this query
+
+AEMET API call for '46071' returned an error
+Return NULL for this query
+
+AEMET API call for '46072' returned an error
+Return NULL for this query
+
+AEMET API call for '46080' returned an error
+Return NULL for this query
+
+AEMET API call for '46082' returned an error
+Return NULL for this query
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 5s for retry backoff ■■■■■■■                         
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■                  
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 12s for retry backoff ■■■                             
+Waiting 12s for retry backoff ■■■■■■■■■■                      
+Waiting 12s for retry backoff ■■■■■■■■■■■■■■■■■■              
+Waiting 12s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■      
+Waiting 12s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 5s for retry backoff ■■■■■■■                         
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 46s for retry backoff ■■                              
+Waiting 46s for retry backoff ■■■■                            
+Waiting 46s for retry backoff ■■■■■■                          
+Waiting 46s for retry backoff ■■■■■■■■                        
+Waiting 46s for retry backoff ■■■■■■■■■                       
+Waiting 46s for retry backoff ■■■■■■■■■■■                     
+Waiting 46s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 46s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 46s for retry backoff ■■■■■■■■■■■■■■■■■               
+Waiting 46s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 46s for retry backoff ■■■■■■■■■■■■■■■■■■■■■           
+Waiting 46s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 46s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■       
+Waiting 46s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■     
+Waiting 46s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   
+Waiting 46s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 7s for retry backoff ■■■■■                           
+Waiting 7s for retry backoff ■■■■■■■■■                       
+Waiting 7s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 7s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 9s for retry backoff ■■■■■                           
+Waiting 9s for retry backoff ■■■■■■■■■■■■■■■■                
+Waiting 9s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■     
+Waiting 9s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+HTTP 500: Hit API Limits. Retrying...
+
+AEMET API call for '46183' returned an error
+Return NULL for this query
+
+AEMET API call for '46187' returned an error
+Return NULL for this query
+
+AEMET API call for '46184' returned an error
+Return NULL for this query
+
+AEMET API call for '46188' returned an error
+Return NULL for this query
+
+AEMET API call for '46191' returned an error
+Return NULL for this query
+
+AEMET API call for '46185' returned an error
+Return NULL for this query
+
+AEMET API call for '46186' returned an error
+Return NULL for this query
+
+AEMET API call for '46192' returned an error
+Return NULL for this query
+
+AEMET API call for '46190' returned an error
+Return NULL for this query
+
+AEMET API call for '46194' returned an error
+Return NULL for this query
+
+AEMET API call for '46195' returned an error
+Return NULL for this query
+HTTP 500: Hit API Limits. Retrying...
+Waiting 7s for retry backoff ■■■■■                           
+Waiting 7s for retry backoff ■■■■■■■■■■■■■■■■■■              
+Waiting 7s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 16s for retry backoff ■■■                             
+Waiting 16s for retry backoff ■■■■■■■                         
+Waiting 16s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 16s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 16s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■       
+Waiting 16s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 16s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '46234' returned an error
+Return NULL for this query
+
+AEMET API call for '46235' returned an error
+Return NULL for this query
+
+AEMET API call for '46236' returned an error
+Return NULL for this query
+
+AEMET API call for '46238' returned an error
+Return NULL for this query
+
+AEMET API call for '46239' returned an error
+Return NULL for this query
+
+AEMET API call for '26170' returned an error
+Return NULL for this query
+
+AEMET API call for '46243' returned an error
+Return NULL for this query
+HTTP 500: Hit API Limits. Retrying...
+
+AEMET API call for '46902' returned an error
+Return NULL for this query
+
+AEMET API call for '6005' returned an error
+Return NULL for this query
+
+AEMET API call for '6006' returned an error
+Return NULL for this query
+
+AEMET API call for '6007' returned an error
+Return NULL for this query
+
+AEMET API call for '46903' returned an error
+Return NULL for this query
+
+AEMET API call for '46904' returned an error
+Return NULL for this query
+
+AEMET API call for '6001' returned an error
+Return NULL for this query
+
+AEMET API call for '6027' returned an error
+Return NULL for this query
+
+AEMET API call for '6028' returned an error
+Return NULL for this query
+
+AEMET API call for '6002' returned an error
+Return NULL for this query
+
+AEMET API call for '6003' returned an error
+Return NULL for this query
+
+AEMET API call for '6004' returned an error
+Return NULL for this query
+
+AEMET API call for '6010' returned an error
+Return NULL for this query
+
+AEMET API call for '6013' returned an error
+Return NULL for this query
+
+AEMET API call for '6014' returned an error
+Return NULL for this query
+
+AEMET API call for '6015' returned an error
+Return NULL for this query
+
+AEMET API call for '6016' returned an error
+Return NULL for this query
+
+AEMET API call for '6011' returned an error
+Return NULL for this query
+
+AEMET API call for '6012' returned an error
+Return NULL for this query
+
+AEMET API call for '6017' returned an error
+Return NULL for this query
+
+AEMET API call for '6025' returned an error
+Return NULL for this query
+
+AEMET API call for '6026' returned an error
+Return NULL for this query
+
+AEMET API call for '6018' returned an error
+Return NULL for this query
+
+AEMET API call for '6019' returned an error
+Return NULL for this query
+HTTP 500: Hit API Limits. Retrying...
+Waiting 5s for retry backoff ■■■■■■                          
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■        
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+HTTP 500: Hit API Limits. Retrying...
+Waiting 4s for retry backoff ■■■■■■■■■■                      
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■       
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 6s for retry backoff ■■■■■■■■■■■■■■                  
+Waiting 6s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '6048' returned an error
+Return NULL for this query
+
+AEMET API call for '6147' returned an error
+Return NULL for this query
+
+AEMET API call for '6049' returned an error
+Return NULL for this query
+
+AEMET API call for '6050' returned an error
+Return NULL for this query
+
+AEMET API call for '6051' returned an error
+Return NULL for this query
+
+AEMET API call for '32036' returned an error
+Return NULL for this query
+
+AEMET API call for '6052' returned an error
+Return NULL for this query
+
+AEMET API call for '6053' returned an error
+Return NULL for this query
+
+AEMET API call for '6054' returned an error
+Return NULL for this query
+
+AEMET API call for '32037' returned an error
+Return NULL for this query
+
+AEMET API call for '6055' returned an error
+Return NULL for this query
+
+AEMET API call for '6056' returned an error
+Return NULL for this query
+
+AEMET API call for '6058' returned an error
+Return NULL for this query
+
+AEMET API call for '6057' returned an error
+Return NULL for this query
+
+AEMET API call for '31022' returned an error
+Return NULL for this query
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 5s for retry backoff ■■■■■■■                         
+Waiting 5s for retry backoff ■■■■■■■■                        
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■    
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 13s for retry backoff ■■■■■■■                         
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■                  
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■           
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 20s for retry backoff ■■■■                            
+Waiting 20s for retry backoff ■■■■■■■■■                       
+Waiting 20s for retry backoff ■■■■■■■■■■■■■■                  
+Waiting 20s for retry backoff ■■■■■■■■■■■■■■■■■■              
+Waiting 20s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 20s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■    
+Waiting 20s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 53s for retry backoff ■■                              
+Waiting 53s for retry backoff ■■■                             
+Waiting 53s for retry backoff ■■■■■                           
+Waiting 53s for retry backoff ■■■■■■■                         
+Waiting 53s for retry backoff ■■■■■■■■                        
+Waiting 53s for retry backoff ■■■■■■■■■■                      
+Waiting 53s for retry backoff ■■■■■■■■■■■■                    
+Waiting 53s for retry backoff ■■■■■■■■■■■■■■                  
+Waiting 53s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 53s for retry backoff ■■■■■■■■■■■■■■■■■               
+Waiting 53s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 53s for retry backoff ■■■■■■■■■■■■■■■■■■■■            
+Waiting 53s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■          
+Waiting 53s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■        
+Waiting 53s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■      
+Waiting 53s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■     
+Waiting 53s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   
+Waiting 53s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 53s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '6120' returned an error
+Return NULL for this query
+
+AEMET API call for '32038' returned an error
+Return NULL for this query
+
+AEMET API call for '32039' returned an error
+Return NULL for this query
+
+AEMET API call for '6121' returned an error
+Return NULL for this query
+
+AEMET API call for '6148' returned an error
+Return NULL for this query
+
+AEMET API call for '6122' returned an error
+Return NULL for this query
+
+AEMET API call for '6123' returned an error
+Return NULL for this query
+
+AEMET API call for '10001' returned an error
+Return NULL for this query
+
+AEMET API call for '6124' returned an error
+Return NULL for this query
+
+AEMET API call for '6125' returned an error
+Return NULL for this query
+
+AEMET API call for '20024' returned an error
+Return NULL for this query
+HTTP 500: Hit API Limits. Retrying...
+Waiting 6s for retry backoff ■■■■■■                          
+Waiting 6s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 6s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 5s for retry backoff ■■■■■■■■■■                      
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 24s for retry backoff ■■■■                            
+Waiting 24s for retry backoff ■■■■■■■■                        
+Waiting 24s for retry backoff ■■■■■■■■■■■■                    
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■■                
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■     
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+HTTP 500: Hit API Limits. Retrying...
+Waiting 4s for retry backoff ■■■■■■■■■                       
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+
+AEMET API call for '10025' returned an error
+Return NULL for this query
+
+AEMET API call for '6161' returned an error
+Return NULL for this query
+
+AEMET API call for '10028' returned an error
+Return NULL for this query
+
+AEMET API call for '6162' returned an error
+Return NULL for this query
+
+AEMET API call for '10029' returned an error
+Return NULL for this query
+
+AEMET API call for '10030' returned an error
+Return NULL for this query
+
+AEMET API call for '31060' returned an error
+Return NULL for this query
+
+AEMET API call for '6901' returned an error
+Return NULL for this query
+
+AEMET API call for '6902' returned an error
+Return NULL for this query
+
+AEMET API call for '10003' returned an error
+Return NULL for this query
+
+AEMET API call for '10004' returned an error
+Return NULL for this query
+
+AEMET API call for '6903' returned an error
+Return NULL for this query
+
+AEMET API call for '10002' returned an error
+Return NULL for this query
+
+AEMET API call for '10005' returned an error
+Return NULL for this query
+
+AEMET API call for '10006' returned an error
+Return NULL for this query
+
+AEMET API call for '10022' returned an error
+Return NULL for this query
+
+AEMET API call for '10023' returned an error
+Return NULL for this query
+
+AEMET API call for '10024' returned an error
+Return NULL for this query
+
+AEMET API call for '20026' returned an error
+Return NULL for this query
+
+AEMET API call for '10026' returned an error
+Return NULL for this query
+
+AEMET API call for '10027' returned an error
+Return NULL for this query
+
+AEMET API call for '10034' returned an error
+Return NULL for this query
+
+AEMET API call for '10043' returned an error
+Return NULL for this query
+
+AEMET API call for '10035' returned an error
+Return NULL for this query
+
+AEMET API call for '10036' returned an error
+Return NULL for this query
+
+AEMET API call for '10037' returned an error
+Return NULL for this query
+
+AEMET API call for '10038' returned an error
+Return NULL for this query
+
+AEMET API call for '10039' returned an error
+Return NULL for this query
+
+AEMET API call for '10047' returned an error
+Return NULL for this query
+
+AEMET API call for '10040' returned an error
+Return NULL for this query
+
+AEMET API call for '10041' returned an error
+Return NULL for this query
+
+AEMET API call for '10048' returned an error
+Return NULL for this query
+
+AEMET API call for '10049' returned an error
+Return NULL for this query
+
+AEMET API call for '10042' returned an error
+Return NULL for this query
+
+AEMET API call for '10051' returned an error
+Return NULL for this query
+
+AEMET API call for '10044' returned an error
+Return NULL for this query
+
+AEMET API call for '10045' returned an error
+Return NULL for this query
+
+AEMET API call for '10046' returned an error
+Return NULL for this query
+
+AEMET API call for '10050' returned an error
+Return NULL for this query
+
+AEMET API call for '10053' returned an error
+Return NULL for this query
+
+AEMET API call for '10063' returned an error
+Return NULL for this query
+
+AEMET API call for '10064' returned an error
+Return NULL for this query
+
+AEMET API call for '10054' returned an error
+Return NULL for this query
+
+AEMET API call for '10055' returned an error
+Return NULL for this query
+
+AEMET API call for '10056' returned an error
+Return NULL for this query
+
+AEMET API call for '10057' returned an error
+Return NULL for this query
+
+AEMET API call for '10058' returned an error
+Return NULL for this query
+
+AEMET API call for '10059' returned an error
+Return NULL for this query
+
+AEMET API call for '10060' returned an error
+Return NULL for this query
+
+AEMET API call for '10137' returned an error
+Return NULL for this query
+
+AEMET API call for '10061' returned an error
+Return NULL for this query
+
+AEMET API call for '10062' returned an error
+Return NULL for this query
+
+AEMET API call for '10065' returned an error
+Return NULL for this query
+
+AEMET API call for '10071' returned an error
+Return NULL for this query
+
+AEMET API call for '10066' returned an error
+Return NULL for this query
+
+AEMET API call for '10067' returned an error
+Return NULL for this query
+
+AEMET API call for '10068' returned an error
+Return NULL for this query
+
+AEMET API call for '10069' returned an error
+Return NULL for this query
+
+AEMET API call for '10070' returned an error
+Return NULL for this query
+
+AEMET API call for '10072' returned an error
+Return NULL for this query
+
+AEMET API call for '10083' returned an error
+Return NULL for this query
+
+AEMET API call for '10073' returned an error
+Return NULL for this query
+
+AEMET API call for '10075' returned an error
+Return NULL for this query
+
+AEMET API call for '10076' returned an error
+Return NULL for this query
+
+AEMET API call for '10077' returned an error
+Return NULL for this query
+
+AEMET API call for '10078' returned an error
+Return NULL for this query
+
+AEMET API call for '10079' returned an error
+Return NULL for this query
+
+AEMET API call for '10080' returned an error
+Return NULL for this query
+
+AEMET API call for '10081' returned an error
+Return NULL for this query
+
+AEMET API call for '10082' returned an error
+Return NULL for this query
+
+AEMET API call for '10084' returned an error
+Return NULL for this query
+
+AEMET API call for '10085' returned an error
+Return NULL for this query
+
+AEMET API call for '10087' returned an error
+Return NULL for this query
+
+AEMET API call for '10091' returned an error
+Return NULL for this query
+
+AEMET API call for '10088' returned an error
+Return NULL for this query
+
+AEMET API call for '10099' returned an error
+Return NULL for this query
+
+AEMET API call for '10089' returned an error
+Return NULL for this query
+
+AEMET API call for '10090' returned an error
+Return NULL for this query
+
+AEMET API call for '10100' returned an error
+Return NULL for this query
+
+AEMET API call for '10092' returned an error
+Return NULL for this query
+
+AEMET API call for '31101' returned an error
+Return NULL for this query
+
+AEMET API call for '10093' returned an error
+Return NULL for this query
+
+AEMET API call for '10094' returned an error
+Return NULL for this query
+
+AEMET API call for '10096' returned an error
+Return NULL for this query
+
+AEMET API call for '10095' returned an error
+Return NULL for this query
+
+AEMET API call for '10097' returned an error
+Return NULL for this query
+
+AEMET API call for '10101' returned an error
+Return NULL for this query
+
+AEMET API call for '10098' returned an error
+Return NULL for this query
+
+AEMET API call for '10106' returned an error
+Return NULL for this query
+
+AEMET API call for '10102' returned an error
+Return NULL for this query
+
+AEMET API call for '10103' returned an error
+Return NULL for this query
+
+AEMET API call for '31106' returned an error
+Return NULL for this query
+
+AEMET API call for '10104' returned an error
+Return NULL for this query
+
+AEMET API call for '31107' returned an error
+Return NULL for this query
+
+AEMET API call for '10105' returned an error
+Return NULL for this query
+
+AEMET API call for '10107' returned an error
+Return NULL for this query
+
+AEMET API call for '10188' returned an error
+Return NULL for this query
+
+AEMET API call for '10108' returned an error
+Return NULL for this query
+
+AEMET API call for '10109' returned an error
+Return NULL for this query
+
+AEMET API call for '10110' returned an error
+Return NULL for this query
+
+AEMET API call for '10114' returned an error
+Return NULL for this query
+
+AEMET API call for '10111' returned an error
+Return NULL for this query
+
+AEMET API call for '10122' returned an error
+Return NULL for this query
+
+AEMET API call for '10112' returned an error
+Return NULL for this query
+
+AEMET API call for '10113' returned an error
+Return NULL for this query
+
+AEMET API call for '10115' returned an error
+Return NULL for this query
+
+AEMET API call for '10116' returned an error
+Return NULL for this query
+
+AEMET API call for '10117' returned an error
+Return NULL for this query
+
+AEMET API call for '10118' returned an error
+Return NULL for this query
+
+AEMET API call for '10119' returned an error
+Return NULL for this query
+
+AEMET API call for '10120' returned an error
+Return NULL for this query
+
+AEMET API call for '10121' returned an error
+Return NULL for this query
+
+AEMET API call for '10123' returned an error
+Return NULL for this query
+
+AEMET API call for '10191' returned an error
+Return NULL for this query
+
+AEMET API call for '10124' returned an error
+Return NULL for this query
+
+AEMET API call for '10125' returned an error
+Return NULL for this query
+
+AEMET API call for '10126' returned an error
+Return NULL for this query
+
+AEMET API call for '10127' returned an error
+Return NULL for this query
+
+AEMET API call for '10128' returned an error
+Return NULL for this query
+
+AEMET API call for '10203' returned an error
+Return NULL for this query
+
+AEMET API call for '10130' returned an error
+Return NULL for this query
+
+AEMET API call for '10131' returned an error
+Return NULL for this query
+
+AEMET API call for '10142' returned an error
+Return NULL for this query
+
+AEMET API call for '10132' returned an error
+Return NULL for this query
+
+AEMET API call for '10144' returned an error
+Return NULL for this query
+
+AEMET API call for '10133' returned an error
+Return NULL for this query
+
+AEMET API call for '10145' returned an error
+Return NULL for this query
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 2s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 2s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■           
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 8s for retry backoff ■■■■■■■■                        
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■            
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 13s for retry backoff ■■■                             
+Waiting 13s for retry backoff ■■■■■■■■                        
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■                
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+HTTP 500: Hit API Limits. Retrying...
+Waiting 5s for retry backoff ■■■■■■■                         
+Waiting 5s for retry backoff ■■■■■■■■■■■                     
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 10s for retry backoff ■■■■                            
+Waiting 10s for retry backoff ■■■■■■■■■■                      
+Waiting 10s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 10s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   
+Waiting 10s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 24s for retry backoff ■■■■                            
+Waiting 24s for retry backoff ■■■■■■■                         
+Waiting 24s for retry backoff ■■■■■■■■■■■                     
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■     
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '10180' returned an error
+Return NULL for this query
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 2s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 2s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■      
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 7s for retry backoff ■■■■■■■■■■                      
+Waiting 7s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 7s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '10212' returned an error
+Return NULL for this query
+
+AEMET API call for '10213' returned an error
+Return NULL for this query
+
+AEMET API call for '10214' returned an error
+Return NULL for this query
+
+AEMET API call for '10215' returned an error
+Return NULL for this query
+
+AEMET API call for '10218' returned an error
+Return NULL for this query
+HTTP 500: Hit API Limits. Retrying...
+Waiting 4s for retry backoff ■■■■■■■■                        
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+HTTP 500: Hit API Limits. Retrying...
+Waiting 5s for retry backoff ■■■■■■■                         
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 13s for retry backoff ■■■                             
+Waiting 13s for retry backoff ■■■■■■■■■                       
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■                
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 25s for retry backoff ■■■■                            
+Waiting 25s for retry backoff ■■■■■■■■                        
+Waiting 25s for retry backoff ■■■■■■■■■■■                     
+Waiting 25s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 25s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 25s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 25s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■      
+Waiting 25s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 25s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+HTTP 500: Hit API Limits. Retrying...
+Waiting 4s for retry backoff ■■■■■■■■                        
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■       
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 6s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 6s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 14s for retry backoff ■■■                             
+Waiting 14s for retry backoff ■■■■■■■                         
+Waiting 14s for retry backoff ■■■■■■■■■■■■■■                  
+Waiting 14s for retry backoff ■■■■■■■■■■■■■■■■■■■■■           
+Waiting 14s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■     
+Waiting 14s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 10s for retry backoff ■■■■■                           
+Waiting 10s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 10s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■        
+Waiting 10s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 57s for retry backoff ■                               
+Waiting 57s for retry backoff ■■■                             
+Waiting 57s for retry backoff ■■■■■                           
+Waiting 57s for retry backoff ■■■■■■                          
+Waiting 57s for retry backoff ■■■■■■■■                        
+Waiting 57s for retry backoff ■■■■■■■■■                       
+Waiting 57s for retry backoff ■■■■■■■■■■■                     
+Waiting 57s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 57s for retry backoff ■■■■■■■■■■■■■■                  
+Waiting 57s for retry backoff ■■■■■■■■■■■■■■■■                
+Waiting 57s for retry backoff ■■■■■■■■■■■■■■■■■               
+Waiting 57s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 57s for retry backoff ■■■■■■■■■■■■■■■■■■■■■           
+Waiting 57s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■          
+Waiting 57s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■        
+Waiting 57s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■       
+Waiting 57s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■     
+Waiting 57s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   
+Waiting 57s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 57s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '15051' returned an error
+Return NULL for this query
+
+AEMET API call for '15052' returned an error
+Return NULL for this query
+
+AEMET API call for '15053' returned an error
+Return NULL for this query
+
+AEMET API call for '15054' returned an error
+Return NULL for this query
+HTTP 500: Hit API Limits. Retrying...
+Waiting 3s for retry backoff ■■■■■■■■■■■                     
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 13s for retry backoff ■■■■■■■■                        
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 22s for retry backoff ■■■■                            
+Waiting 22s for retry backoff ■■■■■■■■■                       
+Waiting 22s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 22s for retry backoff ■■■■■■■■■■■■■■■■■               
+Waiting 22s for retry backoff ■■■■■■■■■■■■■■■■■■■■■           
+Waiting 22s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■       
+Waiting 22s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 22s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '15071' returned an error
+Return NULL for this query
+
+AEMET API call for '15072' returned an error
+Return NULL for this query
+
+AEMET API call for '15073' returned an error
+Return NULL for this query
+
+AEMET API call for '15074' returned an error
+Return NULL for this query
+
+AEMET API call for '15075' returned an error
+Return NULL for this query
+
+AEMET API call for '15076' returned an error
+Return NULL for this query
+
+AEMET API call for '15077' returned an error
+Return NULL for this query
+
+AEMET API call for '15078' returned an error
+Return NULL for this query
+
+AEMET API call for '15079' returned an error
+Return NULL for this query
+
+AEMET API call for '15080' returned an error
+Return NULL for this query
+
+AEMET API call for '15081' returned an error
+Return NULL for this query
+
+AEMET API call for '15082' returned an error
+Return NULL for this query
+HTTP 500: Hit API Limits. Retrying...
+Waiting 4s for retry backoff ■■■■■■■■                        
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 6s for retry backoff ■■■■■■■■■■■■■■■■■■              
+Waiting 6s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '27016' returned an error
+Return NULL for this query
+
+AEMET API call for '27017' returned an error
+Return NULL for this query
+
+AEMET API call for '27018' returned an error
+Return NULL for this query
+
+AEMET API call for '27019' returned an error
+Return NULL for this query
+
+AEMET API call for '27020' returned an error
+Return NULL for this query
+
+AEMET API call for '27021' returned an error
+Return NULL for this query
+
+AEMET API call for '32001' returned an error
+Return NULL for this query
+
+AEMET API call for '27022' returned an error
+Return NULL for this query
+
+AEMET API call for '27023' returned an error
+Return NULL for this query
+
+AEMET API call for '32055' returned an error
+Return NULL for this query
+
+AEMET API call for '27024' returned an error
+Return NULL for this query
+
+AEMET API call for '27025' returned an error
+Return NULL for this query
+
+AEMET API call for '36044' returned an error
+Return NULL for this query
+
+AEMET API call for '36045' returned an error
+Return NULL for this query
+
+AEMET API call for '27026' returned an error
+Return NULL for this query
+
+AEMET API call for '32008' returned an error
+Return NULL for this query
+
+AEMET API call for '27027' returned an error
+Return NULL for this query
+
+AEMET API call for '27028' returned an error
+Return NULL for this query
+
+AEMET API call for '32012' returned an error
+Return NULL for this query
+
+AEMET API call for '27029' returned an error
+Return NULL for this query
+
+AEMET API call for '27030' returned an error
+Return NULL for this query
+
+AEMET API call for '27031' returned an error
+Return NULL for this query
+
+AEMET API call for '27032' returned an error
+Return NULL for this query
+
+AEMET API call for '27034' returned an error
+Return NULL for this query
+
+AEMET API call for '27035' returned an error
+Return NULL for this query
+
+AEMET API call for '27037' returned an error
+Return NULL for this query
+
+AEMET API call for '27038' returned an error
+Return NULL for this query
+
+AEMET API call for '32014' returned an error
+Return NULL for this query
+
+AEMET API call for '27039' returned an error
+Return NULL for this query
+
+AEMET API call for '31140' returned an error
+Return NULL for this query
+
+AEMET API call for '27040' returned an error
+Return NULL for this query
+
+AEMET API call for '27041' returned an error
+Return NULL for this query
+
+AEMET API call for '27042' returned an error
+Return NULL for this query
+
+AEMET API call for '31141' returned an error
+Return NULL for this query
+
+AEMET API call for '27043' returned an error
+Return NULL for this query
+
+AEMET API call for '27044' returned an error
+Return NULL for this query
+
+AEMET API call for '31145' returned an error
+Return NULL for this query
+
+AEMET API call for '53057' returned an error
+Return NULL for this query
+
+AEMET API call for '53058' returned an error
+Return NULL for this query
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 8s for retry backoff ■■■■                            
+Waiting 8s for retry backoff ■■■■■■■                         
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■              
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 12s for retry backoff ■■■■■■■■                        
+Waiting 12s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 12s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 12s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 31s for retry backoff ■■■■                            
+Waiting 31s for retry backoff ■■■■■■■                         
+Waiting 31s for retry backoff ■■■■■■■■■■                      
+Waiting 31s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■                
+Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■          
+Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■        
+Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■     
+Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 2s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 2s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 5s for retry backoff ■■■■■■■■■■                      
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 3s for retry backoff ■■■■■■■■■■■■                    
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+
+AEMET API call for '32027' returned an error
+Return NULL for this query
+
+AEMET API call for '32028' returned an error
+Return NULL for this query
+
+AEMET API call for '32024' returned an error
+Return NULL for this query
+
+AEMET API call for '31161' returned an error
+Return NULL for this query
+
+AEMET API call for '32025' returned an error
+Return NULL for this query
+
+AEMET API call for '32033' returned an error
+Return NULL for this query
+
+AEMET API call for '32029' returned an error
+Return NULL for this query
+
+AEMET API call for '32030' returned an error
+Return NULL for this query
+
+AEMET API call for '32031' returned an error
+Return NULL for this query
+
+AEMET API call for '32032' returned an error
+Return NULL for this query
+
+AEMET API call for '31162' returned an error
+Return NULL for this query
+
+AEMET API call for '31163' returned an error
+Return NULL for this query
+
+AEMET API call for '32034' returned an error
+Return NULL for this query
+
+AEMET API call for '32035' returned an error
+Return NULL for this query
+
+AEMET API call for '32040' returned an error
+Return NULL for this query
+
+AEMET API call for '31176' returned an error
+Return NULL for this query
+
+AEMET API call for '32041' returned an error
+Return NULL for this query
+
+AEMET API call for '32042' returned an error
+Return NULL for this query
+
+AEMET API call for '32043' returned an error
+Return NULL for this query
+
+AEMET API call for '32044' returned an error
+Return NULL for this query
+
+AEMET API call for '32047' returned an error
+Return NULL for this query
+
+AEMET API call for '32056' returned an error
+Return NULL for this query
+
+AEMET API call for '32048' returned an error
+Return NULL for this query
+
+AEMET API call for '32049' returned an error
+Return NULL for this query
+
+AEMET API call for '32050' returned an error
+Return NULL for this query
+
+AEMET API call for '32051' returned an error
+Return NULL for this query
+
+AEMET API call for '31177' returned an error
+Return NULL for this query
+
+AEMET API call for '32052' returned an error
+Return NULL for this query
+
+AEMET API call for '32053' returned an error
+Return NULL for this query
+
+AEMET API call for '32065' returned an error
+Return NULL for this query
+
+AEMET API call for '32054' returned an error
+Return NULL for this query
+
+AEMET API call for '32057' returned an error
+Return NULL for this query
+
+AEMET API call for '32066' returned an error
+Return NULL for this query
+
+AEMET API call for '32058' returned an error
+Return NULL for this query
+
+AEMET API call for '32067' returned an error
+Return NULL for this query
+
+AEMET API call for '32059' returned an error
+Return NULL for this query
+
+AEMET API call for '32060' returned an error
+Return NULL for this query
+
+AEMET API call for '32061' returned an error
+Return NULL for this query
+
+AEMET API call for '36056' returned an error
+Return NULL for this query
+
+AEMET API call for '32062' returned an error
+Return NULL for this query
+
+AEMET API call for '32072' returned an error
+Return NULL for this query
+
+AEMET API call for '36057' returned an error
+Return NULL for this query
+
+AEMET API call for '36058' returned an error
+Return NULL for this query
+
+AEMET API call for '36059' returned an error
+Return NULL for this query
+
+AEMET API call for '32063' returned an error
+Return NULL for this query
+
+AEMET API call for '32064' returned an error
+Return NULL for this query
+
+AEMET API call for '36060' returned an error
+Return NULL for this query
+
+AEMET API call for '36061' returned an error
+Return NULL for this query
+
+AEMET API call for '36901' returned an error
+Return NULL for this query
+
+AEMET API call for '36902' returned an error
+Return NULL for this query
+
+AEMET API call for '28001' returned an error
+Return NULL for this query
+
+AEMET API call for '28002' returned an error
+Return NULL for this query
+
+AEMET API call for '32068' returned an error
+Return NULL for this query
+
+AEMET API call for '32074' returned an error
+Return NULL for this query
+
+AEMET API call for '28003' returned an error
+Return NULL for this query
+
+AEMET API call for '32069' returned an error
+Return NULL for this query
+
+AEMET API call for '32070' returned an error
+Return NULL for this query
+
+AEMET API call for '32071' returned an error
+Return NULL for this query
+
+AEMET API call for '32073' returned an error
+Return NULL for this query
+
+AEMET API call for '31184' returned an error
+Return NULL for this query
+
+AEMET API call for '31185' returned an error
+Return NULL for this query
+
+AEMET API call for '32076' returned an error
+Return NULL for this query
+
+AEMET API call for '32080' returned an error
+Return NULL for this query
+
+AEMET API call for '32081' returned an error
+Return NULL for this query
+
+AEMET API call for '32083' returned an error
+Return NULL for this query
+
+AEMET API call for '32085' returned an error
+Return NULL for this query
+
+AEMET API call for '32086' returned an error
+Return NULL for this query
+
+AEMET API call for '32087' returned an error
+Return NULL for this query
+
+AEMET API call for '31186' returned an error
+Return NULL for this query
+
+AEMET API call for '32088' returned an error
+Return NULL for this query
+
+AEMET API call for '28004' returned an error
+Return NULL for this query
+
+AEMET API call for '32089' returned an error
+Return NULL for this query
+
+AEMET API call for '32090' returned an error
+Return NULL for this query
+
+AEMET API call for '32091' returned an error
+Return NULL for this query
+
+AEMET API call for '28005' returned an error
+Return NULL for this query
+
+AEMET API call for '28006' returned an error
+Return NULL for this query
+
+AEMET API call for '28007' returned an error
+Return NULL for this query
+
+AEMET API call for '28008' returned an error
+Return NULL for this query
+
+AEMET API call for '28009' returned an error
+Return NULL for this query
+
+AEMET API call for '32092' returned an error
+Return NULL for this query
+
+AEMET API call for '36001' returned an error
+Return NULL for this query
+
+AEMET API call for '28010' returned an error
+Return NULL for this query
+
+AEMET API call for '28011' returned an error
+Return NULL for this query
+
+AEMET API call for '36002' returned an error
+Return NULL for this query
+
+AEMET API call for '36003' returned an error
+Return NULL for this query
+
+AEMET API call for '36004' returned an error
+Return NULL for this query
+
+AEMET API call for '28012' returned an error
+Return NULL for this query
+
+AEMET API call for '28013' returned an error
+Return NULL for this query
+
+AEMET API call for '36005' returned an error
+Return NULL for this query
+
+AEMET API call for '36006' returned an error
+Return NULL for this query
+
+AEMET API call for '28019' returned an error
+Return NULL for this query
+
+AEMET API call for '28020' returned an error
+Return NULL for this query
+
+AEMET API call for '36007' returned an error
+Return NULL for this query
+
+AEMET API call for '36008' returned an error
+Return NULL for this query
+
+AEMET API call for '28021' returned an error
+Return NULL for this query
+
+AEMET API call for '36009' returned an error
+Return NULL for this query
+
+AEMET API call for '31187' returned an error
+Return NULL for this query
+
+AEMET API call for '36010' returned an error
+Return NULL for this query
+
+AEMET API call for '31188' returned an error
+Return NULL for this query
+
+AEMET API call for '36013' returned an error
+Return NULL for this query
+
+AEMET API call for '28036' returned an error
+Return NULL for this query
+
+AEMET API call for '36014' returned an error
+Return NULL for this query
+
+AEMET API call for '28037' returned an error
+Return NULL for this query
+
+AEMET API call for '31002' returned an error
+Return NULL for this query
+
+AEMET API call for '36015' returned an error
+Return NULL for this query
+
+AEMET API call for '36016' returned an error
+Return NULL for this query
+
+AEMET API call for '36017' returned an error
+Return NULL for this query
+
+AEMET API call for '28048' returned an error
+Return NULL for this query
+
+AEMET API call for '36018' returned an error
+Return NULL for this query
+
+AEMET API call for '36019' returned an error
+Return NULL for this query
+
+AEMET API call for '36020' returned an error
+Return NULL for this query
+
+AEMET API call for '36021' returned an error
+Return NULL for this query
+
+AEMET API call for '36022' returned an error
+Return NULL for this query
+
+AEMET API call for '36023' returned an error
+Return NULL for this query
+
+AEMET API call for '36024' returned an error
+Return NULL for this query
+
+AEMET API call for '31005' returned an error
+Return NULL for this query
+
+AEMET API call for '36025' returned an error
+Return NULL for this query
+
+AEMET API call for '36026' returned an error
+Return NULL for this query
+
+AEMET API call for '36028' returned an error
+Return NULL for this query
+
+AEMET API call for '36029' returned an error
+Return NULL for this query
+
+AEMET API call for '36030' returned an error
+Return NULL for this query
+
+AEMET API call for '36031' returned an error
+Return NULL for this query
+
+AEMET API call for '36032' returned an error
+Return NULL for this query
+
+AEMET API call for '31219' returned an error
+Return NULL for this query
+
+AEMET API call for '36033' returned an error
+Return NULL for this query
+
+AEMET API call for '36054' returned an error
+Return NULL for this query
+
+AEMET API call for '36034' returned an error
+Return NULL for this query
+
+AEMET API call for '36035' returned an error
+Return NULL for this query
+
+AEMET API call for '36036' returned an error
+Return NULL for this query
+
+AEMET API call for '36037' returned an error
+Return NULL for this query
+
+AEMET API call for '36038' returned an error
+Return NULL for this query
+
+AEMET API call for '36039' returned an error
+Return NULL for this query
+
+AEMET API call for '36055' returned an error
+Return NULL for this query
+
+AEMET API call for '36040' returned an error
+Return NULL for this query
+
+AEMET API call for '36041' returned an error
+Return NULL for this query
+
+AEMET API call for '31037' returned an error
+Return NULL for this query
+
+AEMET API call for '36042' returned an error
+Return NULL for this query
+
+AEMET API call for '31040' returned an error
+Return NULL for this query
+
+AEMET API call for '36043' returned an error
+Return NULL for this query
+
+AEMET API call for '31041' returned an error
+Return NULL for this query
+
+AEMET API call for '36046' returned an error
+Return NULL for this query
+
+AEMET API call for '31229' returned an error
+Return NULL for this query
+
+AEMET API call for '36047' returned an error
+Return NULL for this query
+
+AEMET API call for '36048' returned an error
+Return NULL for this query
+
+AEMET API call for '36049' returned an error
+Return NULL for this query
+
+AEMET API call for '36050' returned an error
+Return NULL for this query
+
+AEMET API call for '36051' returned an error
+Return NULL for this query
+
+AEMET API call for '36052' returned an error
+Return NULL for this query
+
+AEMET API call for '36053' returned an error
+Return NULL for this query
+
+AEMET API call for '31009' returned an error
+Return NULL for this query
+
+AEMET API call for '28014' returned an error
+Return NULL for this query
+
+AEMET API call for '28015' returned an error
+Return NULL for this query
+
+AEMET API call for '28016' returned an error
+Return NULL for this query
+
+AEMET API call for '28017' returned an error
+Return NULL for this query
+
+AEMET API call for '31045' returned an error
+Return NULL for this query
+
+AEMET API call for '28018' returned an error
+Return NULL for this query
+
+AEMET API call for '31230' returned an error
+Return NULL for this query
+
+AEMET API call for '28022' returned an error
+Return NULL for this query
+
+AEMET API call for '28023' returned an error
+Return NULL for this query
+
+AEMET API call for '28024' returned an error
+Return NULL for this query
+
+AEMET API call for '28050' returned an error
+Return NULL for this query
+
+AEMET API call for '28051' returned an error
+Return NULL for this query
+
+AEMET API call for '28052' returned an error
+Return NULL for this query
+
+AEMET API call for '28025' returned an error
+Return NULL for this query
+
+AEMET API call for '28026' returned an error
+Return NULL for this query
+
+AEMET API call for '28027' returned an error
+Return NULL for this query
+
+AEMET API call for '28028' returned an error
+Return NULL for this query
+
+AEMET API call for '28053' returned an error
+Return NULL for this query
+
+AEMET API call for '28054' returned an error
+Return NULL for this query
+
+AEMET API call for '28055' returned an error
+Return NULL for this query
+
+AEMET API call for '28056' returned an error
+Return NULL for this query
+
+AEMET API call for '31237' returned an error
+Return NULL for this query
+
+AEMET API call for '28029' returned an error
+Return NULL for this query
+
+AEMET API call for '28030' returned an error
+Return NULL for this query
+
+AEMET API call for '28031' returned an error
+Return NULL for this query
+
+AEMET API call for '31238' returned an error
+Return NULL for this query
+
+AEMET API call for '28032' returned an error
+Return NULL for this query
+
+AEMET API call for '28057' returned an error
+Return NULL for this query
+
+AEMET API call for '28058' returned an error
+Return NULL for this query
+
+AEMET API call for '28033' returned an error
+Return NULL for this query
+
+AEMET API call for '28034' returned an error
+Return NULL for this query
+
+AEMET API call for '28035' returned an error
+Return NULL for this query
+
+AEMET API call for '28102' returned an error
+Return NULL for this query
+
+AEMET API call for '28038' returned an error
+Return NULL for this query
+
+AEMET API call for '28039' returned an error
+Return NULL for this query
+
+AEMET API call for '28040' returned an error
+Return NULL for this query
+
+AEMET API call for '28041' returned an error
+Return NULL for this query
+
+AEMET API call for '28042' returned an error
+Return NULL for this query
+
+AEMET API call for '28043' returned an error
+Return NULL for this query
+
+AEMET API call for '28044' returned an error
+Return NULL for this query
+
+AEMET API call for '28045' returned an error
+Return NULL for this query
+
+AEMET API call for '28104' returned an error
+Return NULL for this query
+
+AEMET API call for '28106' returned an error
+Return NULL for this query
+
+AEMET API call for '28107' returned an error
+Return NULL for this query
+
+AEMET API call for '28108' returned an error
+Return NULL for this query
+
+AEMET API call for '28109' returned an error
+Return NULL for this query
+
+AEMET API call for '28046' returned an error
+Return NULL for this query
+
+AEMET API call for '28047' returned an error
+Return NULL for this query
+
+AEMET API call for '28049' returned an error
+Return NULL for this query
+
+AEMET API call for '31192' returned an error
+Return NULL for this query
+
+AEMET API call for '28059' returned an error
+Return NULL for this query
+
+AEMET API call for '28060' returned an error
+Return NULL for this query
+
+AEMET API call for '28061' returned an error
+Return NULL for this query
+
+AEMET API call for '28062' returned an error
+Return NULL for this query
+
+AEMET API call for '28063' returned an error
+Return NULL for this query
+
+AEMET API call for '28064' returned an error
+Return NULL for this query
+
+AEMET API call for '28065' returned an error
+Return NULL for this query
+
+AEMET API call for '28066' returned an error
+Return NULL for this query
+
+AEMET API call for '28067' returned an error
+Return NULL for this query
+
+AEMET API call for '28068' returned an error
+Return NULL for this query
+
+AEMET API call for '28069' returned an error
+Return NULL for this query
+
+AEMET API call for '28070' returned an error
+Return NULL for this query
+
+AEMET API call for '28071' returned an error
+Return NULL for this query
+
+AEMET API call for '31046' returned an error
+Return NULL for this query
+
+AEMET API call for '28072' returned an error
+Return NULL for this query
+
+AEMET API call for '31047' returned an error
+Return NULL for this query
+
+AEMET API call for '28073' returned an error
+Return NULL for this query
+
+AEMET API call for '31010' returned an error
+Return NULL for this query
+
+AEMET API call for '28074' returned an error
+Return NULL for this query
+
+AEMET API call for '28075' returned an error
+Return NULL for this query
+
+AEMET API call for '28076' returned an error
+Return NULL for this query
+
+AEMET API call for '28078' returned an error
+Return NULL for this query
+
+AEMET API call for '28079' returned an error
+Return NULL for this query
+
+AEMET API call for '28080' returned an error
+Return NULL for this query
+
+AEMET API call for '28082' returned an error
+Return NULL for this query
+
+AEMET API call for '31048' returned an error
+Return NULL for this query
+
+AEMET API call for '28083' returned an error
+Return NULL for this query
+
+AEMET API call for '31053' returned an error
+Return NULL for this query
+
+AEMET API call for '28084' returned an error
+Return NULL for this query
+
+AEMET API call for '28085' returned an error
+Return NULL for this query
+
+AEMET API call for '28086' returned an error
+Return NULL for this query
+
+AEMET API call for '28087' returned an error
+Return NULL for this query
+
+AEMET API call for '28088' returned an error
+Return NULL for this query
+
+AEMET API call for '28089' returned an error
+Return NULL for this query
+
+AEMET API call for '28090' returned an error
+Return NULL for this query
+
+AEMET API call for '28091' returned an error
+Return NULL for this query
+
+AEMET API call for '28092' returned an error
+Return NULL for this query
+
+AEMET API call for '28115' returned an error
+Return NULL for this query
+
+AEMET API call for '28093' returned an error
+Return NULL for this query
+
+AEMET API call for '28116' returned an error
+Return NULL for this query
+
+AEMET API call for '28117' returned an error
+Return NULL for this query
+
+AEMET API call for '28118' returned an error
+Return NULL for this query
+
+AEMET API call for '28119' returned an error
+Return NULL for this query
+
+AEMET API call for '28094' returned an error
+Return NULL for this query
+
+AEMET API call for '28095' returned an error
+Return NULL for this query
+
+AEMET API call for '28096' returned an error
+Return NULL for this query
+
+AEMET API call for '28120' returned an error
+Return NULL for this query
+
+AEMET API call for '31196' returned an error
+Return NULL for this query
+
+AEMET API call for '31197' returned an error
+Return NULL for this query
+
+AEMET API call for '28097' returned an error
+Return NULL for this query
+
+AEMET API call for '28099' returned an error
+Return NULL for this query
+
+AEMET API call for '28130' returned an error
+Return NULL for this query
+
+AEMET API call for '28131' returned an error
+Return NULL for this query
+
+AEMET API call for '28132' returned an error
+Return NULL for this query
+
+AEMET API call for '28133' returned an error
+Return NULL for this query
+
+AEMET API call for '28134' returned an error
+Return NULL for this query
+
+AEMET API call for '28135' returned an error
+Return NULL for this query
+
+AEMET API call for '31239' returned an error
+Return NULL for this query
+
+AEMET API call for '28100' returned an error
+Return NULL for this query
+
+AEMET API call for '31198' returned an error
+Return NULL for this query
+
+AEMET API call for '28101' returned an error
+Return NULL for this query
+
+AEMET API call for '28110' returned an error
+Return NULL for this query
+
+AEMET API call for '31199' returned an error
+Return NULL for this query
+
+AEMET API call for '28111' returned an error
+Return NULL for this query
+
+AEMET API call for '31056' returned an error
+Return NULL for this query
+
+AEMET API call for '28112' returned an error
+Return NULL for this query
+
+AEMET API call for '28113' returned an error
+Return NULL for this query
+
+AEMET API call for '28114' returned an error
+Return NULL for this query
+
+AEMET API call for '28121' returned an error
+Return NULL for this query
+
+AEMET API call for '28122' returned an error
+Return NULL for this query
+
+AEMET API call for '28123' returned an error
+Return NULL for this query
+
+AEMET API call for '28124' returned an error
+Return NULL for this query
+
+AEMET API call for '28125' returned an error
+Return NULL for this query
+
+AEMET API call for '31253' returned an error
+Return NULL for this query
+
+AEMET API call for '31254' returned an error
+Return NULL for this query
+
+AEMET API call for '28126' returned an error
+Return NULL for this query
+
+AEMET API call for '28127' returned an error
+Return NULL for this query
+
+AEMET API call for '28128' returned an error
+Return NULL for this query
+
+AEMET API call for '28129' returned an error
+Return NULL for this query
+
+AEMET API call for '28136' returned an error
+Return NULL for this query
+
+AEMET API call for '28137' returned an error
+Return NULL for this query
+
+AEMET API call for '28138' returned an error
+Return NULL for this query
+
+AEMET API call for '28140' returned an error
+Return NULL for this query
+
+AEMET API call for '28143' returned an error
+Return NULL for this query
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■                  
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■    
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 8s for retry backoff ■■■■■■■■■■■                     
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '28156' returned an error
+Return NULL for this query
+
+AEMET API call for '28157' returned an error
+Return NULL for this query
+
+AEMET API call for '28163' returned an error
+Return NULL for this query
+
+AEMET API call for '28164' returned an error
+Return NULL for this query
+
+AEMET API call for '28167' returned an error
+Return NULL for this query
+
+AEMET API call for '31036' returned an error
+Return NULL for this query
+
+AEMET API call for '28168' returned an error
+Return NULL for this query
+HTTP 500: Hit API Limits. Retrying...
+Waiting 3s for retry backoff ■■■■■■■■■■■                     
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 4s for retry backoff ■■■■■■■■■                       
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 13s for retry backoff ■■■                             
+Waiting 13s for retry backoff ■■■■■■■■                        
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■          
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '30023' returned an error
+Return NULL for this query
+
+AEMET API call for '30024' returned an error
+Return NULL for this query
+
+AEMET API call for '30025' returned an error
+Return NULL for this query
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+
+AEMET API call for '30026' returned an error
+Return NULL for this query
+
+AEMET API call for '30027' returned an error
+Return NULL for this query
+
+AEMET API call for '30028' returned an error
+Return NULL for this query
+
+AEMET API call for '30029' returned an error
+Return NULL for this query
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 3s for retry backoff ■■■■■■■■■■■                     
+Waiting 3s for retry backoff ■■■■■■■■■■■■                    
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 4s for retry backoff ■■■■■■■■■                       
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 3s for retry backoff ■■■■■■■■■■■■                    
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 8s for retry backoff ■■■■■                           
+Waiting 8s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■       
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 35s for retry backoff ■■                              
+Waiting 35s for retry backoff ■■■■■                           
+Waiting 35s for retry backoff ■■■■■■■                         
+Waiting 35s for retry backoff ■■■■■■■■■■                      
+Waiting 35s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 35s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 35s for retry backoff ■■■■■■■■■■■■■■■■■■              
+Waiting 35s for retry backoff ■■■■■■■■■■■■■■■■■■■■            
+Waiting 35s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 35s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■      
+Waiting 35s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■    
+Waiting 35s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 35s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '31029' returned an error
+Return NULL for this query
+HTTP 500: Hit API Limits. Retrying...
+Waiting 2s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 2s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 2s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 2s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+HTTP 500: Hit API Limits. Retrying...
+Waiting 3s for retry backoff ■■■■■■■■■■                      
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 6s for retry backoff ■■■■■■■■■■■■                    
+Waiting 6s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■     
+Waiting 6s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 13s for retry backoff ■■■■■■                          
+Waiting 13s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■            
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■    
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 7s for retry backoff ■■■■■■■■                        
+Waiting 7s for retry backoff ■■■■■■■■■■■■■■■■■■■■■           
+Waiting 7s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 41s for retry backoff ■■                              
+Waiting 41s for retry backoff ■■■■                            
+Waiting 41s for retry backoff ■■■■■■                          
+Waiting 41s for retry backoff ■■■■■■■■                        
+Waiting 41s for retry backoff ■■■■■■■■■■                      
+Waiting 41s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 41s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 41s for retry backoff ■■■■■■■■■■■■■■■■■               
+Waiting 41s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 41s for retry backoff ■■■■■■■■■■■■■■■■■■■■■           
+Waiting 41s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■        
+Waiting 41s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■      
+Waiting 41s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■    
+Waiting 41s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 41s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '31065' returned an error
+Return NULL for this query
+
+AEMET API call for '31066' returned an error
+Return NULL for this query
+
+AEMET API call for '31068' returned an error
+Return NULL for this query
+
+AEMET API call for '31079' returned an error
+Return NULL for this query
+
+AEMET API call for '31072' returned an error
+Return NULL for this query
+
+AEMET API call for '31073' returned an error
+Return NULL for this query
+
+AEMET API call for '31105' returned an error
+Return NULL for this query
+
+AEMET API call for '31074' returned an error
+Return NULL for this query
+
+AEMET API call for '31075' returned an error
+Return NULL for this query
+
+AEMET API call for '31090' returned an error
+Return NULL for this query
+
+AEMET API call for '31076' returned an error
+Return NULL for this query
+
+AEMET API call for '31077' returned an error
+Return NULL for this query
+
+AEMET API call for '31078' returned an error
+Return NULL for this query
+
+AEMET API call for '31080' returned an error
+Return NULL for this query
+
+AEMET API call for '31081' returned an error
+Return NULL for this query
+
+AEMET API call for '31082' returned an error
+Return NULL for this query
+
+AEMET API call for '31083' returned an error
+Return NULL for this query
+
+AEMET API call for '31084' returned an error
+Return NULL for this query
+
+AEMET API call for '31085' returned an error
+Return NULL for this query
+
+AEMET API call for '31086' returned an error
+Return NULL for this query
+
+AEMET API call for '31087' returned an error
+Return NULL for this query
+
+AEMET API call for '31088' returned an error
+Return NULL for this query
+
+AEMET API call for '31089' returned an error
+Return NULL for this query
+
+AEMET API call for '31091' returned an error
+Return NULL for this query
+
+AEMET API call for '31097' returned an error
+Return NULL for this query
+
+AEMET API call for '31092' returned an error
+Return NULL for this query
+
+AEMET API call for '31099' returned an error
+Return NULL for this query
+
+AEMET API call for '31093' returned an error
+Return NULL for this query
+
+AEMET API call for '31094' returned an error
+Return NULL for this query
+
+AEMET API call for '31095' returned an error
+Return NULL for this query
+
+AEMET API call for '31096' returned an error
+Return NULL for this query
+
+AEMET API call for '26144' returned an error
+Return NULL for this query
+
+AEMET API call for '31098' returned an error
+Return NULL for this query
+
+AEMET API call for '31102' returned an error
+Return NULL for this query
+
+AEMET API call for '31103' returned an error
+Return NULL for this query
+
+AEMET API call for '31104' returned an error
+Return NULL for this query
+
+AEMET API call for '31108' returned an error
+Return NULL for this query
+
+AEMET API call for '31109' returned an error
+Return NULL for this query
+
+AEMET API call for '26173' returned an error
+Return NULL for this query
+
+AEMET API call for '31120' returned an error
+Return NULL for this query
+
+AEMET API call for '31123' returned an error
+Return NULL for this query
+
+AEMET API call for '31124' returned an error
+Return NULL for this query
+
+AEMET API call for '31131' returned an error
+Return NULL for this query
+
+AEMET API call for '31132' returned an error
+Return NULL for this query
+
+AEMET API call for '31134' returned an error
+Return NULL for this query
+
+AEMET API call for '31171' returned an error
+Return NULL for this query
+
+AEMET API call for '31135' returned an error
+Return NULL for this query
+
+AEMET API call for '31136' returned an error
+Return NULL for this query
+
+AEMET API call for '31137' returned an error
+Return NULL for this query
+
+AEMET API call for '31172' returned an error
+Return NULL for this query
+
+AEMET API call for '31138' returned an error
+Return NULL for this query
+
+AEMET API call for '31139' returned an error
+Return NULL for this query
+
+AEMET API call for '31143' returned an error
+Return NULL for this query
+
+AEMET API call for '31144' returned an error
+Return NULL for this query
+
+AEMET API call for '31149' returned an error
+Return NULL for this query
+
+AEMET API call for '31150' returned an error
+Return NULL for this query
+
+AEMET API call for '31151' returned an error
+Return NULL for this query
+
+AEMET API call for '31152' returned an error
+Return NULL for this query
+
+AEMET API call for '31173' returned an error
+Return NULL for this query
+
+AEMET API call for '31153' returned an error
+Return NULL for this query
+
+AEMET API call for '31154' returned an error
+Return NULL for this query
+
+AEMET API call for '31156' returned an error
+Return NULL for this query
+HTTP 500: Hit API Limits. Retrying...
+
+AEMET API call for '31157' returned an error
+Return NULL for this query
+
+AEMET API call for '31164' returned an error
+Return NULL for this query
+
+AEMET API call for '31158' returned an error
+Return NULL for this query
+
+AEMET API call for '31159' returned an error
+Return NULL for this query
+
+AEMET API call for '31160' returned an error
+Return NULL for this query
+
+AEMET API call for '31165' returned an error
+Return NULL for this query
+
+AEMET API call for '31166' returned an error
+Return NULL for this query
+
+AEMET API call for '31167' returned an error
+Return NULL for this query
+
+AEMET API call for '31168' returned an error
+Return NULL for this query
+
+AEMET API call for '31206' returned an error
+Return NULL for this query
+
+AEMET API call for '31207' returned an error
+Return NULL for this query
+
+AEMET API call for '31208' returned an error
+Return NULL for this query
+
+AEMET API call for '31209' returned an error
+Return NULL for this query
+
+AEMET API call for '31210' returned an error
+Return NULL for this query
+
+AEMET API call for '31211' returned an error
+Return NULL for this query
+
+AEMET API call for '31212' returned an error
+Return NULL for this query
+
+AEMET API call for '31215' returned an error
+Return NULL for this query
+
+AEMET API call for '31217' returned an error
+Return NULL for this query
+
+AEMET API call for '31216' returned an error
+Return NULL for this query
+
+AEMET API call for '31220' returned an error
+Return NULL for this query
+
+AEMET API call for '31221' returned an error
+Return NULL for this query
+
+AEMET API call for '31231' returned an error
+Return NULL for this query
+
+AEMET API call for '31232' returned an error
+Return NULL for this query
+
+AEMET API call for '31222' returned an error
+Return NULL for this query
+
+AEMET API call for '31223' returned an error
+Return NULL for this query
+
+AEMET API call for '31233' returned an error
+Return NULL for this query
+
+AEMET API call for '31224' returned an error
+Return NULL for this query
+
+AEMET API call for '31225' returned an error
+Return NULL for this query
+
+AEMET API call for '31226' returned an error
+Return NULL for this query
+
+AEMET API call for '31234' returned an error
+Return NULL for this query
+
+AEMET API call for '31263' returned an error
+Return NULL for this query
+
+AEMET API call for '31227' returned an error
+Return NULL for this query
+
+AEMET API call for '31228' returned an error
+Return NULL for this query
+
+AEMET API call for '31235' returned an error
+Return NULL for this query
+
+AEMET API call for '31236' returned an error
+Return NULL for this query
+
+AEMET API call for '31240' returned an error
+Return NULL for this query
+
+AEMET API call for '31241' returned an error
+Return NULL for this query
+
+AEMET API call for '31242' returned an error
+Return NULL for this query
+
+AEMET API call for '31243' returned an error
+Return NULL for this query
+
+AEMET API call for '31264' returned an error
+Return NULL for this query
+
+AEMET API call for '31247' returned an error
+Return NULL for this query
+
+AEMET API call for '31255' returned an error
+Return NULL for this query
+
+AEMET API call for '53061' returned an error
+Return NULL for this query
+
+AEMET API call for '53062' returned an error
+Return NULL for this query
+
+AEMET API call for '31248' returned an error
+Return NULL for this query
+
+AEMET API call for '53067' returned an error
+Return NULL for this query
+
+AEMET API call for '31249' returned an error
+Return NULL for this query
+
+AEMET API call for '31256' returned an error
+Return NULL for this query
+
+AEMET API call for '53068' returned an error
+Return NULL for this query
+
+AEMET API call for '31250' returned an error
+Return NULL for this query
+
+AEMET API call for '31261' returned an error
+Return NULL for this query
+
+AEMET API call for '53069' returned an error
+Return NULL for this query
+
+AEMET API call for '31251' returned an error
+Return NULL for this query
+
+AEMET API call for '31252' returned an error
+Return NULL for this query
+
+AEMET API call for '53070' returned an error
+Return NULL for this query
+
+AEMET API call for '53078' returned an error
+Return NULL for this query
+
+AEMET API call for '31257' returned an error
+Return NULL for this query
+
+AEMET API call for '31258' returned an error
+Return NULL for this query
+
+AEMET API call for '31259' returned an error
+Return NULL for this query
+
+AEMET API call for '31260' returned an error
+Return NULL for this query
+
+AEMET API call for '31902' returned an error
+Return NULL for this query
+
+AEMET API call for '31903' returned an error
+Return NULL for this query
+
+AEMET API call for '31904' returned an error
+Return NULL for this query
+
+AEMET API call for '31905' returned an error
+Return NULL for this query
+
+AEMET API call for '53080' returned an error
+Return NULL for this query
+
+AEMET API call for '53081' returned an error
+Return NULL for this query
+
+AEMET API call for '31906' returned an error
+Return NULL for this query
+
+AEMET API call for '31907' returned an error
+Return NULL for this query
+
+AEMET API call for '31908' returned an error
+Return NULL for this query
+
+AEMET API call for '53059' returned an error
+Return NULL for this query
+
+AEMET API call for '53060' returned an error
+Return NULL for this query
+
+AEMET API call for '53063' returned an error
+Return NULL for this query
+
+AEMET API call for '53064' returned an error
+Return NULL for this query
+
+AEMET API call for '53065' returned an error
+Return NULL for this query
+
+AEMET API call for '53066' returned an error
+Return NULL for this query
+
+AEMET API call for '1001' returned an error
+Return NULL for this query
+
+AEMET API call for '1002' returned an error
+Return NULL for this query
+
+AEMET API call for '1003' returned an error
+Return NULL for this query
+
+AEMET API call for '1004' returned an error
+Return NULL for this query
+
+AEMET API call for '1009' returned an error
+Return NULL for this query
+
+AEMET API call for '1010' returned an error
+Return NULL for this query
+
+AEMET API call for '1013' returned an error
+Return NULL for this query
+
+AEMET API call for '1014' returned an error
+Return NULL for this query
+
+AEMET API call for '1022' returned an error
+Return NULL for this query
+
+AEMET API call for '1016' returned an error
+Return NULL for this query
+
+AEMET API call for '1017' returned an error
+Return NULL for this query
+
+AEMET API call for '1023' returned an error
+Return NULL for this query
+
+AEMET API call for '1018' returned an error
+Return NULL for this query
+
+AEMET API call for '1019' returned an error
+Return NULL for this query
+
+AEMET API call for '1020' returned an error
+Return NULL for this query
+
+AEMET API call for '1032' returned an error
+Return NULL for this query
+
+AEMET API call for '1021' returned an error
+Return NULL for this query
+
+AEMET API call for '1033' returned an error
+Return NULL for this query
+
+AEMET API call for '1027' returned an error
+Return NULL for this query
+
+AEMET API call for '1028' returned an error
+Return NULL for this query
+
+AEMET API call for '53001' returned an error
+Return NULL for this query
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 3s for retry backoff ■■■■■■■■■■■■                    
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 8s for retry backoff ■■■■■                           
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■               
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '53002' returned an error
+Return NULL for this query
+HTTP 500: Hit API Limits. Retrying...
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■                  
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■    
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■■                
+Waiting 5s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 10s for retry backoff ■■■■                            
+Waiting 10s for retry backoff ■■■■■■■■■■■■■■                  
+Waiting 10s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■        
+Waiting 10s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 26s for retry backoff ■■                              
+Waiting 26s for retry backoff ■■■■■                           
+Waiting 26s for retry backoff ■■■■■■■■■                       
+Waiting 26s for retry backoff ■■■■■■■■■■■■                    
+Waiting 26s for retry backoff ■■■■■■■■■■■■■■■■                
+Waiting 26s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 26s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 26s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■     
+Waiting 26s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 26s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 4s for retry backoff ■■■■■■■■                        
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■          
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■           
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 7s for retry backoff ■■■■■■■■■                       
+Waiting 7s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■          
+Waiting 7s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 8s for retry backoff ■■■■                            
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■                
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■     
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 56s for retry backoff ■■                              
+Waiting 56s for retry backoff ■■■■                            
+Waiting 56s for retry backoff ■■■■■                           
+Waiting 56s for retry backoff ■■■■■■■                         
+Waiting 56s for retry backoff ■■■■■■■■■                       
+Waiting 56s for retry backoff ■■■■■■■■■■                      
+Waiting 56s for retry backoff ■■■■■■■■■■■■                    
+Waiting 56s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 56s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 56s for retry backoff ■■■■■■■■■■■■■■■■■               
+Waiting 56s for retry backoff ■■■■■■■■■■■■■■■■■■              
+Waiting 56s for retry backoff ■■■■■■■■■■■■■■■■■■■■            
+Waiting 56s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■          
+Waiting 56s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■         
+Waiting 56s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■       
+Waiting 56s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■     
+Waiting 56s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■    
+Waiting 56s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 56s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '20031' returned an error
+Return NULL for this query
+
+AEMET API call for '20033' returned an error
+Return NULL for this query
+
+AEMET API call for '20034' returned an error
+Return NULL for this query
+
+AEMET API call for '20035' returned an error
+Return NULL for this query
+
+AEMET API call for '20036' returned an error
+Return NULL for this query
+
+AEMET API call for '20042' returned an error
+Return NULL for this query
+
+AEMET API call for '20049' returned an error
+Return NULL for this query
+
+AEMET API call for '20050' returned an error
+Return NULL for this query
+
+AEMET API call for '20051' returned an error
+Return NULL for this query
+
+AEMET API call for '20052' returned an error
+Return NULL for this query
+
+AEMET API call for '20053' returned an error
+Return NULL for this query
+
+AEMET API call for '20054' returned an error
+Return NULL for this query
+
+AEMET API call for '20055' returned an error
+Return NULL for this query
+
+AEMET API call for '20056' returned an error
+Return NULL for this query
+
+AEMET API call for '20059' returned an error
+Return NULL for this query
+
+AEMET API call for '20060' returned an error
+Return NULL for this query
+
+AEMET API call for '20061' returned an error
+Return NULL for this query
+
+AEMET API call for '20066' returned an error
+Return NULL for this query
+
+AEMET API call for '20067' returned an error
+Return NULL for this query
+
+AEMET API call for '20068' returned an error
+Return NULL for this query
+
+AEMET API call for '20069' returned an error
+Return NULL for this query
+
+AEMET API call for '20072' returned an error
+Return NULL for this query
+
+AEMET API call for '20075' returned an error
+Return NULL for this query
+
+AEMET API call for '20073' returned an error
+Return NULL for this query
+
+AEMET API call for '20074' returned an error
+Return NULL for this query
+
+AEMET API call for '20906' returned an error
+Return NULL for this query
+
+AEMET API call for '20078' returned an error
+Return NULL for this query
+
+AEMET API call for '20079' returned an error
+Return NULL for this query
+
+AEMET API call for '20907' returned an error
+Return NULL for this query
+
+AEMET API call for '53000' returned an error
+Return NULL for this query
+HTTP 500: Hit API Limits. Retrying...
+Waiting 4s for retry backoff ■■■■■■■■                        
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■                
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 7s for retry backoff ■■■■■■                          
+Waiting 7s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 7s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 13s for retry backoff ■■■                             
+Waiting 13s for retry backoff ■■■■■■■■                        
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■          
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '48031' returned an error
+Return NULL for this query
+
+AEMET API call for '48032' returned an error
+Return NULL for this query
+
+AEMET API call for '48033' returned an error
+Return NULL for this query
+
+AEMET API call for '48034' returned an error
+Return NULL for this query
+
+AEMET API call for '48035' returned an error
+Return NULL for this query
+
+AEMET API call for '48036' returned an error
+Return NULL for this query
+
+AEMET API call for '48037' returned an error
+Return NULL for this query
+
+AEMET API call for '48029' returned an error
+Return NULL for this query
+
+AEMET API call for '48030' returned an error
+Return NULL for this query
+
+AEMET API call for '48038' returned an error
+Return NULL for this query
+
+AEMET API call for '48039' returned an error
+Return NULL for this query
+
+AEMET API call for '48040' returned an error
+Return NULL for this query
+
+AEMET API call for '48063' returned an error
+Return NULL for this query
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 4s for retry backoff ■■■■■■■■■                       
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 8s for retry backoff ■■■■■                           
+Waiting 8s for retry backoff ■■■■■■■■                        
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■            
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 10s for retry backoff ■■■■                            
+Waiting 10s for retry backoff ■■■■■■■■■■■                     
+Waiting 10s for retry backoff ■■■■■■■■■■■■■■■■■■■             
+Waiting 10s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   
+Waiting 10s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '48085' returned an error
+Return NULL for this query
+
+AEMET API call for '48086' returned an error
+Return NULL for this query
+
+AEMET API call for '48087' returned an error
+Return NULL for this query
+
+AEMET API call for '48088' returned an error
+Return NULL for this query
+
+AEMET API call for '48089' returned an error
+Return NULL for this query
+
+AEMET API call for '48091' returned an error
+Return NULL for this query
+
+AEMET API call for '48092' returned an error
+Return NULL for this query
+
+AEMET API call for '48093' returned an error
+Return NULL for this query
+
+AEMET API call for '48094' returned an error
+Return NULL for this query
+
+AEMET API call for '48095' returned an error
+Return NULL for this query
+
+AEMET API call for '48096' returned an error
+Return NULL for this query
+
+AEMET API call for '48097' returned an error
+Return NULL for this query
+
+AEMET API call for '48901' returned an error
+Return NULL for this query
+
+AEMET API call for '48902' returned an error
+Return NULL for this query
+
+AEMET API call for '48903' returned an error
+Return NULL for this query
+
+AEMET API call for '48909' returned an error
+Return NULL for this query
+
+AEMET API call for '48912' returned an error
+Return NULL for this query
+
+AEMET API call for '48913' returned an error
+Return NULL for this query
+
+AEMET API call for '48914' returned an error
+Return NULL for this query
+
+AEMET API call for '48915' returned an error
+Return NULL for this query
+
+AEMET API call for '48904' returned an error
+Return NULL for this query
+
+AEMET API call for '48905' returned an error
+Return NULL for this query
+
+AEMET API call for '48906' returned an error
+Return NULL for this query
+
+AEMET API call for '48907' returned an error
+Return NULL for this query
+
+AEMET API call for '26002' returned an error
+Return NULL for this query
+
+AEMET API call for '26023' returned an error
+Return NULL for this query
+
+AEMET API call for '26003' returned an error
+Return NULL for this query
+
+AEMET API call for '26007' returned an error
+Return NULL for this query
+
+AEMET API call for '26004' returned an error
+Return NULL for this query
+
+AEMET API call for '26005' returned an error
+Return NULL for this query
+HTTP 500: Hit API Limits. Retrying...
+Waiting 8s for retry backoff ■■■■■                           
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■     
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 13s for retry backoff ■■■■■                           
+Waiting 13s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■            
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■    
+Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 24s for retry backoff ■■■                             
+Waiting 24s for retry backoff ■■■■■■■                         
+Waiting 24s for retry backoff ■■■■■■■■■■                      
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■                  
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■■■■              
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■          
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■       
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   
+Waiting 24s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '26083' returned an error
+Return NULL for this query
+
+AEMET API call for '26084' returned an error
+Return NULL for this query
+
+AEMET API call for '26086' returned an error
+Return NULL for this query
+
+AEMET API call for '26089' returned an error
+Return NULL for this query
+
+AEMET API call for '26091' returned an error
+Return NULL for this query
+
+AEMET API call for '26092' returned an error
+Return NULL for this query
+
+AEMET API call for '26095' returned an error
+Return NULL for this query
+
+AEMET API call for '26093' returned an error
+Return NULL for this query
+
+AEMET API call for '26094' returned an error
+Return NULL for this query
+
+AEMET API call for '26096' returned an error
+Return NULL for this query
+
+AEMET API call for '26098' returned an error
+Return NULL for this query
+
+AEMET API call for '26099' returned an error
+Return NULL for this query
+
+AEMET API call for '26102' returned an error
+Return NULL for this query
+
+AEMET API call for '26180' returned an error
+Return NULL for this query
+
+AEMET API call for '26103' returned an error
+Return NULL for this query
+
+AEMET API call for '26104' returned an error
+Return NULL for this query
+
+AEMET API call for '26105' returned an error
+Return NULL for this query
+
+AEMET API call for '26107' returned an error
+Return NULL for this query
+
+AEMET API call for '26110' returned an error
+Return NULL for this query
+
+AEMET API call for '26111' returned an error
+Return NULL for this query
+
+AEMET API call for '26108' returned an error
+Return NULL for this query
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 4s for retry backoff ■■■■■■■■■                       
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■                 
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 3s for retry backoff ■■■■■■■■■■■■■                   
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+
+AEMET API call for '26145' returned an error
+Return NULL for this query
+
+AEMET API call for '26130' returned an error
+Return NULL for this query
+
+AEMET API call for '26131' returned an error
+Return NULL for this query
+
+AEMET API call for '26132' returned an error
+Return NULL for this query
+
+AEMET API call for '26134' returned an error
+Return NULL for this query
+
+AEMET API call for '26135' returned an error
+Return NULL for this query
+
+AEMET API call for '26136' returned an error
+Return NULL for this query
+
+AEMET API call for '26142' returned an error
+Return NULL for this query
+
+AEMET API call for '26143' returned an error
+Return NULL for this query
+
+AEMET API call for '26146' returned an error
+Return NULL for this query
+
+AEMET API call for '26147' returned an error
+Return NULL for this query
+
+AEMET API call for '53056' returned an error
+Return NULL for this query
+
+AEMET API call for '54001' returned an error
+Return NULL for this query
+
+AEMET API call for '54002' returned an error
+Return NULL for this query
+HTTP 429: Límite de peticiones o caudal por minuto excedido para este usuario. Espere al siguiente minuto. Retrying...
+Waiting 3s for retry backoff ■■■■■■■■■■                      
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 3s for retry backoff ■■■■■■■■■■■■                    
+Waiting 3s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  
+Waiting 4s for retry backoff ■■■■■■■■■                       
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■     
+Waiting 4s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+Waiting 8s for retry backoff ■■■■■■■■■■■                     
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■          
+Waiting 8s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 
+
+AEMET API call for '54003' returned an error
+Return NULL for this query
+
+AEMET API call for '54004' returned an error
+Return NULL for this query
+
+AEMET API call for '54005' returned an error
+Return NULL for this query
+There were 40 warnings (use warnings() to see them)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats   1.0.0     ✔ readr     2.1.5
+✔ ggplot2   3.5.2     ✔ stringr   1.5.1
+✔ lubridate 1.9.4     ✔ tibble    3.3.0
+✔ purrr     1.1.0     ✔ tidyr     1.3.1
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::between()     masks data.table::between()
+✖ dplyr::filter()      masks stats::filter()
+✖ dplyr::first()       masks data.table::first()
+✖ purrr::flatten()     masks jsonlite::flatten()
+✖ lubridate::hour()    masks data.table::hour()
+✖ lubridate::isoweek() masks data.table::isoweek()
+✖ dplyr::lag()         masks stats::lag()
+✖ dplyr::last()        masks data.table::last()
+✖ lubridate::mday()    masks data.table::mday()
+✖ lubridate::minute()  masks data.table::minute()
+✖ lubridate::month()   masks data.table::month()
+✖ lubridate::quarter() masks data.table::quarter()
+✖ lubridate::second()  masks data.table::second()
+✖ purrr::transpose()   masks data.table::transpose()
+✖ lubridate::wday()    masks data.table::wday()
+✖ lubridate::week()    masks data.table::week()
+✖ lubridate::yday()    masks data.table::yday()
+✖ lubridate::year()    masks data.table::year()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Using libcurl 8.7.1 with OpenSSL/3.2.2
+
+Attaching package: ‘curl’
+
+The following object is masked from ‘package:readr’:
+
+    parse_date
+
+The following object is masked from ‘package:httr’:
+
+    handle_reset
+
+Loading required package: R.oo
+Loading required package: R.methodsS3
+R.methodsS3 v1.8.2 (2022-06-13 22:00:14 UTC) successfully loaded. See ?R.methodsS3 for help.
+R.oo v1.27.1 (2025-05-02 21:00:05 UTC) successfully loaded. See ?R.oo for help.
+
+Attaching package: ‘R.oo’
+
+The following object is masked from ‘package:R.methodsS3’:
+
+    throw
+
+The following objects are masked from ‘package:methods’:
+
+    getClasses, getMethods
+
+The following objects are masked from ‘package:base’:
+
+    attach, detach, load, save
+
+R.utils v2.13.0 (2025-02-24 21:20:02 UTC) successfully loaded. See ?R.utils for help.
+
+Attaching package: ‘R.utils’
+
+The following object is masked from ‘package:tidyr’:
+
+    extract
+
+The following object is masked from ‘package:jsonlite’:
+
+    validate
+
+The following object is masked from ‘package:utils’:
+
+    timestamp
+
+The following objects are masked from ‘package:base’:
+
+    cat, commandArgs, getOption, isOpen, nullfile, parse, use, warnings
+
+Error in value[[3L]](cond) : object 'dataset3_start' not found
+Calls: tryCatch ... tryCatchOne -> <Anonymous> -> difftime -> as.POSIXct
+In addition: Warning message:
+In Sys.setlocale("LC_ALL", "en_US.UTF-8") :
+  OS reports request to set locale to "en_US.UTF-8" cannot be honored
+Execution halted

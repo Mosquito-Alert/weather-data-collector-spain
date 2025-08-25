@@ -569,3 +569,96 @@ Estimated remaining time: 73.8 minutes
 
 === BATCH 13 of 17 ===
 Collecting forecasts for 500 municipalities...
+Raw forecast collection completed for batch 13 
+Retrieved 1176 municipality-day records
+Processing forecast data...
+✅ Batch 13 completed successfully
+Duration: 11.08 minutes
+Records in batch: 1176 
+Total successful municipalities so far: 1179 
+Estimated remaining time: 44.3 minutes
+
+=== BATCH 14 of 17 ===
+Collecting forecasts for 500 municipalities...
+Raw forecast collection completed for batch 14 
+Retrieved 2093 municipality-day records
+Processing forecast data...
+✅ Batch 14 completed successfully
+Duration: 16.68 minutes
+Records in batch: 2093 
+Total successful municipalities so far: 1478 
+Estimated remaining time: 50.1 minutes
+
+=== BATCH 15 of 17 ===
+Collecting forecasts for 500 municipalities...
+Raw forecast collection completed for batch 15 
+Retrieved 1127 municipality-day records
+Processing forecast data...
+✅ Batch 15 completed successfully
+Duration: 11.67 minutes
+Records in batch: 1127 
+Total successful municipalities so far: 1639 
+Estimated remaining time: 23.3 minutes
+Saving intermediate results after batch 15 ...
+Intermediate data saved to: data/output/municipal_forecasts_intermediate_2025-08-25_batch15.csv.gz 
+
+=== BATCH 16 of 17 ===
+Collecting forecasts for 500 municipalities...
+Raw forecast collection completed for batch 16 
+Retrieved 1897 municipality-day records
+Processing forecast data...
+✅ Batch 16 completed successfully
+Duration: 19.69 minutes
+Records in batch: 1897 
+Total successful municipalities so far: 1910 
+Estimated remaining time: 19.7 minutes
+
+=== BATCH 17 of 17 ===
+Collecting forecasts for 129 municipalities...
+Raw forecast collection completed for batch 17 
+Retrieved 511 municipality-day records
+Processing forecast data...
+✅ Batch 17 completed successfully
+Duration: 3.79 minutes
+Records in batch: 511 
+Total successful municipalities so far: 1983 
+Estimated remaining time: 0 minutes
+
+=== FINAL PROCESSING ===
+Total forecast records: 13881 
+Municipalities with data: 1983 out of 8129 
+Success rate: 24.4 %
+Date range: 2025-08-25 to 2025-08-31 
+Final data saved to: data/output/municipal_forecasts_2025-08-25.csv 
+Compressed version saved to: data/output/municipal_forecasts_2025-08-25.csv.gz 
+
+=== SUMMARY STATISTICS ===
+Total municipalities processed: 1983 
+Total forecast days: 13881 
+Average forecasts per municipality: 7 
+
+Sample of final data:
+# A tibble: 3 × 12
+  municipio_id municipio_nombre provincia elaborado           fecha     
+  <chr>        <chr>            <chr>     <dttm>              <date>    
+1 39084        Solórzano        Cantabria 2025-08-25 17:19:10 2025-08-25
+2 39084        Solórzano        Cantabria 2025-08-25 17:19:10 2025-08-26
+3 39084        Solórzano        Cantabria 2025-08-25 17:19:10 2025-08-27
+# ℹ 7 more variables: temp_max <int>, temp_min <int>, temp_avg <dbl>,
+#   humid_max <int>, humid_min <int>, wind_speed <int>, collected_at <dttm>
+
+Completed at: 2025-08-25 22:27:03 
+✅ Dataset 2 completed in 134.24 minutes
+
+=== DATASET 3: HOURLY DATA ===
+Collecting hourly data for building history
+[1] "Downloaded 58101 new rows of data with 7 core variables."
+[1] "Previous dataset file has 180393 rows."
+[1] "Total dataset now contains 196021 rows."
+❌ Dataset 3 failed: object 'dataset3_start' not found 
+
+
+=== Job Completion ===
+Exit code: 1
+Completed at: Mon Aug 25 22:27:15 CEST 2025
+❌ Hybrid collection failed with exit code 1
