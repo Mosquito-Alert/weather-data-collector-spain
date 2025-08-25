@@ -1,0 +1,14 @@
+Testing module loading fix...
+R version:
+R version 4.4.2 (2024-10-31) -- "Pile of Leaves"
+R location:
+/software/eb/software/R/4.4.2-gfbf-2024a/bin/R
+Testing if aggregation script can find R:
+R is available in main script
+Testing generate_all_datasets.sh R detection:
+=== GENERATING ALL REQUIRED DATASETS ===
+Started at: Mon Aug 25 16:33:04 CEST 2025
+Log files will be saved with prefix: logs/generate_datasets_20250825_163304
+TEST MODE: Only checking R availability
+✅ R is available
+R version 4.4.2 (2024-10-31) -- "Pile of Leaves"

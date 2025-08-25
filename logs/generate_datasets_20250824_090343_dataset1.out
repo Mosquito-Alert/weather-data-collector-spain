@@ -1,0 +1,148 @@
+
+R version 4.4.2 (2024-10-31) -- "Pile of Leaves"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '~/research/weather-data-collector-spain' loaded. [renv 1.1.4]
+> #!/usr/bin/env Rscript
+> 
+> # aggregate_daily_station_data.R
+> # -------------------------------
+> # Purpose: Create daily aggregated weather data by station from hourly observations
+> #
+> # This script processes the hourly expanded weather data to create daily summaries
+> # by station. It combines historical daily data with aggregated current observations
+> # to provide a complete time series from 2013 to present.
+> #
+> # Output: Daily means, minimums, maximums, and totals by weather station
+> #
+> # Data Sources:
+> #   1. Historical daily data (2013 to T-4 days) from AEMET climatological endpoint
+> #   2. Current hourly data (T-4 days to present) aggregated to daily values
+> #
+> # Author: John Palmer
+> # Date: 2025-08-20
+> 
+> rm(list=ls())
+> 
+> # Dependencies ####
+> library(tidyverse)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.2     ✔ tibble    3.3.0
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.1.0     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+> library(lubridate)
+> library(data.table)
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:lubridate’:
+
+    hour, isoweek, mday, minute, month, quarter, second, wday, week,
+    yday, year
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+The following object is masked from ‘package:purrr’:
+
+    transpose
+
+> 
+> cat("=== DAILY STATION DATA AGGREGATION ===\n")
+=== DAILY STATION DATA AGGREGATION ===
+> 
+> # Check if expanded hourly data exists
+> if(!file.exists("data/output/hourly_station_ongoing.csv.gz")) {
++   cat("ERROR: Hourly weather data not found. Run get_latest_data.R first.\n")
++   quit(save="no", status=1)
++ }
+> 
+> # Load expanded hourly data
+> cat("Loading hourly weather data...\n")
+Loading hourly weather data...
+> hourly_data = fread("data/output/hourly_station_ongoing.csv.gz")
+> hourly_data$fint = as_datetime(hourly_data$fint)
+> hourly_data$date = as.Date(hourly_data$fint)
+> 
+> cat("Loaded", nrow(hourly_data), "hourly observation records.\n")
+Loaded 107633 hourly observation records.
+> cat("Date range:", min(hourly_data$date, na.rm=TRUE), "to", max(hourly_data$date, na.rm=TRUE), "\n")
+Date range: 20323 to 20324 
+> 
+> # Load historical daily data if it exists
+> historical_daily = NULL
+> if(file.exists("data/output/daily_station_historical.csv.gz")) {
++   cat("Loading historical daily data...\n")
++   historical_daily = fread("data/output/daily_station_historical.csv.gz")
++   
++   # Standardize historical data format
++   if("fecha" %in% names(historical_daily)) {
++     historical_daily$date = as.Date(historical_daily$fecha)
++   }
++   
++   # Select compatible variables and reshape to match hourly format
++   historical_compatible = historical_daily %>%
++     filter(!is.na(date)) %>%
++     select(any_of(c("date", "idema", "ta", "tamax", "tamin", "hr", "prec", "vv", "p"))) %>%
++     pivot_longer(cols = c(-date, -idema), names_to = "measure", values_to = "value") %>%
++     filter(!is.na(value)) %>%
++     mutate(source = "historical_daily") %>%
++     as.data.table()
++   
++   cat("Loaded", nrow(historical_compatible), "historical daily records.\n")
++   cat("Historical date range:", min(historical_compatible$date, na.rm=TRUE), "to", max(historical_compatible$date, na.rm=TRUE), "\n")
++ } else {
++   cat("No historical daily data found. Using only current observations.\n")
++   historical_compatible = data.table()
++ }
+Loading historical daily data...
+Error in `pivot_longer()`:
+! Can't select columns that don't exist.
+✖ Column `idema` doesn't exist.
+Backtrace:
+     ▆
+  1. ├─... %>% as.data.table()
+  2. ├─data.table::as.data.table(.)
+  3. ├─dplyr::mutate(., source = "historical_daily")
+  4. ├─dplyr::filter(., !is.na(value))
+  5. ├─tidyr::pivot_longer(...)
+  6. ├─tidyr:::pivot_longer.data.frame(., cols = c(-date, -idema), names_to = "measure", values_to = "value")
+  7. │ └─tidyr::build_longer_spec(...)
+  8. │   └─tidyselect::eval_select(...)
+  9. │     └─tidyselect:::eval_select_impl(...)
+ 10. │       ├─tidyselect:::with_subscript_errors(...)
+ 11. │       │ └─base::withCallingHandlers(...)
+ 12. │       └─tidyselect:::vars_select_eval(...)
+ 13. │         └─tidyselect:::walk_data_tree(expr, data_mask, context_mask)
+ 14. │           └─tidyselect:::eval_c(expr, data_mask, context_mask)
+ 15. │             └─tidyselect:::reduce_sels(node, data_mask, context_mask, init = init)
+ 16. │               └─tidyselect:::walk_data_tree(new, data_mask, context_mask)
+ 17. │                 └─tidyselect:::as_indices_sel_impl(...)
+ 18. │                   └─tidyselect:::as_indices_impl(...)
+ 19. │                     └─tidyselect:::chr_as_locations(x, vars, call = call, arg = arg)
+ 20. │                       └─vctrs::vec_as_location(...)
+ 21. └─vctrs (local) `<fn>`()
+ 22.   └─vctrs:::stop_subscript_oob(...)
+ 23.     └─vctrs:::stop_subscript(...)
+ 24.       └─rlang::abort(...)
+Execution halted

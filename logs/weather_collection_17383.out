@@ -1,0 +1,241 @@
+Agent pid 476241
+📊 Updating dashboard via monitor project...
+📊 Updating job status: weather-hourly -> running (5%)
+✅ Status file updated: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly.json
+🔄 Attempting dashboard sync with git lock...
+🔄 Git sync requested: weather-hourly (running)
+✅ Git lock acquired (PID: 476263)
+🔄 Starting git sync operations...
+📁 Working directory: /home/j.palmer/research/mosquito-alert-model-monitor
+📝 Adding updated files...
+📋 Changes to commit:
+data/status/weather-hourly.json
+💾 Committing: Dashboard update: weather-hourly (running) (2025-08-24 00:48:12)
+[main 2080c51] Dashboard update: weather-hourly (running) (2025-08-24 00:48:12)
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+✅ Changes committed successfully
+⬆️  Pushing to remote...
+✅ Push successful
+✅ Git sync completed: weather-hourly (running)
+🔓 Git lock released
+📊 Status update complete: weather-hourly -> running
+Already up to date.
+Starting weather data collection: Sun Aug 24 02:48:17 CEST 2025
+📊 Updating dashboard via monitor project...
+📊 Updating job status: weather-hourly -> running (20%)
+✅ Status file updated: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly.json
+🔄 Attempting dashboard sync with git lock...
+🔄 Git sync requested: weather-hourly (running)
+✅ Git lock acquired (PID: 476313)
+🔄 Starting git sync operations...
+📁 Working directory: /home/j.palmer/research/mosquito-alert-model-monitor
+📝 Adding updated files...
+📋 Changes to commit:
+data/status/weather-hourly.json
+💾 Committing: Dashboard update: weather-hourly (running) (2025-08-24 00:48:17)
+[main a1032f1] Dashboard update: weather-hourly (running) (2025-08-24 00:48:17)
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+✅ Changes committed successfully
+⬆️  Pushing to remote...
+✅ Push successful
+✅ Git sync completed: weather-hourly (running)
+🔓 Git lock released
+📊 Status update complete: weather-hourly -> running
+Collecting municipal forecasts...
+📊 Updating dashboard via monitor project...
+📊 Updating job status: weather-forecast -> running (25%)
+✅ Status file updated: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-forecast.json
+🔄 Attempting dashboard sync with git lock...
+🔄 Git sync requested: weather-forecast (running)
+✅ Git lock acquired (PID: 476352)
+🔄 Starting git sync operations...
+📁 Working directory: /home/j.palmer/research/mosquito-alert-model-monitor
+📝 Adding updated files...
+📋 Changes to commit:
+data/status/weather-forecast.json
+💾 Committing: Dashboard update: weather-forecast (running) (2025-08-24 00:48:20)
+[main f4f239f] Dashboard update: weather-forecast (running) (2025-08-24 00:48:20)
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+✅ Changes committed successfully
+⬆️  Pushing to remote...
+✅ Push successful
+✅ Git sync completed: weather-forecast (running)
+🔓 Git lock released
+📊 Status update complete: weather-forecast -> running
+📊 Updating dashboard via monitor project...
+📊 Updating job status: weather-forecast -> completed (100%)
+✅ Status file updated: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-forecast.json
+🔄 Attempting dashboard sync with git lock...
+🔄 Git sync requested: weather-forecast (completed)
+✅ Git lock acquired (PID: 476435)
+🔄 Starting git sync operations...
+📁 Working directory: /home/j.palmer/research/mosquito-alert-model-monitor
+📝 Adding updated files...
+📋 Changes to commit:
+data/status/weather-forecast.json
+💾 Committing: Dashboard update: weather-forecast (completed) (2025-08-24 00:48:57)
+[main a7f8817] Dashboard update: weather-forecast (completed) (2025-08-24 00:48:57)
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+✅ Changes committed successfully
+⬆️  Pushing to remote...
+✅ Push successful
+✅ Git sync completed: weather-forecast (completed)
+🔓 Git lock released
+📊 Status update complete: weather-forecast -> completed
+Collecting hourly observations...
+📊 Updating dashboard via monitor project...
+📊 Updating job status: weather-hourly -> running (50%)
+✅ Status file updated: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly.json
+🔄 Attempting dashboard sync with git lock...
+🔄 Git sync requested: weather-hourly (running)
+✅ Git lock acquired (PID: 476474)
+🔄 Starting git sync operations...
+📁 Working directory: /home/j.palmer/research/mosquito-alert-model-monitor
+📝 Adding updated files...
+📋 Changes to commit:
+data/status/weather-hourly.json
+💾 Committing: Dashboard update: weather-hourly (running) (2025-08-24 00:48:59)
+[main 3ef5890] Dashboard update: weather-hourly (running) (2025-08-24 00:48:59)
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+✅ Changes committed successfully
+⬆️  Pushing to remote...
+✅ Push successful
+✅ Git sync completed: weather-hourly (running)
+🔓 Git lock released
+📊 Status update complete: weather-hourly -> running
+📊 Updating dashboard via monitor project...
+📊 Updating job status: weather-hourly -> completed (100%)
+✅ Status file updated: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly.json
+🔄 Attempting dashboard sync with git lock...
+🔄 Git sync requested: weather-hourly (completed)
+✅ Git lock acquired (PID: 476563)
+🔄 Starting git sync operations...
+📁 Working directory: /home/j.palmer/research/mosquito-alert-model-monitor
+📝 Adding updated files...
+📋 Changes to commit:
+data/status/weather-hourly.json
+💾 Committing: Dashboard update: weather-hourly (completed) (2025-08-24 00:49:24)
+[main 113da6c] Dashboard update: weather-hourly (completed) (2025-08-24 00:49:24)
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+✅ Changes committed successfully
+⬆️  Pushing to remote...
+✅ Push successful
+✅ Git sync completed: weather-hourly (completed)
+🔓 Git lock released
+📊 Status update complete: weather-hourly -> completed
+Updating historical data...
+📊 Updating dashboard via monitor project...
+📊 Updating job status: weather-historical -> running (70%)
+✅ Status file updated: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-historical.json
+🔄 Attempting dashboard sync with git lock...
+🔄 Git sync requested: weather-historical (running)
+✅ Git lock acquired (PID: 476602)
+🔄 Starting git sync operations...
+📁 Working directory: /home/j.palmer/research/mosquito-alert-model-monitor
+📝 Adding updated files...
+📋 Changes to commit:
+data/status/weather-historical.json
+💾 Committing: Dashboard update: weather-historical (running) (2025-08-24 00:49:27)
+[main 8fa3225] Dashboard update: weather-historical (running) (2025-08-24 00:49:27)
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+✅ Changes committed successfully
+⬆️  Pushing to remote...
+✅ Push successful
+✅ Git sync completed: weather-historical (running)
+🔓 Git lock released
+📊 Status update complete: weather-historical -> running
+📊 Updating dashboard via monitor project...
+📊 Updating job status: weather-historical -> completed (100%)
+✅ Status file updated: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-historical.json
+🔄 Attempting dashboard sync with git lock...
+🔄 Git sync requested: weather-historical (completed)
+✅ Git lock acquired (PID: 480617)
+🔄 Starting git sync operations...
+📁 Working directory: /home/j.palmer/research/mosquito-alert-model-monitor
+📝 Adding updated files...
+📋 Changes to commit:
+data/status/weather-historical.json
+💾 Committing: Dashboard update: weather-historical (completed) (2025-08-24 07:03:26)
+[main 207832f] Dashboard update: weather-historical (completed) (2025-08-24 07:03:26)
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+✅ Changes committed successfully
+⬆️  Pushing to remote...
+⚠️  Push attempt 1 failed
+🔄 Pulling latest changes...
+✅ Rebase successful, retrying push...
+✅ Push successful
+✅ Git sync completed: weather-historical (completed)
+🔓 Git lock released
+📊 Status update complete: weather-historical -> completed
+Generating aggregated datasets...
+📊 Updating dashboard via monitor project...
+📊 Updating job status: weather-aggregation -> running (90%)
+✅ Status file updated: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-aggregation.json
+🔄 Attempting dashboard sync with git lock...
+🔄 Git sync requested: weather-aggregation (running)
+✅ Git lock acquired (PID: 480674)
+🔄 Starting git sync operations...
+📁 Working directory: /home/j.palmer/research/mosquito-alert-model-monitor
+📝 Adding updated files...
+📋 Changes to commit:
+data/status/weather-aggregation.json
+💾 Committing: Dashboard update: weather-aggregation (running) (2025-08-24 07:03:40)
+[main 981067f] Dashboard update: weather-aggregation (running) (2025-08-24 07:03:40)
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+✅ Changes committed successfully
+⬆️  Pushing to remote...
+✅ Push successful
+✅ Git sync completed: weather-aggregation (running)
+🔓 Git lock released
+📊 Status update complete: weather-aggregation -> running
+=== GENERATING ALL REQUIRED DATASETS ===
+Started at: Sun Aug 24 09:03:43 CEST 2025
+Log files will be saved with prefix: logs/generate_datasets_20250824_090343
+
+Checking for required input files...
+Input file check complete.
+
+=== STEP 1/3: GENERATING DATASET 1 (Daily Station Data) ===
+Running aggregate_daily_station_data.R...
+📊 Updating dashboard via monitor project...
+📊 Updating job status: weather-aggregation -> failed (90%)
+✅ Status file updated: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-aggregation.json
+🔄 Attempting dashboard sync with git lock...
+🔄 Git sync requested: weather-aggregation (failed)
+✅ Git lock acquired (PID: 480762)
+🔄 Starting git sync operations...
+📁 Working directory: /home/j.palmer/research/mosquito-alert-model-monitor
+📝 Adding updated files...
+📋 Changes to commit:
+data/status/weather-aggregation.json
+💾 Committing: Dashboard update: weather-aggregation (failed) (2025-08-24 07:04:06)
+[main 3b32958] Dashboard update: weather-aggregation (failed) (2025-08-24 07:04:06)
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+✅ Changes committed successfully
+⬆️  Pushing to remote...
+✅ Push successful
+✅ Git sync completed: weather-aggregation (failed)
+🔓 Git lock released
+📊 Status update complete: weather-aggregation -> failed
+❌ Dataset generation failed
+Weather data collection completed: Sun Aug 24 09:04:08 CEST 2025
+📊 Updating dashboard via monitor project...
+📊 Updating job status: weather-hourly -> completed (100%)
+✅ Status file updated: /home/j.palmer/research/mosquito-alert-model-monitor/data/status/weather-hourly.json
+🔄 Attempting dashboard sync with git lock...
+🔄 Git sync requested: weather-hourly (completed)
+✅ Git lock acquired (PID: 480803)
+🔄 Starting git sync operations...
+📁 Working directory: /home/j.palmer/research/mosquito-alert-model-monitor
+📝 Adding updated files...
+📋 Changes to commit:
+data/status/weather-hourly.json
+💾 Committing: Dashboard update: weather-hourly (completed) (2025-08-24 07:04:09)
+[main 479accc] Dashboard update: weather-hourly (completed) (2025-08-24 07:04:09)
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+✅ Changes committed successfully
+⬆️  Pushing to remote...
+✅ Push successful
+✅ Git sync completed: weather-hourly (completed)
+🔓 Git lock released
+📊 Status update complete: weather-hourly -> completed

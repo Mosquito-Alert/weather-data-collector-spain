@@ -12,7 +12,7 @@ library(lubridate)
 source("auth/keys.R")
 
 # Set testing mode to TRUE and specify N_TEST_MUNICIPALITIES to get forecase for only selected municipalities
-TESTING_MODE = TRUE
+TESTING_MODE = FALSE
 N_TEST_MUNICIPALITIES = 2
 
 cat("=== AEMET FORECAST DATA COLLECTION ===\n")

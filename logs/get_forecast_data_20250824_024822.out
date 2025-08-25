@@ -1,0 +1,296 @@
+
+R version 4.4.2 (2024-10-31) -- "Pile of Leaves"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '~/research/weather-data-collector-spain' loaded. [renv 1.1.4]
+> #!/usr/bin/env Rscript
+> 
+> # Simple forecast data collection based on proven working patterns
+> library(jsonlite)
+> library(httr)      # Use httr like in the working script
+> library(curl)
+Using libcurl 8.7.1 with OpenSSL/3.2.2
+
+Attaching package: ‘curl’
+
+The following object is masked from ‘package:httr’:
+
+    handle_reset
+
+> library(dplyr)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> library(data.table)
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+> library(lubridate)
+
+Attaching package: ‘lubridate’
+
+The following objects are masked from ‘package:data.table’:
+
+    hour, isoweek, mday, minute, month, quarter, second, wday, week,
+    yday, year
+
+The following objects are masked from ‘package:base’:
+
+    date, intersect, setdiff, union
+
+> 
+> # Load API keys
+> source("auth/keys.R")
+> 
+> # Set testing mode to TRUE and specify N_TEST_MUNICIPALITIES to get forecase for only selected municipalities
+> TESTING_MODE = TRUE
+> N_TEST_MUNICIPALITIES = 2
+> 
+> cat("=== AEMET FORECAST DATA COLLECTION ===\n")
+=== AEMET FORECAST DATA COLLECTION ===
+> cat("Started at:", format(Sys.time()), "\n")
+Started at: 2025-08-24 02:48:38 
+> 
+> # Function to get municipality forecast using working pattern
+> get_municipality_forecast_v2 = function(municipio_code, municipio_name = NULL) {
++   tryCatch({
++     cat("Processing", municipio_code, "\n")
++     
++     # Initialize curl handle with current API key
++     h = new_handle()
++     handle_setheaders(h, 'api_key' = get_current_api_key())
++     
++     # Request forecast data URL
++     response1 = curl_fetch_memory(
++       paste0('https://opendata.aemet.es/opendata/api/prediccion/especifica/municipio/diaria/', municipio_code), 
++       handle = h
++     )
++     
++     if(response1$status_code == 429) {
++       cat("Rate limit - rotating key...\n")
++       rotate_api_key()
++       handle_setheaders(h, 'api_key' = get_current_api_key())
++       Sys.sleep(3)
++       
++       response1 = curl_fetch_memory(
++         paste0('https://opendata.aemet.es/opendata/api/prediccion/especifica/municipio/diaria/', municipio_code), 
++         handle = h
++       )
++     }
++     
++     if(response1$status_code != 200) {
++       cat("API request failed:", response1$status_code, "\n")
++       return(NULL)
++     }
++     
++     # Parse response to get data URL
++     response_content = fromJSON(rawToChar(response1$content))
++     
++     if(!"datos" %in% names(response_content)) {
++       cat("No data URL in response\n")
++       return(NULL)
++     }
++     
++     # Fetch actual forecast data
++     Sys.sleep(1)
++     response2 = curl_fetch_memory(response_content$datos)
++     
++     if(response2$status_code != 200) {
++       cat("Data request failed:", response2$status_code, "\n")
++       return(NULL)
++     }
++     
++     # Parse forecast data using your working approach
++     this_string = rawToChar(response2$content)
++     Encoding(this_string) = "latin1"
++     forecast_data = fromJSON(this_string)
++     
++     # Extract municipality info
++     municipio_nombre = forecast_data$nombre
++     provincia = forecast_data$provincia
++     elaborado = forecast_data$elaborado
++     
++     # Process all 7 days at once (wdia[[1]] contains vectors for all days)
++             wdia = forecast_data$prediccion$dia
++             
++             # Extract vectors for all 7 days using your proven pattern
++             fechas = as.Date(wdia[[1]]$fecha)  # Direct conversion using as.Date
++             temp_max = wdia[[1]]$temperatura$maxima
++             temp_min = wdia[[1]]$temperatura$minima
++             temp_avg = rowMeans(cbind(temp_max, temp_min), na.rm = TRUE)
++             
++             # Extract additional variables following your pattern
++             humid_max = if("humedadRelativa" %in% names(wdia[[1]])) {
++               wdia[[1]]$humedadRelativa$maxima
++             } else rep(NA, length(fechas))
++             
++             humid_min = if("humedadRelativa" %in% names(wdia[[1]])) {
++               wdia[[1]]$humedadRelativa$minima
++             } else rep(NA, length(fechas))
++             
++             # Wind data (following your unlist/lapply pattern)
++             wind_speed = if("viento" %in% names(wdia[[1]])) {
++               unlist(lapply(wdia[[1]]$viento, function(x) {
++                 if(is.list(x) && "velocidad" %in% names(x)) {
++                   mean(x$velocidad, na.rm = TRUE)
++                 } else NA
++               }))
++             } else rep(NA, length(fechas))
++             
++             cat("Extracted", length(fechas), "forecast days\n")
++             cat("First day - Date:", as.character(fechas[1]), "Temp max:", temp_max[1], "Temp min:", temp_min[1], "Temp avg:", temp_avg[1], "\n")
++             
++             # Create result data frame with all 7 days
++             result = data.frame(
++               municipio_id = municipio_code,
++               municipio_nombre = forecast_data$nombre,
++               provincia = forecast_data$provincia,
++               elaborado = forecast_data$elaborado,
++               fecha = fechas,
++               temp_max = temp_max,
++               temp_min = temp_min, 
++               temp_avg = temp_avg,
++               humid_max = humid_max,
++               humid_min = humid_min,
++               wind_speed = wind_speed,
++               stringsAsFactors = FALSE
++             )
++             
++             return(result)
++     
++   }, error = function(e) {
++     cat("✗ ERROR:", e$message, "\n")
++     return(NULL)
++   })
++ }
+> 
+> # Load municipality data
+> cat("Loading municipality codes...\n")
+Loading municipality codes...
+> municipalities_data = fread("data/input/municipalities.csv.gz")
+> cat("Loaded", nrow(municipalities_data), "municipalities\n")
+Loaded 8129 municipalities
+> 
+> working_municipalities = municipalities_data$CUMUN
+> names(working_municipalities) = municipalities_data$NAMEUNIT
+> 
+> if(TESTING_MODE){
++   working_municipalities = head(working_municipalities, N_TEST_MUNICIPALITIES)
++   cat("Testing with", N_TEST_MUNICIPALITIES, "municipalities\n\n")
++ }
+Testing with 2 municipalities
+
+> 
+> # Collect forecasts
+> all_forecasts = list()
+> successful_collections = 0
+> 
+> for(i in seq_along(working_municipalities)) {
++   city = names(working_municipalities)[i]
++   code = working_municipalities[i]
++   
++   cat("Municipality", i, "of", length(working_municipalities), ":", city, "(", code, ")\n")
++   
++   if(i > 1) {
++     cat("Waiting 15 seconds...\n")
++     Sys.sleep(15)  # Longer delay to avoid rate limits
++   }
++   
++   forecast_data = get_municipality_forecast_v2(code, city)
++   
++   if(!is.null(forecast_data)) {
++     all_forecasts[[code]] = forecast_data
++     successful_collections = successful_collections + 1
++   }
++   
++   cat("\n")
++ }
+Municipality 1 of 2 : Solórzano ( 39084 )
+Processing 39084 
+Extracted 7 forecast days
+First day - Date: 2025-08-23 Temp max: 25 Temp min: 12 Temp avg: 18.5 
+
+Municipality 2 of 2 : Pino del Oro ( 49157 )
+Waiting 15 seconds...
+Processing 49157 
+Extracted 7 forecast days
+First day - Date: 2025-08-23 Temp max: 31 Temp min: 12 Temp avg: 21.5 
+
+Warning messages:
+1: In data.frame(municipio_id = municipio_code, municipio_nombre = forecast_data$nombre,  :
+  row names were found from a short variable and have been discarded
+2: In data.frame(municipio_id = municipio_code, municipio_nombre = forecast_data$nombre,  :
+  row names were found from a short variable and have been discarded
+> 
+> cat("=== RESULTS ===\n")
+=== RESULTS ===
+> cat("Municipalities attempted:", length(working_municipalities), "\n")
+Municipalities attempted: 2 
+> cat("Successful collections:", successful_collections, "\n")
+Successful collections: 2 
+> 
+> if(length(all_forecasts) > 0) {
++   final_data = do.call(rbind, all_forecasts)
++   
++   # Add collection timestamp
++   final_data$collected_at = Sys.time()
++   
++   cat("Total forecast records:", nrow(final_data), "\n")
++   cat("Date range:", as.character(min(final_data$fecha)), "to", as.character(max(final_data$fecha)), "\n")
++   cat("Sample data:\n")
++   print(head(final_data, 3))
++   
++   # Ensure output directory exists
++   dir.create("data/output", recursive = TRUE, showWarnings = FALSE)
++   
++   # Save the data
++   output_file = paste0("data/output/municipal_forecasts_", Sys.Date(), ".csv")
++   write.csv(final_data, output_file, row.names = FALSE)
++   cat("Data saved to:", output_file, "\n")
++ } else {
++   cat("No data collected\n")
++ }
+Total forecast records: 14 
+Date range: 2025-08-23 to 2025-08-29 
+Sample data:
+  municipio_id municipio_nombre provincia           elaborado      fecha
+1        39084        Solórzano Cantabria 2025-08-23T21:07:13 2025-08-23
+2        39084        Solórzano Cantabria 2025-08-23T21:07:13 2025-08-24
+3        39084        Solórzano Cantabria 2025-08-23T21:07:13 2025-08-25
+  temp_max temp_min temp_avg humid_max humid_min wind_speed        collected_at
+1       25       12     18.5        80        75   2.142857 2025-08-24 02:48:56
+2       27       16     21.5        95        65   7.857143 2025-08-24 02:48:56
+3       26       17     21.5       100        70  11.666667 2025-08-24 02:48:56
+Data saved to: data/output/municipal_forecasts_2025-08-24.csv 
+> 
+> cat("Completed at:", format(Sys.time()), "\n")
+Completed at: 2025-08-24 02:48:56 
+> 
+> proc.time()
+   user  system elapsed 
+  4.792   1.311  34.502 

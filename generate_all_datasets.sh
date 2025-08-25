@@ -25,6 +25,15 @@ set -e  # Exit on any error
 # Set working directory to script location
 cd "$(dirname "$0")"
 
+# Load modules if running in SLURM environment (modules might not be inherited by sub-shells)
+if [ -n "$SLURM_JOB_ID" ]; then
+    module load GDAL/3.10.0-foss-2024a
+    module load R/4.4.2-gfbf-2024a
+    module load LibTIFF/4.6.0-GCCcore-13.3.0
+    module load cURL/8.7.1-GCCcore-13.3.0
+    module load OpenSSL/3
+fi
+
 # Create necessary directories
 mkdir -p logs
 mkdir -p data/output
@@ -36,6 +45,18 @@ LOG_PREFIX="logs/generate_datasets_${TIMESTAMP}"
 echo "=== GENERATING ALL REQUIRED DATASETS ==="
 echo "Started at: $(date)"
 echo "Log files will be saved with prefix: ${LOG_PREFIX}"
+
+# Check for test mode
+if [[ "$1" == "--test-only" ]]; then
+    echo "TEST MODE: Only checking R availability"
+    if command -v R &> /dev/null; then
+        echo "✅ R is available"
+        R --version | head -1
+    else
+        echo "❌ R is not available"
+    fi
+    exit 0
+fi
 
 # Check if R is available
 if ! command -v R &> /dev/null; then

@@ -1,0 +1,10 @@
+/var/spool/slurmd/job17377/slurm_script: line 15: module: command not found
+/var/spool/slurmd/job17377/slurm_script: line 16: module: command not found
+/var/spool/slurmd/job17377/slurm_script: line 17: module: command not found
+/var/spool/slurmd/job17377/slurm_script: line 18: module: command not found
+Identity added: /home/j.palmer/.ssh/id_rsa (/home/j.palmer/.ssh/id_rsa)
+From github.com:Mosquito-Alert/weather-data-collector-spain
+ * branch            main       -> FETCH_HEAD
+/var/spool/slurmd/job17377/slurm_script: line 60: R: command not found
+/var/spool/slurmd/job17377/slurm_script: line 71: R: command not found
+/var/spool/slurmd/job17377/slurm_script: line 83: R: command not found

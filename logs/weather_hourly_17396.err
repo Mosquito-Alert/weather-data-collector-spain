@@ -1,0 +1,5 @@
+/var/spool/slurmd/job17396/slurm_script: line 15: module: command not found
+/var/spool/slurmd/job17396/slurm_script: line 16: module: command not found
+/var/spool/slurmd/job17396/slurm_script: line 17: module: command not found
+/var/spool/slurmd/job17396/slurm_script: line 18: module: command not found
+/var/spool/slurmd/job17396/slurm_script: line 42: R: command not found
