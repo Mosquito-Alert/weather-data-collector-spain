@@ -1,6 +1,6 @@
 ---
 title: Spanish Weather Data Collection System
-layout: default
+layout: toc
 ---
 
 # Spanish Weather Data Collection System
@@ -241,7 +241,7 @@ For technical questions or issues:
 
 ## License
 
-MIT License - see LICENSE file for complete terms.
+GPLv3 License - see LICENSE file for complete terms.
 - [Variable Reference](variables.html) - Complete variable definitions
 
 ## Recent Updates

@@ -140,7 +140,7 @@ All datasets use standardized English variable names. Municipality IDs use CUMUN
 
 ## License
 
-MIT License - see LICENSE file for details.
+GPLv3 License - see LICENSE file for details.
 - **Records**: 2,250 station-days
 - **Stations**: 838 weather stations
 - **Coverage**: 2025-08-17 to 2025-08-25

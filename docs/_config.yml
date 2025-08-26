@@ -14,7 +14,6 @@ plugins:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-seo-tag
-  - jekyll-paginate
 
 # SEO settings
 author: Mosquito Alert
@@ -25,24 +24,10 @@ social:
   links:
     - https://github.com/Mosquito-Alert
 
-# Navigation
-nav_links:
-  - title: "Home"
-    url: "/"
-  - title: "API Analysis"
-    url: "/api-analysis"
-  - title: "Data Structure"
-    url: "/data-structure"
-  - title: "Scripts Documentation"
-    url: "/scripts"
-  - title: "Variable Reference"
-    url: "/variables"
-
-# Collections
-collections:
-  analysis:
-    output: true
-    permalink: /:collection/:name/
+# Table of contents
+kramdown:
+  toc_levels: 1..3
+  auto_ids: true
 
 # Exclude files
 exclude:
