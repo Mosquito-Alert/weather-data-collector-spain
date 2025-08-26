@@ -1,14 +1,14 @@
 #!/bin/bash
-#SBATCH --job-name=readme_update
-#SBATCH --output=logs/readme_update_%j.out
-#SBATCH --error=logs/readme_update_%j.err
-#SBATCH --time=00:30:00
+#SBATCH --job-name=fill_gaps
+#SBATCH --output=logs/fill_gaps_%j.out
+#SBATCH --error=logs/fill_gaps_%j.err
+#SBATCH --time=02:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=2G
+#SBATCH --mem=4G
 #SBATCH --partition=ceab
 
-echo "=== README Update Job ===
+echo "=== Gap Filling Job ===
 Job ID: $SLURM_JOB_ID
 Node: $HOSTNAME
 Started at: $(date)"
@@ -26,8 +26,8 @@ cd /home/j.palmer/research/weather-data-collector-spain
 # Create logs directory if it doesn't exist
 mkdir -p logs
 
-echo "Updating README with current data summary..."
-Rscript code/update_readme_with_summary.R
+echo "Starting gap filling analysis..."
+Rscript scripts/r/fill_data_gaps.R
 
 echo "=== Job Completion ==="
 echo "Exit code: $?"

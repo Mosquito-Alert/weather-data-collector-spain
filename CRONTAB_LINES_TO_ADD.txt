@@ -1,8 +1,16 @@
 # WEATHER DATA COLLECTION - HYBRID SYSTEM
 # Add these lines to your existing crontab with: crontab -e
 
-# Main hybrid collection (daily at 2 AM) - All three datasets
-0 2 * * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch update_weather_hybrid.sh
+# Main hybrid collection - Daily at 2:00 AM
+# Collects all three datasets (station daily, municipal forecasts, hourly)
+# Expected completion: 2-4 hours vs 33+ hours with old approach
+0 2 * * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch scripts/bash/update_weather_hybrid.sh
+
+# Daily README update (6 AM) - Updates README with current status after collection
+0 6 * * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch scripts/bash/update_readme_summary.sh
+
+# Weekly gap filling (Sundays at 1 AM) - Fills any missing data without redundancy  
+0 1 * * 0 cd /home/j.palmer/research/weather-data-collector-spain && sbatch scripts/bash/fill_gaps.sh
 
 # Daily README update (6 AM) - Updates README with current status after collection
 0 6 * * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch scripts/update_readme_summary.sh

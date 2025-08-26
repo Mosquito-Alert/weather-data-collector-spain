@@ -1,13 +1,146 @@
-# Weather Data Collector - Spain
+# Spanish Weather Data Collection System
 
-This repository provides scripts to download, update, and manage weather data from AEMET weather stations across Spain, producing three comprehensive datasets for analysis and research.
+Automated collection and processing of Spanish meteorological data from AEMET (Agencia Estatal de Meteorología) OpenData API.
 
+## Overview
 
-## 📊 Current Data Collection Status
+This system collects three standardized weather datasets covering all Spanish weather stations and municipalities:
 
-*Last updated: 2025-08-25 21:23:49*
+- **Daily Station Data**: Historical daily measurements from 4,000+ weather stations
+- **Municipal Forecasts**: 7-day forecasts for all 8,000+ Spanish municipalities  
+- **Hourly Station Data**: High-frequency measurements for recent periods
 
-### Dataset 1: Daily Station Data
+Data is automatically collected, quality-controlled, and aggregated into standardized CSV files ready for analysis.
+
+## Data Outputs
+
+The system produces three main datasets with standardized variable names:
+
+### 1. `daily_station_historical.csv`
+Daily weather measurements from Spanish meteorological stations.
+
+**Key Variables**: `date`, `station_id`, `temp_mean`, `temp_max`, `temp_min`, `precipitation`, `humidity_mean`, `wind_speed`, `pressure_max`, `pressure_min`
+
+**Coverage**: 4,000+ stations across Spain  
+**Time Range**: Recent daily observations  
+**Update**: Daily at 2 AM
+
+### 2. `daily_municipal_extended.csv`  
+Municipal-level weather data combining forecasts with station aggregations.
+
+**Key Variables**: `date`, `municipality_id`, `temp_mean`, `temp_max`, `temp_min`, `humidity_mean`, `wind_speed`
+
+**Coverage**: 8,000+ Spanish municipalities  
+**Data Priority**: Station aggregations take precedence over forecasts when both exist  
+**Update**: Daily at 2 AM
+
+### 3. `hourly_station_ongoing.csv`
+High-frequency station measurements for detailed analysis.
+
+**Key Variables**: `datetime`, `station_id`, `variable_type`, `value`  
+
+**Coverage**: Selected weather stations  
+**Update**: Daily at 2 AM
+
+## Data Flow
+
+```
+AEMET OpenData API
+       ↓
+   Data Collection
+   (scripts/r/*.R)
+       ↓
+   Quality Control  
+   & Standardization
+       ↓
+   Municipal Aggregation
+   (Station → Municipal)
+       ↓
+   Final Datasets
+   (data/output/*.csv)
+```
+
+## Technical Implementation
+
+### Collection System
+- **Language**: R with SLURM job scheduling
+- **API Access**: AEMET OpenData with rate limiting
+- **Performance**: climaemet package provides 48x speedup for municipal forecasts
+- **Execution Time**: 2-4 hours total (previously 33+ hours)
+
+### Data Processing
+- **Variable Standardization**: English names with documented units
+- **Quality Control**: Temperature and precipitation validation
+- **Gap Management**: Automatic detection and filling of missing data
+- **Municipality Codes**: CUMUN format from AEMET (documented for merge compatibility)
+
+### Automation
+- **Daily Collection**: 2:00 AM via SLURM scheduler
+- **Gap Filling**: Weekly on Sundays at 1:00 AM  
+- **Documentation Updates**: Daily at 6:00 AM
+
+## Getting Started
+
+### Prerequisites
+- SLURM HPC environment with R/4.4.2 and GDAL/3.10.0
+- AEMET OpenData API key (stored in `auth/keys.R`)
+- Required R packages: tidyverse, climaemet, meteospain, data.table
+
+### Installation
+1. Clone repository
+2. Configure API key in `auth/keys.R`
+3. Install crontab automation:
+```bash
+# Add these lines to crontab -e
+0 2 * * * cd /path/to/project && sbatch scripts/bash/update_weather_hybrid.sh
+0 6 * * * cd /path/to/project && sbatch scripts/bash/update_readme_summary.sh  
+0 1 * * 0 cd /path/to/project && sbatch scripts/bash/fill_gaps.sh
+```
+
+### Manual Execution
+```bash
+# Full data collection
+sbatch scripts/bash/update_weather_hybrid.sh
+
+# Gap analysis and filling
+sbatch scripts/bash/fill_gaps.sh
+
+# Update documentation
+sbatch scripts/bash/update_readme_summary.sh
+```
+
+## File Structure
+
+```
+scripts/
+├── r/              # R collection and analysis scripts
+├── bash/           # SLURM job scripts  
+└── archive/        # Archived/unused scripts
+
+data/
+├── output/         # Final standardized datasets
+├── backup/         # Data backups and archives
+└── input/          # Reference data (station lists, etc.)
+
+docs/               # Technical documentation
+auth/               # API credentials (excluded from git)
+logs/               # SLURM job outputs
+```
+
+## Variable Documentation
+
+All datasets use standardized English variable names. Municipality IDs use CUMUN codes from AEMET. See `docs/variable_standardization.md` for complete mapping from original AEMET variable names.
+
+## Performance Notes
+
+- **Municipal forecasts**: 48x performance improvement using climaemet package
+- **Daily execution**: 2-4 hours total vs 33+ hours with previous approach
+- **Data priority**: Station measurements replace forecasts as they become available
+- **Gap management**: Prevents redundant historical data collection
+
+## License
+
+MIT License - see LICENSE file for details.
 - **Records**: 2,250 station-days
 - **Stations**: 838 weather stations
 - **Coverage**: 2025-08-17 to 2025-08-25

@@ -47,7 +47,7 @@ echo "Expected completion time: 2-4 hours (vs 33+ hours with old approach)"
 echo ""
 
 # Execute the standardized collection script
-Rscript code/collect_all_datasets_standardized.R
+Rscript scripts/r/collect_all_datasets_standardized.R
 
 exit_code=$?
 
