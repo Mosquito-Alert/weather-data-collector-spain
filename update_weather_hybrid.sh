@@ -25,6 +25,9 @@ echo ""
 echo "Loading modules..."
 module load GDAL/3.10.0-foss-2024a
 module load R/4.4.2-gfbf-2024a
+module load LibTIFF/4.6.0-GCCcore-13.3.0
+module load cURL/8.7.1-GCCcore-13.3.0
+module load OpenSSL/3
 
 # Verify modules loaded
 echo "R version: $(R --version | head -1)"

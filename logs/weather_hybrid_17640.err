@@ -1,0 +1,5 @@
+/var/spool/slurmd/job17640/slurm_script: line 26: module: command not found
+/var/spool/slurmd/job17640/slurm_script: line 27: module: command not found
+/var/spool/slurmd/job17640/slurm_script: line 30: R: command not found
+/var/spool/slurmd/job17640/slurm_script: line 31: gdal-config: command not found
+/var/spool/slurmd/job17640/slurm_script: line 46: Rscript: command not found
