@@ -1,0 +1,19 @@
+Starting robust variable standardization...
+- The project is out-of-sync -- use `renv::status()` for details.
+Processing: daily_station_historical.csv 
+  Original dimensions: 4543 rows, 37 columns
+  Original columns: fecha, indicativo, nombre, provincia, altitud, tmed, prec, tmin, horatmin, tmax ...
+  ✗ Error processing daily_station_historical.csv :  
+
+Processing: daily_municipal_extended.csv 
+  Original dimensions: 18232 rows, 26 columns
+  Original columns: municipio_id, municipio_nombre, provincia, elaborado, fecha, temp_max, temp_min, temp_avg, humid_max, humid_min ...
+  ✗ Error processing daily_municipal_extended.csv :  
+
+Processing: hourly_station_ongoing.csv 
+  Original dimensions: 0 rows, 5 columns
+  Original columns: fint, idema, measure, value, date ...
+  ✗ Error processing hourly_station_ongoing.csv :  
+
+Variable standardization completed!
+Standardization job completed.

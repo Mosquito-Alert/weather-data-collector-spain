@@ -10,16 +10,49 @@ cat("=== UPDATING README WITH DATA SUMMARY ===\n")
 
 # Generate fresh data summary
 cat("Generating current data summary...\n")
-source("code/generate_data_summary.R")
 
-# Read the generated markdown summary
-summary_file = "data/output/current_data_summary.md"
-if(!file.exists(summary_file)) {
-  cat("ERROR: Summary file not found. Data summary generation may have failed.\n")
-  quit(save = "no", status = 1)
+# Create summary directly
+data_dir <- "data/output"
+datasets <- c("daily_station_historical.csv", "daily_municipal_extended.csv", "hourly_station_ongoing.csv")
+
+summary_lines <- c(
+  "## Current Data Status",
+  "",
+  paste("*Last updated:", Sys.time(), "*"),
+  ""
+)
+
+for (dataset in datasets) {
+  file_path <- file.path(data_dir, dataset)
+  if (file.exists(file_path)) {
+    tryCatch({
+      data <- read.csv(file_path, nrows = 1)
+      file_info <- file.info(file_path)
+      summary_lines <- c(summary_lines,
+        paste("### ", gsub("_", " ", gsub(".csv", "", dataset))),
+        paste("- **Records**: ", nrow(read.csv(file_path, header = TRUE))),
+        paste("- **Variables**: ", ncol(data)),
+        paste("- **Last Modified**: ", file_info$mtime),
+        paste("- **File Size**: ", round(file_info$size / 1024^2, 2), "MB"),
+        ""
+      )
+    }, error = function(e) {
+      summary_lines <<- c(summary_lines,
+        paste("### ", gsub("_", " ", gsub(".csv", "", dataset))),
+        "- **Status**: Error reading file",
+        ""
+      )
+    })
+  } else {
+    summary_lines <- c(summary_lines,
+      paste("### ", gsub("_", " ", gsub(".csv", "", dataset))),
+      "- **Status**: File not found",
+      ""
+    )
+  }
 }
 
-new_summary = readLines(summary_file)
+new_summary <- summary_lines
 cat("Read", length(new_summary), "lines from summary file.\n")
 
 # Read current README.md

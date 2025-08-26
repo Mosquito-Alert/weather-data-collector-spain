@@ -2,30 +2,6 @@
 
 Automated collection and processing of Spanish meteorological data from AEMET (Agencia Estatal de Meteorología) OpenData API.
 
-
-## Current Data Status
-
-*Last updated: 2025-08-26 21:00:46.834172 *
-
-###  daily station historical
-- **Records**:  4543
-- **Variables**:  37
-- **Last Modified**:  2025-08-26 20:56:47
-- **File Size**:  0.91 MB
-
-###  daily municipal extended
-- **Records**:  18232
-- **Variables**:  26
-- **Last Modified**:  2025-08-26 20:56:48
-- **File Size**:  3.01 MB
-
-###  hourly station ongoing
-- **Records**:  0
-- **Variables**:  5
-- **Last Modified**:  2025-08-26 20:56:48
-- **File Size**:  0 MB
-
-
 ## Overview
 
 This system collects three standardized weather datasets covering all Spanish weather stations and municipalities:
