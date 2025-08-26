@@ -46,8 +46,8 @@ echo "Strategy: Append to three final files (no fragmentation)"
 echo "Expected completion time: 2-4 hours (vs 33+ hours with old approach)"
 echo ""
 
-# Execute the consolidated collection script
-Rscript code/collect_all_datasets_consolidated.R
+# Execute the standardized collection script
+Rscript code/collect_all_datasets_standardized.R
 
 exit_code=$?
 
