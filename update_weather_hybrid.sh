@@ -40,13 +40,14 @@ cd /home/j.palmer/research/weather-data-collector-spain
 # Create logs directory if it doesn't exist
 mkdir -p logs
 
-# Run the hybrid collection
-echo "Starting hybrid weather data collection..."
+# Run the consolidated collection (three-file strategy)
+echo "Starting consolidated weather data collection..."
+echo "Strategy: Append to three final files (no fragmentation)"
 echo "Expected completion time: 2-4 hours (vs 33+ hours with old approach)"
 echo ""
 
-# Execute the main collection script
-Rscript code/collect_all_datasets_hybrid.R
+# Execute the consolidated collection script
+Rscript code/collect_all_datasets_consolidated.R
 
 exit_code=$?
 

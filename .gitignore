@@ -10,6 +10,7 @@ auth
 
 # ignoring all output data files - only track input data and documentation
 data/output/
+data/backup/
 data/*.csv*
 data/*.gz
 !data/input/
