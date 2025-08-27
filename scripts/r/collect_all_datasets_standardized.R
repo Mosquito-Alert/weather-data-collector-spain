@@ -31,7 +31,7 @@ if(COLLECT_STATION_DATA) {
   dataset1_start = Sys.time()
   
   tryCatch({
-    source("code/get_station_daily_standardized.R")
+    source("scripts/r/aggregate_daily_station_standardized.R")
     dataset1_end = Sys.time()
     times$station_daily = as.numeric(difftime(dataset1_end, dataset1_start, units = "mins"))
     cat("✅ Dataset 1 completed in", round(times$station_daily, 2), "minutes\n\n")
@@ -49,7 +49,7 @@ if(COLLECT_MUNICIPAL_FORECASTS) {
   dataset2_start = Sys.time()
   
   tryCatch({
-    source("code/get_forecast_data_standardized.R")
+    source("scripts/r/aggregate_municipal_standardized.R")
     dataset2_end = Sys.time()
     times$municipal_forecasts = as.numeric(difftime(dataset2_end, dataset2_start, units = "mins"))
     cat("✅ Dataset 2 completed in", round(times$municipal_forecasts, 2), "minutes\n\n")
@@ -67,7 +67,7 @@ if(COLLECT_HOURLY_DATA) {
   dataset3_start = Sys.time()
   
   tryCatch({
-    source("code/get_latest_data_standardized.R")
+    source("scripts/r/aggregate_hourly_standardized.R")
     dataset3_end = Sys.time()
     times$hourly_data = as.numeric(difftime(dataset3_end, dataset3_start, units = "mins"))
     cat("✅ Dataset 3 completed in", round(times$hourly_data, 2), "minutes\n\n")
@@ -79,12 +79,7 @@ if(COLLECT_HOURLY_DATA) {
 
 # === POST-COLLECTION AGGREGATION ===
 cat("=== POST-COLLECTION AGGREGATION ===\n")
-tryCatch({
-  source("code/aggregate_municipal_data_standardized.R")
-  cat("✅ Municipal aggregation completed\n")
-}, error = function(e) {
-  cat("❌ Municipal aggregation failed:", e$message, "\n")
-})
+cat("(Aggregation already performed by standardized wrappers)\n")
 
 # === FINAL GAP ANALYSIS ===
 cat("\n=== POST-COLLECTION GAP ANALYSIS ===\n")
