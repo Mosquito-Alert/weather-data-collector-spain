@@ -196,13 +196,31 @@ standardize_municipal_df <- function(dt) {
   dt <- fix_synonym(dt, "velmedia_municipal", "wind_speed")
   dt <- fix_synonym(dt, "source", "data_source")
   dt <- fix_synonym(dt, "priority", "data_priority")
+  
+  # Normalize municipality_id to canonical 5-digit code (CUMUN/INE-like)
+  # - Preserve original in municipality_id_raw for traceability
+  # - If length < 5: left-pad with zeros (e.g., 1030 -> 01030)
+  # - If length > 5 (e.g., 11-digit composites): keep first 5 digits
+  if ("municipality_id" %in% names(dt)) {
+    if (!"municipality_id_raw" %in% names(dt)) dt[, municipality_id_raw := as.character(municipality_id)]
+    dt[, municipality_id := as.character(municipality_id)]
+    dt[, municipality_id := gsub("[^0-9]", "", municipality_id)]
+    suppressWarnings({
+      dt[nchar(municipality_id) == 0, municipality_id := NA_character_]
+      # Left-pad shorter than 5
+      dt[nchar(municipality_id) > 0 & nchar(municipality_id) < 5, municipality_id := sprintf("%05d", as.integer(municipality_id))]
+      # If exactly 5, keep as-is (ensure zero-padded characters preserved)
+      # If longer than 5, truncate to first 5 digits
+      dt[nchar(municipality_id) > 5, municipality_id := substr(municipality_id, 1L, 5L)]
+    })
+  }
   dt <- drop_numbered_dupes(dt)
   standard_order <- c(
     "municipality_id","municipality_name","province","date",
     "temp_mean","temp_max","temp_min","humidity_mean","humidity_max","humidity_min","wind_speed",
     "forecast_issued_at","data_source","data_priority",
     "n_stations","collection_timestamp","processing_timestamp",
-    "qc_temp_range","qc_temp_realistic"
+    "qc_temp_range","qc_temp_realistic","municipality_id_raw"
   )
   extra <- setdiff(colnames(dt), standard_order)
   setcolorder(dt, c(intersect(standard_order, colnames(dt)), extra))

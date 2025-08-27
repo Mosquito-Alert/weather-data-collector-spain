@@ -1,53 +1,61 @@
 # Spanish Weather Data Collection System
 
-Automated collection and processing of Spanish meteorological data from AEMET (Agencia Estatal de Meteorología) OpenData API.
-
-
-## Current Data Status
-
-*Last updated: 2025-08-26 21:00:46.834172 *
-
-###  daily station historical
-- **Records**:  4543
-- **Variables**:  37
-- **Last Modified**:  2025-08-26 20:56:47
-- **File Size**:  0.91 MB
-
-###  daily municipal extended
-- **Records**:  18232
-- **Variables**:  26
-- **Last Modified**:  2025-08-26 20:56:48
-- **File Size**:  3.01 MB
-
-###  hourly station ongoing
-- **Records**:  0
-- **Variables**:  5
-- **Last Modified**:  2025-08-26 20:56:48
-- **File Size**:  0 MB
-
+Automated collection and processing of Spanish meteorological data from AEMET (Agencia Estatal de Meteorología) OpenData API with **original variable names preserved for data integrity**.
 
 ## Overview
 
-This system collects three standardized weather datasets covering all Spanish weather stations and municipalities:
+This system collects **four distinct weather datasets** from separate AEMET APIs, maintaining original variable names to ensure data integrity and traceability:
 
-- **Daily Station Data**: Historical daily measurements from 4,000+ weather stations
-- **Municipal Forecasts**: 7-day forecasts for all 8,000+ Spanish municipalities  
-- **Hourly Station Data**: High-frequency measurements for recent periods
+1. **Historical Daily Stations**: Long-term daily observations from AEMET historical climatological API
+2. **Current Daily Stations**: Recent daily data aggregated from hourly observations (gap-filling)
+3. **Hourly Station Ongoing**: Real-time hourly measurements from current observation API
+4. **Municipal Forecasts**: 7-day forecasts for all Spanish municipalities (ongoing validation collection)
 
-Data is automatically collected, quality-controlled, and aggregated into standardized CSV files ready for analysis.
+**Key Principle**: Each dataset preserves original AEMET variable names and is kept separate to avoid data mixing issues.
 
 ## Data Outputs
 
-The system produces three main datasets with standardized variable names:
+The system produces four main datasets with **original AEMET variable names**:
 
-### 1. `daily_station_historical.csv`
-Daily weather measurements from Spanish meteorological stations.
+### 1. `daily_stations_historical.csv.gz`
+Daily weather measurements from AEMET historical climatological API.
 
-**Key Variables**: `date`, `station_id`, `temp_mean`, `temp_max`, `temp_min`, `precipitation`, `humidity_mean`, `wind_speed`, `pressure_max`, `pressure_min`
+**Key Variables**: `fecha`, `indicativo`, `tmed`, `tmax`, `tmin`, `prec`, `hrMedia`, `velmedia`, `presMax`, `presMin`
 
 **Coverage**: 4,000+ stations across Spain  
-**Time Range**: Recent daily observations  
-**Update**: Daily at 2 AM
+**Time Range**: 2013 to T-4 days (historical API coverage)  
+**Update**: Daily  
+**Source**: AEMET historical climatological endpoint
+
+### 2. `daily_stations_current.csv.gz`
+Recent daily weather data aggregated from hourly observations to fill the gap between historical and present.
+
+**Key Variables**: Same as historical (`indicativo`, `fecha`, `ta`/`tmed`, `hr`, `vv`, `pres`, etc.)
+
+**Coverage**: Same stations as hourly data  
+**Time Range**: T-4 days to yesterday (gap period)  
+**Update**: Daily  
+**Source**: AEMET hourly API aggregated to daily
+
+### 3. `hourly_station_ongoing.csv.gz`
+High-frequency meteorological measurements from Spanish weather stations.
+
+**Key Variables**: `fint`, `idema`, `measure`, `value` (long format) or direct variables like `ta`, `hr`, `vv`, `pres`
+
+**Coverage**: 1,000+ active stations  
+**Time Range**: Recent hourly observations  
+**Update**: Every 6 hours  
+**Source**: AEMET current hourly observation API
+
+### 4. `daily_municipal_forecast.csv.gz`
+Municipal weather forecasts for validation and analysis (ongoing accumulation).
+
+**Key Variables**: `fecha`, `municipio`, `temp_max`, `temp_min`, `temp_avg`, `humid_max`, `humid_min`, `wind_speed`
+
+**Coverage**: 8,000+ Spanish municipalities  
+**Time Range**: Ongoing collection of 7-day forecasts  
+**Update**: Daily (accumulates for validation)  
+**Source**: AEMET municipal forecast API
 
 ### 2. `daily_municipal_extended.csv`  
 Municipal-level weather data combining forecasts with station aggregations.
@@ -59,29 +67,42 @@ Municipal-level weather data combining forecasts with station aggregations.
 **Update**: Daily at 2 AM
 
 ### 3. `hourly_station_ongoing.csv`
-High-frequency station measurements for detailed analysis.
+## Variable Names
 
-**Key Variables**: `datetime`, `station_id`, `variable_type`, `value`  
+**All datasets preserve original AEMET variable names** for data integrity. See [docs/variable_names_reference.md](docs/variable_names_reference.md) for complete variable explanations.
 
-**Coverage**: Selected weather stations  
-**Update**: Daily at 2 AM
+**Key Original Variables**:
+- `fecha` = Date
+- `indicativo`/`idema` = Station ID  
+- `tmed`/`ta` = Temperature
+- `prec` = Precipitation
+- `hrMedia`/`hr` = Humidity
+- `velmedia`/`vv` = Wind speed
+- `municipio` = Municipality ID
 
 ## Data Flow
 
 ```
-AEMET OpenData API
+AEMET APIs (Separate Sources)
        ↓
-   Data Collection
-   (scripts/r/*.R)
+┌─────────────────────────────────────────┐
+│  1. Historical API  →  daily_stations_  │
+│                        historical.csv.gz │
+├─────────────────────────────────────────┤
+│  2. Hourly API      →  hourly_station_  │
+│     (aggregated)       ongoing.csv.gz    │
+│                    →  daily_stations_   │
+│                       current.csv.gz    │
+├─────────────────────────────────────────┤
+│  3. Municipal API   →  daily_municipal_ │
+│                        forecast.csv.gz  │
+└─────────────────────────────────────────┘
        ↓
-   Quality Control  
-   & Standardization
+   Quality Validation
+   (Original names preserved)
        ↓
-   Municipal Aggregation
-   (Station → Municipal)
-       ↓
-   Final Datasets
-   (data/output/*.csv)
+   Four Separate Datasets
+   (No cross-contamination)
 ```
 
 ## Technical Implementation
@@ -89,19 +110,19 @@ AEMET OpenData API
 ### Collection System
 - **Language**: R with SLURM job scheduling
 - **API Access**: AEMET OpenData with rate limiting
-- **Performance**: climaemet package provides 48x speedup for municipal forecasts
-- **Execution Time**: 2-4 hours total (previously 33+ hours)
+- **Data Integrity**: Original variable names preserved to prevent confusion
+- **Separation**: Each API source produces distinct datasets to avoid mixing issues
 
 ### Data Processing
-- **Variable Standardization**: English names with documented units
-- **Quality Control**: Temperature and precipitation validation
-- **Gap Management**: Automatic detection and filling of missing data
-- **Municipality Codes**: CUMUN format from AEMET (documented for merge compatibility)
+- **No Variable Renaming**: Keeps original AEMET names for traceability
+- **Quality Control**: Basic validation without altering source structure
+- **Gap Management**: Separate current daily dataset covers historical-to-present gap
+- **Municipality Codes**: Preserved as provided by each API (different formats noted)
 
 ### Automation
-- **Daily Collection**: 2:00 AM via SLURM scheduler
-- **Gap Filling**: Weekly on Sundays at 1:00 AM  
-- **Documentation Updates**: Daily at 6:00 AM
+- **Daily Collection**: Runs all 4 dataset collections
+- **Validation Collection**: Municipal forecasts accumulated over time for model validation
+- **Documentation**: Auto-updated with original variable references
 
 ## Getting Started
 
@@ -115,45 +136,54 @@ AEMET OpenData API
 2. Configure API key in `auth/keys.R`
 3. Install crontab automation:
 ```bash
-# Add these lines to crontab -e
-0 2 * * * cd /path/to/project && sbatch scripts/bash/update_weather_hybrid.sh
-0 6 * * * cd /path/to/project && sbatch scripts/bash/update_readme_summary.sh  
-0 1 * * 0 cd /path/to/project && sbatch scripts/bash/fill_gaps.sh
+# Add to crontab for daily collection of 4 separate datasets
+0 2 * * * cd /path/to/project && sbatch scripts/bash/update_weather_original_names.sh
 ```
 
 ### Manual Execution
 ```bash
-# Full data collection
-sbatch scripts/bash/update_weather_hybrid.sh
+# Full collection (4 datasets with original names)
+Rscript scripts/r/collect_four_datasets.R
 
-# Gap analysis and filling
-sbatch scripts/bash/fill_gaps.sh
+# Or run individual dataset collections
+Rscript scripts/r/aggregate_daily_stations_historical.R
+Rscript scripts/r/aggregate_daily_stations_current.R  
+Rscript scripts/r/aggregate_hourly_station_ongoing.R
+Rscript scripts/r/aggregate_daily_municipal_forecast.R
+```  
+Rscript scripts/r/aggregate_hourly_station_ongoing.R
+Rscript scripts/r/aggregate_daily_municipal_forecast.R
 
-# Update documentation
-sbatch scripts/bash/update_readme_summary.sh
+# Main orchestrator
+Rscript scripts/r/collect_all_datasets_original_names.R
 ```
 
 ## File Structure
 
 ```
 scripts/
-├── r/              # R collection and analysis scripts
+├── r/              # R collection scripts (4 separate datasets)
 ├── bash/           # SLURM job scripts  
-└── archive/        # Archived/unused scripts
+└── archive/        # Legacy collection methods
 
 data/
-├── output/         # Final standardized datasets
-├── backup/         # Data backups and archives
+├── output/         # Four main datasets with original variable names:
+│   ├── daily_stations_historical.csv.gz
+│   ├── daily_stations_current.csv.gz
+│   ├── hourly_station_ongoing.csv.gz
+│   └── daily_municipal_forecast.csv.gz
 └── input/          # Reference data (station lists, etc.)
 
-docs/               # Technical documentation
+docs/               # Documentation including variable name reference
 auth/               # API credentials (excluded from git)
 logs/               # SLURM job outputs
 ```
 
 ## Variable Documentation
 
-All datasets use standardized English variable names. Municipality IDs use CUMUN codes from AEMET. See `docs/variable_standardization.md` for complete mapping from original AEMET variable names.
+All datasets preserve **original AEMET variable names** for data integrity. See [docs/variable_names_reference.md](docs/variable_names_reference.md) for complete explanations of what each original variable represents.
+
+**No variable renaming or standardization** - this ensures data traceability and prevents confusion about what each measurement represents.
 
 ## Performance Notes
 
