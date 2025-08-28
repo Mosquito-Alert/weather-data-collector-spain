@@ -1,30 +1,32 @@
-# WEATHER DATA COLLECTION LINES TO ADD TO YOUR EXISTING CRONTAB
-# Copy and paste these lines into your existing crontab using 'crontab -e'
+# WEATHER DATA COLLECTION - HYBRID SYSTEM
+# Add these lines to your existing crontab with: crontab -e
 
-# === HYBRID WEATHER DATA COLLECTION (ADD THESE LINES) ===
-
-# Daily collection at 2 AM - All three datasets in one efficient job
+# Main hybrid collection (daily at 2 AM) - All three datasets
 0 2 * * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch update_weather_hybrid.sh
 
-# Weekly historical update (Sundays at 4 AM) - Keep existing approach  
-0 4 * * 0 cd /home/j.palmer/research/weather-data-collector-spain && sbatch update_historical_weather.sh
+# Daily README update (6 AM) - Updates README with current status after collection
+0 6 * * * cd /home/j.palmer/research/weather-data-collector-spain && Rscript code/update_readme_with_summary.R
 
-# Monthly priority municipal data (1st of month at 6 AM) - Keep existing
-0 6 1 * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch priority_municipal_data.sh
-
-# Quarterly dataset generation (1st day of quarter at 8 AM) - Keep existing
-0 8 1 1,4,7,10 * cd /home/j.palmer/research/weather-data-collector-spain && sbatch generate_all_datasets.sh
-
-# === END WEATHER DATA COLLECTION LINES ===
+# Weekly gap filling (Sundays at 1 AM) - Fills any missing data without redundancy  
+0 1 * * 0 cd /home/j.palmer/research/weather-data-collector-spain && Rscript code/fill_data_gaps.R
 
 # INSTRUCTIONS:
-# 1. Run: crontab -e
-# 2. Copy and paste the lines between the === markers above
-# 3. Remove any old weather-related lines if they exist
+# 1. Copy the three lines above (without the # comments)
+# 2. Run: crontab -e
+# 3. Paste the lines at the end of your existing crontab
 # 4. Save and exit
 #
-# This replaces any previous separate hourly/daily/forecast jobs with:
-# - Single daily hybrid job (2 AM) - Expected 2-4 hours vs 33+ hours previously  
-# - Weekly/monthly/quarterly jobs remain the same
+# This will:
+# - Collect all data daily (2 AM)
+# - Update README daily (6 AM) - shows near real-time data status
+# - Fill gaps weekly without redundant historical collection (1 AM Sundays)  
 #
-# IMPORTANT: This does NOT replace your entire crontab - only add these lines!
+# Expected performance:
+# - Daily collection: 2-4 hours (vs 33+ hours previously)
+# - Daily README update: 1-2 minutes (very lightweight)
+# - Gap filling: 30 minutes - 2 hours depending on gaps
+#
+# Timeline:
+# - 1 AM Sunday: Gap filling (if needed)
+# - 2 AM daily: Main data collection
+# - 6 AM daily: README status update (after collection completes)
