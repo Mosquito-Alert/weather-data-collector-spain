@@ -1,0 +1,18 @@
+=== SLURM Job Information ===
+Job ID: 17640
+Job Name: weather_hybrid
+Node: node6
+Started at: Tue Aug 26 02:00:02 CEST 2025
+
+Loading modules...
+R version: 
+GDAL version: 
+
+Starting hybrid weather data collection...
+Expected completion time: 2-4 hours (vs 33+ hours with old approach)
+
+
+=== Job Completion ===
+Exit code: 127
+Completed at: Tue Aug 26 02:00:02 CEST 2025
+❌ Hybrid collection failed with exit code 127

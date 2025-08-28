@@ -2,17 +2,19 @@
 # ----------------------
 # Purpose: Download and update historical daily weather data for Spain from the AEMET OpenData API.
 #
-# This script fetches historical daily climatological data using the 7 core variables
-# that are compatible across current observations, historical data, and forecast endpoints.
+# This script fetches historical daily climatological data keeping original AEMET variable names
+# for data integrity and to avoid mixing different API formats.
 #
-# Core Variables (Standardized):
-#   - ta: Air temperature (°C) - from tmed
-#   - tamax: Maximum temperature (°C) - from tmax 
-#   - tamin: Minimum temperature (°C) - from tmin
-#   - hr: Relative humidity (%) - from hrMedia
-#   - prec: Precipitation (mm) - from prec
-#   - vv: Wind speed (km/h) - from velmedia
-#   - pres: Atmospheric pressure (hPa) - from presMax
+# Original AEMET Variables (preserved):
+#   - fecha: Date
+#   - indicativo: Station ID
+#   - tmed: Mean temperature (°C)
+#   - tmax: Maximum temperature (°C) 
+#   - tmin: Minimum temperature (°C)
+#   - hrMedia: Relative humidity (%)
+#   - prec: Precipitation (mm)
+#   - velmedia: Wind speed (km/h)
+#   - presMax: Atmospheric pressure (hPa)
 #
 # Concurrency Control:
 #   - Set PREVENT_CONCURRENT_RUNS = TRUE to enable lockfile-based run prevention
@@ -97,7 +99,7 @@ all_dates = rev(all_dates)
 
 # Identify which dates are missing from the local dataset
 if(!is.null(stored_weather_daily)){
-  these_dates = all_dates[which(!all_dates %in% unique(stored_weather_daily$date))]
+  these_dates = all_dates[which(!all_dates %in% unique(stored_weather_daily$fecha))]
 } else{
   these_dates = all_dates
 }
@@ -146,26 +148,26 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
         # Set encoding to handle Spanish characters properly
         Encoding(this_string) = "latin1"
         
-        # Parse JSON and standardize variable names to match current observations
+        # Parse JSON keeping original AEMET variable names
         wdia  = fromJSON(this_string) %>% 
           as_tibble() %>% 
           select(
-            date = fecha, 
+            fecha, 
             indicativo, 
-            ta = tmed,        # Mean temperature -> ta
-            tamax = tmax,     # Maximum temperature -> tamax  
-            tamin = tmin,     # Minimum temperature -> tamin
-            hr = hrMedia,     # Mean humidity -> hr
-            prec = prec,      # Precipitation -> prec
-            vv = velmedia,    # Wind speed -> vv
-            pres = presMax    # Pressure (using max) -> pres
+            tmed,        # Mean temperature (original name)
+            tmax,        # Maximum temperature (original name)
+            tmin,        # Minimum temperature (original name)
+            hrMedia,     # Mean humidity (original name)
+            prec,        # Precipitation (original name)
+            velmedia,    # Wind speed (original name)
+            presMax      # Pressure (original name)
           ) %>% 
           mutate(
-            date = as_date(date),
-            ta = as.numeric(str_replace(ta, ",", ".")),
-            tamax = as.numeric(str_replace(tamax, ",", ".")),
-            tamin = as.numeric(str_replace(tamin, ",", ".")),
-            hr = as.numeric(str_replace(hr, ",", ".")),
+            fecha = as_date(fecha),
+            tmed = as.numeric(str_replace(tmed, ",", ".")),
+            tmax = as.numeric(str_replace(tmax, ",", ".")),
+            tmin = as.numeric(str_replace(tmin, ",", ".")),
+            hrMedia = as.numeric(str_replace(hrMedia, ",", ".")),
             # Handle precipitation more carefully - it often contains "Ip" for trace amounts
             prec = case_when(
               is.na(prec) ~ NA_real_,
@@ -173,8 +175,8 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
               prec == "" ~ NA_real_,
               TRUE ~ suppressWarnings(as.numeric(str_replace(prec, ",", ".")))
             ),
-            vv = as.numeric(str_replace(vv, ",", ".")),
-            pres = as.numeric(str_replace(pres, ",", "."))
+            velmedia = as.numeric(str_replace(velmedia, ",", ".")),
+            presMax = as.numeric(str_replace(presMax, ",", "."))
           ) %>% 
           as.data.table()
         return(wdia)

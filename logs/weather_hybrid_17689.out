@@ -1,8 +1,8 @@
 === SLURM Job Information ===
-Job ID: 17611
+Job ID: 17689
 Job Name: weather_hybrid
 Node: node6
-Started at: Mon Aug 25 18:50:07 CEST 2025
+Started at: Tue Aug 26 10:27:17 CEST 2025
 
 Loading modules...
 R version: R version 4.4.2 (2024-10-31) -- "Pile of Leaves"
@@ -15,13 +15,13 @@ Expected completion time: 2-4 hours (vs 33+ hours with old approach)
 ========================================
 HYBRID WEATHER DATA COLLECTION SYSTEM
 ========================================
-Started at: 2025-08-25 18:50:25 
+Started at: 2025-08-26 10:27:39 
 
 === DATASET 1: DAILY STATION DATA ===
 Collecting daily means, minimums, and maximums by weather station
 === DAILY STATION DATA COLLECTION ===
-Started at: 2025-08-25 18:50:25 
-Collecting station data from 2025-08-17 to 2025-08-24 
+Started at: 2025-08-26 10:27:39 
+Collecting station data from 2025-08-18 to 2025-08-25 
 Loading station information...
 Loaded 4300 stations
 Processing 4300 stations in 43 batches
@@ -33,9 +33,9 @@ Processing station 41 of 100 in batch 1 : 2030
 Processing station 61 of 100 in batch 1 : 4452 
 Processing station 81 of 100 in batch 1 : 8178D 
 ✅ Batch 1 completed
-Duration: 1.96 minutes
-Records in batch: 150 
-Successful stations so far: 25 out of 100 
+Duration: 1.05 minutes
+Records in batch: 105 
+Successful stations so far: 21 out of 100 
 
 === BATCH 2 of 43 ===
 Processing station 1 of 100 in batch 2 : 1001 
@@ -99,7 +99,10 @@ Processing station 21 of 100 in batch 9 : 8294
 Processing station 41 of 100 in batch 9 : 8503G 
 Processing station 61 of 100 in batch 9 : 9271B 
 Processing station 81 of 100 in batch 9 : 1706 
-❌ No data collected in batch 9 
+✅ Batch 9 completed
+Duration: 0.96 minutes
+Records in batch: 5 
+Successful stations so far: 22 out of 900 
 
 === BATCH 10 of 43 ===
 Processing station 1 of 100 in batch 10 : 2275 
@@ -116,9 +119,9 @@ Processing station 41 of 100 in batch 11 : 4383
 Processing station 61 of 100 in batch 11 : 5008I 
 Processing station 81 of 100 in batch 11 : 2471Y 
 ✅ Batch 11 completed
-Duration: 2.71 minutes
-Records in batch: 59 
-Successful stations so far: 35 out of 1100 
+Duration: 2.33 minutes
+Records in batch: 60 
+Successful stations so far: 34 out of 1100 
 
 === BATCH 12 of 43 ===
 Processing station 1 of 100 in batch 12 : 2734D 
@@ -127,9 +130,9 @@ Processing station 41 of 100 in batch 12 : 3127A
 Processing station 61 of 100 in batch 12 : 3338 
 Processing station 81 of 100 in batch 12 : 3526X 
 ✅ Batch 12 completed
-Duration: 1 minutes
-Records in batch: 93 
-Successful stations so far: 51 out of 1200 
+Duration: 2.18 minutes
+Records in batch: 120 
+Successful stations so far: 58 out of 1200 
 
 === BATCH 13 of 43 ===
 Processing station 1 of 100 in batch 13 : 4147X 
@@ -138,9 +141,9 @@ Processing station 41 of 100 in batch 13 : 4622X
 Processing station 61 of 100 in batch 13 : 3194U 
 Processing station 81 of 100 in batch 13 : 6205X 
 ✅ Batch 13 completed
-Duration: 1.37 minutes
-Records in batch: 89 
-Successful stations so far: 66 out of 1300 
+Duration: 1.63 minutes
+Records in batch: 145 
+Successful stations so far: 87 out of 1300 
 
 === BATCH 14 of 43 ===
 Processing station 1 of 100 in batch 14 : 9994X 
@@ -149,9 +152,9 @@ Processing station 41 of 100 in batch 14 : 5515X
 Processing station 61 of 100 in batch 14 : 5860H 
 Processing station 81 of 100 in batch 14 : 6056X 
 ✅ Batch 14 completed
-Duration: 1.91 minutes
-Records in batch: 54 
-Successful stations so far: 75 out of 1400 
+Duration: 1.28 minutes
+Records in batch: 75 
+Successful stations so far: 102 out of 1400 
 
 === BATCH 15 of 43 ===
 Processing station 1 of 100 in batch 15 : 6281X 
@@ -160,9 +163,9 @@ Processing station 41 of 100 in batch 15 : 8058X
 Processing station 61 of 100 in batch 15 : 8368U 
 Processing station 81 of 100 in batch 15 : 9001D 
 ✅ Batch 15 completed
-Duration: 1.38 minutes
-Records in batch: 108 
-Successful stations so far: 93 out of 1500 
+Duration: 2.59 minutes
+Records in batch: 80 
+Successful stations so far: 118 out of 1500 
 
 === BATCH 16 of 43 ===
 Processing station 1 of 100 in batch 16 : 9198X 
@@ -171,9 +174,9 @@ Processing station 41 of 100 in batch 16 : 9510X
 Processing station 61 of 100 in batch 16 : 9707 
 Processing station 81 of 100 in batch 16 : 9908X 
 ✅ Batch 16 completed
-Duration: 2.12 minutes
-Records in batch: 192 
-Successful stations so far: 125 out of 1600 
+Duration: 1.14 minutes
+Records in batch: 130 
+Successful stations so far: 144 out of 1600 
 
 === BATCH 17 of 43 ===
 Processing station 1 of 100 in batch 17 : B248 
@@ -182,9 +185,9 @@ Processing station 41 of 100 in batch 17 : 1700O
 Processing station 61 of 100 in batch 17 : 0171X 
 Processing station 81 of 100 in batch 17 : 0372C 
 ✅ Batch 17 completed
-Duration: 1.51 minutes
-Records in batch: 78 
-Successful stations so far: 138 out of 1700 
+Duration: 1.04 minutes
+Records in batch: 86 
+Successful stations so far: 162 out of 1700 
 
 === BATCH 18 of 43 ===
 Processing station 1 of 100 in batch 18 : 1048X 
@@ -193,9 +196,9 @@ Processing station 41 of 100 in batch 18 : 1279X
 Processing station 61 of 100 in batch 18 : 1437O 
 Processing station 81 of 100 in batch 18 : 1583X 
 ✅ Batch 18 completed
-Duration: 1.39 minutes
-Records in batch: 88 
-Successful stations so far: 153 out of 1800 
+Duration: 2.13 minutes
+Records in batch: 30 
+Successful stations so far: 168 out of 1800 
 
 === BATCH 19 of 43 ===
 Processing station 1 of 100 in batch 19 : 2092 
@@ -203,10 +206,7 @@ Processing station 21 of 100 in batch 19 : 4455
 Processing station 41 of 100 in batch 19 : 4511D 
 Processing station 61 of 100 in batch 19 : 5171A 
 Processing station 81 of 100 in batch 19 : 0017 
-✅ Batch 19 completed
-Duration: 0.98 minutes
-Records in batch: 48 
-Successful stations so far: 161 out of 1900 
+❌ No data collected in batch 19 
 
 === BATCH 20 of 43 ===
 Processing station 1 of 100 in batch 20 : 0110 
@@ -334,10 +334,7 @@ Processing station 21 of 100 in batch 35 : 8010A
 Processing station 41 of 100 in batch 35 : 6055A 
 Processing station 61 of 100 in batch 35 : 7247 
 Processing station 81 of 100 in batch 35 : 1391I 
-✅ Batch 35 completed
-Duration: 2.27 minutes
-Records in batch: 6 
-Successful stations so far: 162 out of 3500 
+❌ No data collected in batch 35 
 
 === BATCH 36 of 43 ===
 Processing station 1 of 100 in batch 36 : 1569A 
@@ -378,9 +375,9 @@ Processing station 41 of 100 in batch 40 : 1035
 Processing station 61 of 100 in batch 40 : B430 
 Processing station 81 of 100 in batch 40 : C636K 
 ✅ Batch 40 completed
-Duration: 2.43 minutes
-Records in batch: 125 
-Successful stations so far: 183 out of 4000 
+Duration: 1.8 minutes
+Records in batch: 55 
+Successful stations so far: 179 out of 4000 
 
 === BATCH 41 of 43 ===
 Processing station 1 of 100 in batch 41 : C689E 
@@ -389,9 +386,9 @@ Processing station 41 of 100 in batch 41 : C415A
 Processing station 61 of 100 in batch 41 : C449F 
 Processing station 81 of 100 in batch 41 : C619Y 
 ✅ Batch 41 completed
-Duration: 2.43 minutes
-Records in batch: 171 
-Successful stations so far: 213 out of 4100 
+Duration: 2.48 minutes
+Records in batch: 132 
+Successful stations so far: 208 out of 4100 
 
 === BATCH 42 of 43 ===
 Processing station 1 of 100 in batch 42 : C468F 
@@ -410,44 +407,44 @@ Processing station 81 of 100 in batch 43 : C419J
 ❌ No data collected in batch 43 
 
 === FINAL PROCESSING ===
-Total daily records: 1261 
-Stations with data: 202 out of 4300 
-Success rate: 4.7 %
-Data saved to: data/output/station_daily_data_2025-08-25.csv 
-Compressed version saved to: data/output/station_daily_data_2025-08-25.csv.gz 
+Total daily records: 1023 
+Stations with data: 205 out of 4300 
+Success rate: 4.8 %
+Data saved to: data/output/station_daily_data_2025-08-26.csv 
+Compressed version saved to: data/output/station_daily_data_2025-08-26.csv.gz 
 
 === SUMMARY ===
-Stations processed: 202 
-Total station-days: 1261 
-Date range: 2025-08-17 to 2025-08-22 
-        fecha indicativo          nombre  provincia altitud  tmed  prec  tmin
-       <char>     <char>          <char>     <char>  <char> <num> <num> <num>
-1: 2025-08-17       1495 VIGO AEROPUERTO PONTEVEDRA     255  19.8     0  14.4
-2: 2025-08-18       1495 VIGO AEROPUERTO PONTEVEDRA     255  21.6     0  15.5
-3: 2025-08-19       1495 VIGO AEROPUERTO PONTEVEDRA     255  20.0     0  14.8
+Stations processed: 205 
+Total station-days: 1023 
+Date range: 2025-08-18 to 2025-08-22 
+        fecha indicativo            nombre provincia altitud  tmed  prec  tmin
+       <char>     <char>            <char>    <char>  <char> <num> <num> <num>
+1: 2025-08-18       1082 BILBAO AEROPUERTO   BIZKAIA      42  19.6   1.3  17.1
+2: 2025-08-19       1082 BILBAO AEROPUERTO   BIZKAIA      42  19.4   0.0  16.7
+3: 2025-08-20       1082 BILBAO AEROPUERTO   BIZKAIA      42  20.1  28.8  15.8
    horatmin  tmax horatmax    dir velmedia racha horaracha    sol presMax
      <char> <num>   <char> <char>    <num> <num>    <char> <char>   <num>
-1:    04:35  25.3    13:01     24      2.8   9.7     15:07   10,9   989.4
-2:    04:24  27.7    12:07     99      4.4   9.7    Varias   11,9   988.8
-3:    06:12  25.2    10:14     26      4.2  10.3     16:56   11,8   988.5
+1:    23:58  22.1    15:20     31      1.7   6.7     17:30    1,6  1014.2
+2:    23:46  22.1    16:05     03      2.8   8.9     12:18    3,2  1013.4
+3:    02:38  24.4    16:33     99      5.3  12.8    Varias    8,8  1011.4
    horaPresMax presMin horaPresMin hrMedia  hrMax horaHrMax  hrMin horaHrMin
         <char>   <num>      <char>  <char> <char>    <char> <char>    <char>
-1:      Varias   987.5          05      73     97    Varias     60     13:01
-2:      Varias   987.0          19      75     97     02:57     50     12:13
-3:      Varias   987.0          04      75     96    Varias     49     10:16
+1:      Varias  1012.1          05      93     98     05:30     80     15:24
+2:          00  1011.2          19      82     98    Varias     71     16:08
+3:          00  1010.1          05      77     97     02:59     60     16:15
    station_id        collected_at
        <char>              <POSc>
-1:       1495 2025-08-25 18:50:51
-2:       1495 2025-08-25 18:50:51
-3:       1495 2025-08-25 18:50:51
+1:       1082 2025-08-26 10:27:43
+2:       1082 2025-08-26 10:27:43
+3:       1082 2025-08-26 10:27:43
 
-Completed at: 2025-08-25 20:12:48 
-✅ Dataset 1 completed in 82.38 minutes
+Completed at: 2025-08-26 11:41:18 
+✅ Dataset 1 completed in 73.65 minutes
 
 === DATASET 2: MUNICIPAL FORECASTS ===
 Collecting municipal data with 7-day forecasts using climaemet
 === MUNICIPAL FORECASTS COLLECTION (CLIMAEMET) ===
-Started at: 2025-08-25 20:12:48 
+Started at: 2025-08-26 11:41:18 
 Loading municipality codes...
 Loaded 8129 municipalities
 Processing 8129 municipalities in 17 batches
@@ -455,210 +452,235 @@ Processing 8129 municipalities in 17 batches
 === BATCH 1 of 17 ===
 Collecting forecasts for 500 municipalities...
 Raw forecast collection completed for batch 1 
-Retrieved 1036 municipality-day records
+Retrieved 336 municipality-day records
 Processing forecast data...
 ✅ Batch 1 completed successfully
-Duration: 8.85 minutes
-Records in batch: 1036 
-Total successful municipalities so far: 148 
+Duration: 2.72 minutes
+Records in batch: 336 
+Total successful municipalities so far: 48 
 
 === BATCH 2 of 17 ===
 Collecting forecasts for 500 municipalities...
 Raw forecast collection completed for batch 2 
-Retrieved 665 municipality-day records
+Retrieved 980 municipality-day records
 Processing forecast data...
 ✅ Batch 2 completed successfully
-Duration: 5.69 minutes
-Records in batch: 665 
-Total successful municipalities so far: 243 
-Estimated remaining time: 85.3 minutes
+Duration: 9.52 minutes
+Records in batch: 980 
+Total successful municipalities so far: 188 
+Estimated remaining time: 142.9 minutes
 
 === BATCH 3 of 17 ===
 Collecting forecasts for 500 municipalities...
 Raw forecast collection completed for batch 3 
-Retrieved 0 municipality-day records
+Retrieved 700 municipality-day records
 Processing forecast data...
-❌ Batch 3 failed: Var 'temperatura' not available in the current dataset. 
-Continuing with next batch...
+✅ Batch 3 completed successfully
+Duration: 7.43 minutes
+Records in batch: 700 
+Total successful municipalities so far: 288 
+Estimated remaining time: 104.1 minutes
 
 === BATCH 4 of 17 ===
 Collecting forecasts for 500 municipalities...
 Raw forecast collection completed for batch 4 
-Retrieved 2345 municipality-day records
+Retrieved 532 municipality-day records
 Processing forecast data...
 ✅ Batch 4 completed successfully
-Duration: 21.86 minutes
-Records in batch: 2345 
-Total successful municipalities so far: 578 
-Estimated remaining time: 284.2 minutes
+Duration: 5.67 minutes
+Records in batch: 532 
+Total successful municipalities so far: 364 
+Estimated remaining time: 73.7 minutes
 
 === BATCH 5 of 17 ===
 Collecting forecasts for 500 municipalities...
 Raw forecast collection completed for batch 5 
-Retrieved 1099 municipality-day records
+Retrieved 546 municipality-day records
 Processing forecast data...
 ✅ Batch 5 completed successfully
-Duration: 8.93 minutes
-Records in batch: 1099 
-Total successful municipalities so far: 735 
-Estimated remaining time: 107.2 minutes
+Duration: 4.65 minutes
+Records in batch: 546 
+Total successful municipalities so far: 442 
+Estimated remaining time: 55.8 minutes
 Saving intermediate results after batch 5 ...
-Intermediate data saved to: data/output/municipal_forecasts_intermediate_2025-08-25_batch5.csv.gz 
+Intermediate data saved to: data/output/municipal_forecasts_intermediate_2025-08-26_batch5.csv.gz 
 
 === BATCH 6 of 17 ===
 Collecting forecasts for 500 municipalities...
 Raw forecast collection completed for batch 6 
-Retrieved 434 municipality-day records
+Retrieved 1372 municipality-day records
 Processing forecast data...
 ✅ Batch 6 completed successfully
-Duration: 5.69 minutes
-Records in batch: 434 
-Total successful municipalities so far: 797 
-Estimated remaining time: 62.6 minutes
+Duration: 10.1 minutes
+Records in batch: 1372 
+Total successful municipalities so far: 638 
+Estimated remaining time: 111.1 minutes
 
 === BATCH 7 of 17 ===
 Collecting forecasts for 500 municipalities...
 Raw forecast collection completed for batch 7 
-Retrieved 0 municipality-day records
+Retrieved 1155 municipality-day records
 Processing forecast data...
-❌ Batch 7 failed: Var 'temperatura' not available in the current dataset. 
-Continuing with next batch...
+✅ Batch 7 completed successfully
+Duration: 9.56 minutes
+Records in batch: 1155 
+Total successful municipalities so far: 803 
+Estimated remaining time: 95.6 minutes
 
 === BATCH 8 of 17 ===
 Collecting forecasts for 500 municipalities...
 Raw forecast collection completed for batch 8 
-Retrieved 0 municipality-day records
+Retrieved 2772 municipality-day records
 Processing forecast data...
-❌ Batch 8 failed: Var 'temperatura' not available in the current dataset. 
-Continuing with next batch...
+✅ Batch 8 completed successfully
+Duration: 20.45 minutes
+Records in batch: 2772 
+Total successful municipalities so far: 1199 
+Estimated remaining time: 184 minutes
 
 === BATCH 9 of 17 ===
 Collecting forecasts for 500 municipalities...
 Raw forecast collection completed for batch 9 
-Retrieved 0 municipality-day records
+Retrieved 1295 municipality-day records
 Processing forecast data...
-❌ Batch 9 failed: Var 'temperatura' not available in the current dataset. 
-Continuing with next batch...
+✅ Batch 9 completed successfully
+Duration: 10.35 minutes
+Records in batch: 1295 
+Total successful municipalities so far: 1384 
+Estimated remaining time: 82.8 minutes
 
 === BATCH 10 of 17 ===
 Collecting forecasts for 500 municipalities...
 Raw forecast collection completed for batch 10 
-Retrieved 0 municipality-day records
+Retrieved 1036 municipality-day records
 Processing forecast data...
-❌ Batch 10 failed: Var 'temperatura' not available in the current dataset. 
-Continuing with next batch...
+✅ Batch 10 completed successfully
+Duration: 7.57 minutes
+Records in batch: 1036 
+Total successful municipalities so far: 1532 
+Estimated remaining time: 53 minutes
+Saving intermediate results after batch 10 ...
+Intermediate data saved to: data/output/municipal_forecasts_intermediate_2025-08-26_batch10.csv.gz 
 
 === BATCH 11 of 17 ===
 Collecting forecasts for 500 municipalities...
 Raw forecast collection completed for batch 11 
-Retrieved 0 municipality-day records
+Retrieved 1519 municipality-day records
 Processing forecast data...
-❌ Batch 11 failed: Var 'temperatura' not available in the current dataset. 
-Continuing with next batch...
+✅ Batch 11 completed successfully
+Duration: 11.67 minutes
+Records in batch: 1519 
+Total successful municipalities so far: 1749 
+Estimated remaining time: 70 minutes
 
 === BATCH 12 of 17 ===
 Collecting forecasts for 500 municipalities...
 Raw forecast collection completed for batch 12 
-Retrieved 1498 municipality-day records
+Retrieved 1099 municipality-day records
 Processing forecast data...
 ✅ Batch 12 completed successfully
-Duration: 14.76 minutes
-Records in batch: 1498 
-Total successful municipalities so far: 1011 
-Estimated remaining time: 73.8 minutes
+Duration: 7.65 minutes
+Records in batch: 1099 
+Total successful municipalities so far: 1906 
+Estimated remaining time: 38.2 minutes
 
 === BATCH 13 of 17 ===
 Collecting forecasts for 500 municipalities...
 Raw forecast collection completed for batch 13 
-Retrieved 1176 municipality-day records
+Retrieved 756 municipality-day records
 Processing forecast data...
 ✅ Batch 13 completed successfully
-Duration: 11.08 minutes
-Records in batch: 1176 
-Total successful municipalities so far: 1179 
-Estimated remaining time: 44.3 minutes
+Duration: 8.19 minutes
+Records in batch: 756 
+Total successful municipalities so far: 2014 
+Estimated remaining time: 32.7 minutes
 
 === BATCH 14 of 17 ===
 Collecting forecasts for 500 municipalities...
 Raw forecast collection completed for batch 14 
-Retrieved 2093 municipality-day records
+Retrieved 854 municipality-day records
 Processing forecast data...
 ✅ Batch 14 completed successfully
-Duration: 16.68 minutes
-Records in batch: 2093 
-Total successful municipalities so far: 1478 
-Estimated remaining time: 50.1 minutes
+Duration: 7.94 minutes
+Records in batch: 854 
+Total successful municipalities so far: 2136 
+Estimated remaining time: 23.8 minutes
 
 === BATCH 15 of 17 ===
 Collecting forecasts for 500 municipalities...
 Raw forecast collection completed for batch 15 
-Retrieved 1127 municipality-day records
+Retrieved 1211 municipality-day records
 Processing forecast data...
 ✅ Batch 15 completed successfully
-Duration: 11.67 minutes
-Records in batch: 1127 
-Total successful municipalities so far: 1639 
-Estimated remaining time: 23.3 minutes
+Duration: 9.74 minutes
+Records in batch: 1211 
+Total successful municipalities so far: 2309 
+Estimated remaining time: 19.5 minutes
 Saving intermediate results after batch 15 ...
-Intermediate data saved to: data/output/municipal_forecasts_intermediate_2025-08-25_batch15.csv.gz 
+Intermediate data saved to: data/output/municipal_forecasts_intermediate_2025-08-26_batch15.csv.gz 
 
 === BATCH 16 of 17 ===
 Collecting forecasts for 500 municipalities...
 Raw forecast collection completed for batch 16 
-Retrieved 1897 municipality-day records
+Retrieved 441 municipality-day records
 Processing forecast data...
 ✅ Batch 16 completed successfully
-Duration: 19.69 minutes
-Records in batch: 1897 
-Total successful municipalities so far: 1910 
-Estimated remaining time: 19.7 minutes
+Duration: 6.18 minutes
+Records in batch: 441 
+Total successful municipalities so far: 2372 
+Estimated remaining time: 6.2 minutes
 
 === BATCH 17 of 17 ===
 Collecting forecasts for 129 municipalities...
 Raw forecast collection completed for batch 17 
-Retrieved 511 municipality-day records
+Retrieved 0 municipality-day records
 Processing forecast data...
-✅ Batch 17 completed successfully
-Duration: 3.79 minutes
-Records in batch: 511 
-Total successful municipalities so far: 1983 
-Estimated remaining time: 0 minutes
+❌ Batch 17 failed: Var 'temperatura' not available in the current dataset. 
+Continuing with next batch...
 
 === FINAL PROCESSING ===
-Total forecast records: 13881 
-Municipalities with data: 1983 out of 8129 
-Success rate: 24.4 %
-Date range: 2025-08-25 to 2025-08-31 
-Final data saved to: data/output/municipal_forecasts_2025-08-25.csv 
-Compressed version saved to: data/output/municipal_forecasts_2025-08-25.csv.gz 
+Total forecast records: 16604 
+Municipalities with data: 2372 out of 8129 
+Success rate: 29.2 %
+Date range: 2025-08-26 to 2025-09-01 
+Final data saved to: data/output/municipal_forecasts_2025-08-26.csv 
+Compressed version saved to: data/output/municipal_forecasts_2025-08-26.csv.gz 
 
 === SUMMARY STATISTICS ===
-Total municipalities processed: 1983 
-Total forecast days: 13881 
+Total municipalities processed: 2372 
+Total forecast days: 16604 
 Average forecasts per municipality: 7 
 
 Sample of final data:
 # A tibble: 3 × 12
   municipio_id municipio_nombre provincia elaborado           fecha     
   <chr>        <chr>            <chr>     <dttm>              <date>    
-1 39084        Solórzano        Cantabria 2025-08-25 17:19:10 2025-08-25
-2 39084        Solórzano        Cantabria 2025-08-25 17:19:10 2025-08-26
-3 39084        Solórzano        Cantabria 2025-08-25 17:19:10 2025-08-27
+1 39084        Solórzano        Cantabria 2025-08-26 08:57:13 2025-08-26
+2 39084        Solórzano        Cantabria 2025-08-26 08:57:13 2025-08-27
+3 39084        Solórzano        Cantabria 2025-08-26 08:57:13 2025-08-28
 # ℹ 7 more variables: temp_max <int>, temp_min <int>, temp_avg <dbl>,
 #   humid_max <int>, humid_min <int>, wind_speed <int>, collected_at <dttm>
 
-Completed at: 2025-08-25 22:27:03 
-✅ Dataset 2 completed in 134.24 minutes
+Completed at: 2025-08-26 14:01:29 
+✅ Dataset 2 completed in 140.18 minutes
 
 === DATASET 3: HOURLY DATA ===
 Collecting hourly data for building history
-[1] "Downloaded 58101 new rows of data with 7 core variables."
-[1] "Previous dataset file has 180393 rows."
-[1] "Total dataset now contains 196021 rows."
+<curl_error_recv_error in curl_fetch_memory(paste0("https://opendata.aemet.es/opendata/api/observacion/convencional/todas"),     handle = h): Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0>
+<curl_error_recv_error in curl_fetch_memory(paste0("https://opendata.aemet.es/opendata/api/observacion/convencional/todas"),     handle = h): Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0>
+<curl_error_recv_error in curl_fetch_memory(paste0("https://opendata.aemet.es/opendata/api/observacion/convencional/todas"),     handle = h): Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0>
+<curl_error_recv_error in curl_fetch_memory(paste0("https://opendata.aemet.es/opendata/api/observacion/convencional/todas"),     handle = h): Failure when receiving data from the peer [opendata.aemet.es]:
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0>
+[1] "No new data retrieved. Nothing saved."
+❌ Dataset 3 failed: object 'dataset3_start' not found 
+
 ❌ Dataset 3 failed: object 'dataset3_start' not found 
 
 
 === Job Completion ===
 Exit code: 1
-Completed at: Mon Aug 25 22:27:15 CEST 2025
+Completed at: Tue Aug 26 14:06:14 CEST 2025
 ❌ Hybrid collection failed with exit code 1

@@ -1,14 +1,22 @@
 # WEATHER DATA COLLECTION - HYBRID SYSTEM
 # Add these lines to your existing crontab with: crontab -e
 
-# Main hybrid collection (daily at 2 AM) - All three datasets
-0 2 * * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch update_weather_hybrid.sh
+# Main hybrid collection - Daily at 2:00 AM
+# Collects all three datasets (station daily, municipal forecasts, hourly)
+# Expected completion: 2-4 hours vs 33+ hours with old approach
+0 2 * * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch scripts/bash/update_weather_hybrid.sh
 
 # Daily README update (6 AM) - Updates README with current status after collection
-0 6 * * * cd /home/j.palmer/research/weather-data-collector-spain && Rscript code/update_readme_with_summary.R
+0 6 * * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch scripts/bash/update_readme_summary.sh
 
 # Weekly gap filling (Sundays at 1 AM) - Fills any missing data without redundancy  
-0 1 * * 0 cd /home/j.palmer/research/weather-data-collector-spain && Rscript code/fill_data_gaps.R
+0 1 * * 0 cd /home/j.palmer/research/weather-data-collector-spain && sbatch scripts/bash/fill_gaps.sh
+
+# Daily README update (6 AM) - Updates README with current status after collection
+0 6 * * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch scripts/update_readme_summary.sh
+
+# Weekly gap filling (Sundays at 1 AM) - Fills any missing data without redundancy  
+0 1 * * 0 cd /home/j.palmer/research/weather-data-collector-spain && sbatch scripts/fill_gaps.sh
 
 # INSTRUCTIONS:
 # 1. Copy the three lines above (without the # comments)
@@ -17,13 +25,13 @@
 # 4. Save and exit
 #
 # This will:
-# - Collect all data daily (2 AM)
-# - Update README daily (6 AM) - shows near real-time data status
-# - Fill gaps weekly without redundant historical collection (1 AM Sundays)  
+# - Collect all data daily (2 AM) - full SLURM job
+# - Update README daily (6 AM) - lightweight SLURM job (30 min, 2GB)
+# - Fill gaps weekly (1 AM Sundays) - medium SLURM job (2 hours, 4GB)
 #
 # Expected performance:
 # - Daily collection: 2-4 hours (vs 33+ hours previously)
-# - Daily README update: 1-2 minutes (very lightweight)
+# - Daily README update: 1-2 minutes (but runs on compute node)
 # - Gap filling: 30 minutes - 2 hours depending on gaps
 #
 # Timeline:

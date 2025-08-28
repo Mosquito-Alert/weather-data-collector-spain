@@ -25,6 +25,9 @@ echo ""
 echo "Loading modules..."
 module load GDAL/3.10.0-foss-2024a
 module load R/4.4.2-gfbf-2024a
+module load LibTIFF/4.6.0-GCCcore-13.3.0
+module load cURL/8.7.1-GCCcore-13.3.0
+module load OpenSSL/3
 
 # Verify modules loaded
 echo "R version: $(R --version | head -1)"
@@ -37,13 +40,14 @@ cd /home/j.palmer/research/weather-data-collector-spain
 # Create logs directory if it doesn't exist
 mkdir -p logs
 
-# Run the hybrid collection
-echo "Starting hybrid weather data collection..."
+# Run the consolidated collection (three-file strategy)
+echo "Starting consolidated weather data collection..."
+echo "Strategy: Append to three final files (no fragmentation)"
 echo "Expected completion time: 2-4 hours (vs 33+ hours with old approach)"
 echo ""
 
-# Execute the main collection script
-Rscript code/collect_all_datasets_hybrid.R
+# Execute the standardized collection script
+Rscript scripts/r/collect_all_datasets_standardized.R
 
 exit_code=$?
 

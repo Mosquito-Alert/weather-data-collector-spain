@@ -1,0 +1,105 @@
+=== Variable Standardization Job ===
+Job ID: 17745
+Started at: Tue Aug 26 19:11:49 CEST 2025
+Starting variable standardization...
+- The project is out-of-sync -- use `renv::status()` for details.
+=== WEATHER DATA VARIABLE STANDARDIZATION ===
+Standardizing variable names across all three datasets
+Started at: 2025-08-26 19:12:17 
+
+
+=== STANDARDIZING EXISTING DATA FILES ===
+
+1. Processing daily_station_historical.csv...
+Standardizing station historical ...
+   indicativo -> station_id 
+   idema -> station_id 
+   fecha -> date 
+   tmed -> temp_mean 
+   tmax -> temp_max 
+   tmin -> temp_min 
+   prec -> precipitation 
+   hrMedia -> humidity_mean 
+   hrMax -> humidity_max 
+   hrMin -> humidity_min 
+   velmedia -> wind_speed 
+   presMax -> pressure_max 
+   presMin -> pressure_min 
+   nombre -> station_name 
+   provincia -> province 
+   altitud -> altitude 
+   horatmin -> time_temp_min 
+   horatmax -> time_temp_max 
+   horaHrMax -> time_humidity_max 
+   horaHrMin -> time_humidity_min 
+   horaPresMax -> time_pressure_max 
+   horaPresMin -> time_pressure_min 
+   horaracha -> time_wind_gust 
+   dir -> wind_direction 
+   racha -> wind_gust 
+   sol -> solar_hours 
+   temp_range_ok -> temp_range_ok 
+   temp_realistic -> temp_realistic 
+   prec_realistic -> prec_realistic 
+   collected_at -> collected_at 
+   processed_at -> processed_at 
+   source -> data_source 
+   measure -> measure 
+   value -> value 
+   n_observations -> n_observations 
+  Unmapped columns (kept as-is): station_id, date 
+  ✅ Standardized version saved ( 4543 records )
+
+2. Processing daily_municipal_extended.csv...
+Standardizing municipal extended ...
+   municipio_id -> municipality_id 
+   municipio -> municipality_id 
+   municipio_code -> municipality_id 
+   municipio_nombre -> municipality_name 
+   fecha -> date 
+   provincia -> province 
+   temp_max -> temp_max 
+   temp_min -> temp_min 
+   temp_avg -> temp_mean 
+   tmed_municipal -> temp_mean 
+   tmax_municipal -> temp_max 
+   tmin_municipal -> temp_min 
+   humid_max -> humidity_max 
+   humid_min -> humidity_min 
+   hrMedia_municipal -> humidity_mean 
+   wind_speed -> wind_speed 
+   velmedia_municipal -> wind_speed 
+   data_source -> data_source 
+   source -> data_source 
+   elaborado -> forecast_issued_at 
+   collected_at -> collected_at 
+   processed_at -> processed_at 
+   temp_range_ok -> temp_range_ok 
+   temp_realistic -> temp_realistic 
+   n_stations -> n_stations 
+   priority -> data_priority 
+  ✅ Standardized version saved ( 18232 records )
+
+3. Processing hourly_station_ongoing.csv...
+  ℹ️ File exists but is empty, skipping
+
+=== CREATING VARIABLE DOCUMENTATION ===
+✅ Documentation saved to docs/variable_standardization.md
+
+========================================
+VARIABLE STANDARDIZATION COMPLETE
+========================================
+Files processed:
+  ✅ daily_station_historical.csv (standardized)
+  ✅ daily_municipal_extended.csv (standardized)
+  ✅ hourly_station_ongoing.csv (standardized)
+
+Original files backed up to data/backup/
+Documentation created: docs/variable_standardization.md
+
+Next step: Update collection scripts to use standardized names
+Completed at: 2025-08-26 19:12:18 
+=== Job Completion ===
+Exit code: 0
+Completed at: Tue Aug 26 19:12:18 CEST 2025
+✅ Variable standardization completed successfully

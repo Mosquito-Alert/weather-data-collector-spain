@@ -1,0 +1,18 @@
+=== FIXING VARIABLE STANDARDIZATION ===
+Job ID: 17753
+Started at: Tue Aug 26 20:49:40 CEST 2025
+Running corrected standardization...
+- The project is out-of-sync -- use `renv::status()` for details.
+=== CORRECTED VARIABLE STANDARDIZATION ===
+Carefully standardizing variable names without creating duplicates
+Started at: 2025-08-26 20:50:08 
+
+
+=== PROCESSING STATION HISTORICAL DATA ===
+Loaded 4543 station records
+Processing station historical ...
+  Original columns: 37 
+=== Job Completion ===
+Exit code: 1
+Completed at: Tue Aug 26 20:50:08 CEST 2025
+❌ Variable standardization fix failed with exit code 1
