@@ -213,7 +213,7 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
   
    print(paste0("writing chunk with ", nrow(weather_daily), " records"))
    
-   fwrite(weather_daily, "data/output/daily_station_historical.csv.gz")
+   fwrite(weather_daily, output_data_file_path)
    
 #   print("pausing 60 seconds")
 #   Sys.sleep(60)  # Increased pause between chunks
