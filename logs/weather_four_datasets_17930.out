@@ -1,0 +1,72 @@
+=== SLURM Job Information ===
+Job ID: 17930
+Job Name: weather_four_datasets
+Node: node6
+Started at: Wed Aug 27 21:55:39 CEST 2025
+
+Loading modules...
+R version: R version 4.4.2 (2024-10-31) -- "Pile of Leaves"
+GDAL version: 3.10.0
+
+Starting four-dataset weather collection...
+Approach: Original variable names, separate data sources
+Expected completion time: 2-6 hours depending on data volumes
+
+- The project is out-of-sync -- use `renv::status()` for details.
+========================================
+FOUR-DATASET WEATHER COLLECTION
+========================================
+Approach: Separate datasets, original variable names
+Started at: 2025-08-27 21:56:05 
+
+=== DATASET 1: HISTORICAL DAILY STATIONS ===
+Source: AEMET historical climatological API (2013 to T-4 days)
+Output: daily_stations_historical.csv.gz
+=== Daily Stations Historical Aggregation ===
+Source: AEMET historical climatological API
+Period: 2013 to T-4 days (as far as historical API provides)
+Variables: Original AEMET names preserved
+
+Using historical file: daily_station_historical.csv.gz 
+Loaded 46874 historical records
+Date range: 20269 to 20323 
+Stations: 889 
+Variables: fecha, indicativo, tmed, tmax, tmin, hrMedia, prec, velmedia, presMax 
+
+=== Historical Aggregation Complete ===
+Output file: data/output/daily_stations_historical.csv.gz 
+Records: 46874 
+File size: 0.6 MB
+Date range: 20269 to 20323 
+Stations: 889 
+
+Data completeness by variable:
+  tmed: 98.3% complete
+  tmax: 98.4% complete
+  tmin: 98.3% complete
+  hrMedia: 95.5% complete
+  prec: 97.2% complete
+  velmedia: 81.6% complete
+  presMax: 24.9% complete
+✅ Dataset 1 completed in 0.01 minutes
+
+=== DATASET 2: CURRENT DAILY STATIONS ===
+Source: Hourly API aggregated to daily (T-4 days to yesterday)
+Output: daily_stations_current.csv.gz
+=== Daily Stations Current Aggregation ===
+Source: Hourly station data aggregated to daily
+Period: Gap between historical data end and yesterday
+Variables: Original AEMET names preserved
+
+No hourly data found. Running hourly collection...
+[1] "Downloaded 62692 new rows of data with 7 core variables."
+[1] "Creating new expanded weather dataset file."
+[1] "Total dataset now contains 62692 rows."
+❌ Dataset 2 failed: object 'hourly_files' not found 
+
+
+=== Job Completion ===
+Exit code: 1
+Completed at: Wed Aug 27 21:56:27 CEST 2025
+❌ Four-dataset collection failed with exit code 1
+Check the log file for details
