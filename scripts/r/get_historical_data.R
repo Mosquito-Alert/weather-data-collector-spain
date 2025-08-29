@@ -51,25 +51,6 @@ library(jsonlite)
 output_data_file_path = "data/output/daily_station_historical.csv.gz"
 
 
-# If you want to prevent concurrent runs of this script, set PREVENT_CONCURRENT_RUNS to TRUE.
-PREVENT_CONCURRENT_RUNS = FALSE
-
-if(PREVENT_CONCURRENT_RUNS) {
-  # Prevent concurrent runs by creating a lockfile
-  # Lockfile management
-  lockfile <- "tmp/get_historical_data.lock"
-  # Check if lockfile exists
-  if (file.exists(lockfile)) {
-    cat("Another run is in progress. Exiting.\n")
-    quit(save = "no", status = 0)
-  }
-  # Create a temporary directory and lockfile
-  dir.create("tmp", showWarnings = FALSE)
-  file.create(lockfile)
-  # Ensure lockfile is removed on exit
-  on.exit(unlink(lockfile), add = TRUE)
-}
-
 # Load API keys
 source("auth/keys.R")
 
