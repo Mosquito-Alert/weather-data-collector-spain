@@ -139,6 +139,8 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
             tmax,        # Maximum temperature (original name)
             tmin,        # Minimum temperature (original name)
             hrMedia,     # Mean humidity (original name)
+            hrMax,       # Max humidity (original name)
+            hrMin,       # Min humidity (original name)
             prec,        # Precipitation (original name)
             velmedia,    # Wind speed (original name)
             presMax      # Pressure (original name)
@@ -149,7 +151,10 @@ lapply(seq(1, length(these_dates), chunksize), function(j){
             tmax = as.numeric(str_replace(tmax, ",", ".")),
             tmin = as.numeric(str_replace(tmin, ",", ".")),
             hrMedia = as.numeric(str_replace(hrMedia, ",", ".")),
-            # Handle precipitation more carefully - it often contains "Ip" for trace amounts
+            hrMax = as.numeric(str_replace(hrMax, ",", ".")),
+            hrMin = as.numeric(str_replace(hrMin, ",", ".")),
+            
+                        # Handle precipitation more carefully - it often contains "Ip" for trace amounts
             prec = case_when(
               is.na(prec) ~ NA_real_,
               str_detect(prec, "Ip|ip") ~ 0.1,  # Trace precipitation = 0.1mm
