@@ -14,7 +14,7 @@ library(data.table)
 
 # Load API keys and set for climaemet
 source("auth/keys.R")
-aemet_api_key(my_api_key, install = TRUE, overwrite = TRUE)
+aemet_api_key(get_current_api_key(), install = TRUE, overwrite = TRUE)
 
 # Configuration
 TESTING_MODE = FALSE
@@ -36,7 +36,8 @@ BATCH_SIZE = 500  # Process in smaller batches
 batches = split(all_municipios, ceiling(seq_along(all_municipios) / BATCH_SIZE))
 total_batches = length(batches)
 
-cat("Processing", length(all_municipios), "municipalities in", total_batches, "batches\n\n")
+cat("Processing", length(all_municipios), "municipalities in", total_batches, "batches\n")
+cat("Note: Individual municipality API errors are normal - not all codes have active forecast data\n\n")
 
 all_forecasts = list()
 successful_municipalities = 0
@@ -51,11 +52,60 @@ for(batch_num in seq_along(batches)) {
     # Use climaemet for this batch
     cat("Collecting forecasts for", length(current_batch), "municipalities...\n")
     
-    batch_forecasts = aemet_forecast_daily(
-      x = current_batch,
-      verbose = FALSE,
-      progress = TRUE
-    )
+    # Function to attempt forecast collection with key rotation on failure
+    collect_with_retry <- function(municipios, max_retries = 3) {
+      for(attempt in 1:max_retries) {
+        tryCatch({
+          # Set current API key
+          aemet_api_key(get_current_api_key(), install = TRUE, overwrite = TRUE)
+          
+          # Attempt to collect forecasts
+          # Note: Individual municipality errors are normal - not all codes have active forecast data
+          batch_forecasts = aemet_forecast_daily(
+            x = municipios,
+            verbose = FALSE,
+            progress = TRUE
+          )
+          
+          # Check if we got any data back
+          if(is.null(batch_forecasts) || nrow(batch_forecasts) == 0) {
+            cat("No forecast data returned for this batch (all municipalities may be inactive)\n")
+            return(data.frame())  # Return empty data frame instead of failing
+          }
+          
+          return(batch_forecasts)  # Success - return data
+          
+        }, error = function(e) {
+          error_msg = as.character(e$message)
+          cat("Attempt", attempt, "failed:", error_msg, "\n")
+          
+          # Check if error suggests rate limiting or API key issues (not individual municipality errors)
+          if(grepl("429|rate limit|quota|forbidden|unauthorized|timeout|too many requests", error_msg, ignore.case = TRUE) && 
+             attempt < max_retries) {
+            
+            cat("Detected potential rate limiting or API error. Rotating API key...\n")
+            rotate_api_key()
+            cat("Waiting 30 seconds before retry...\n")
+            Sys.sleep(30)
+            
+          } else if(attempt == max_retries) {
+            cat("All retry attempts failed for this batch\n")
+            # Return empty data frame instead of stopping completely
+            return(data.frame())
+          }
+        })
+      }
+    }
+    
+    # Collect forecasts with retry logic
+    batch_forecasts = collect_with_retry(current_batch)
+    
+    # Check if we got any data from this batch
+    if(is.null(batch_forecasts) || nrow(batch_forecasts) == 0) {
+      cat("⚠️  No forecast data available for batch", batch_num, "(all municipalities may be inactive)\n")
+      cat("Skipping data processing for this batch\n\n")
+      next  # Skip to next batch
+    }
     
     cat("Raw forecast collection completed for batch", batch_num, "\n")
     cat("Retrieved", nrow(batch_forecasts), "municipality-day records\n")
@@ -63,41 +113,49 @@ for(batch_num in seq_along(batches)) {
     # Extract and process data in our standard format
     cat("Processing forecast data...\n")
     
-    # Get temperature data
-    temp_data = aemet_forecast_tidy(batch_forecasts, "temperatura") %>%
-      select(
-        municipio_id = municipio,
-        municipio_nombre = nombre,
-        provincia,
-        elaborado,
-        fecha,
-        temp_max = temperatura_maxima,
-        temp_min = temperatura_minima
-      ) %>%
-      mutate(temp_avg = rowMeans(cbind(temp_max, temp_min), na.rm = TRUE))
-    
-    # Get humidity data
-    humidity_data = aemet_forecast_tidy(batch_forecasts, "humedadRelativa") %>%
-      select(
-        municipio = municipio,
-        fecha,
-        humid_max = humedadRelativa_maxima,
-        humid_min = humedadRelativa_minima
-      )
-    
-    # Get wind data
-    wind_data = aemet_forecast_tidy(batch_forecasts, "viento") %>%
-      select(
-        municipio = municipio,
-        fecha,
-        wind_speed = viento_velocidad
-      )
-    
-    # Combine all data
-    batch_final = temp_data %>%
-      left_join(humidity_data, by = c("municipio_id" = "municipio", "fecha")) %>%
-      left_join(wind_data, by = c("municipio_id" = "municipio", "fecha")) %>%
-      mutate(collected_at = Sys.time())
+    # Check if required columns exist before processing
+    tryCatch({
+      # Get temperature data
+      temp_data = aemet_forecast_tidy(batch_forecasts, "temperatura") %>%
+        select(
+          municipio_id = municipio,
+          municipio_nombre = nombre,
+          provincia,
+          elaborado,
+          fecha,
+          temp_max = temperatura_maxima,
+          temp_min = temperatura_minima
+        ) %>%
+        mutate(temp_avg = rowMeans(cbind(temp_max, temp_min), na.rm = TRUE))
+      
+      # Get humidity data
+      humidity_data = aemet_forecast_tidy(batch_forecasts, "humedadRelativa") %>%
+        select(
+          municipio = municipio,
+          fecha,
+          humid_max = humedadRelativa_maxima,
+          humid_min = humedadRelativa_minima
+        )
+      
+      # Get wind data
+      wind_data = aemet_forecast_tidy(batch_forecasts, "viento") %>%
+        select(
+          municipio = municipio,
+          fecha,
+          wind_speed = viento_velocidad
+        )
+      
+      # Combine all data
+      batch_final = temp_data %>%
+        left_join(humidity_data, by = c("municipio_id" = "municipio", "fecha")) %>%
+        left_join(wind_data, by = c("municipio_id" = "municipio", "fecha")) %>%
+        mutate(collected_at = Sys.time())
+      
+    }, error = function(e) {
+      cat("Error processing forecast data for batch", batch_num, ":", e$message, "\n")
+      cat("Skipping this batch\n\n")
+      next
+    })
     
     # Store batch results
     all_forecasts[[batch_num]] = batch_final

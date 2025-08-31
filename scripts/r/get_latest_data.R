@@ -49,26 +49,6 @@ Sys.setlocale("LC_ALL", "en_US.UTF-8")
 # Set output data file path
 output_data_file_path = "data/output/hourly_station_ongoing.csv.gz"
 
-# If you want to prevent concurrent runs of this script, set PREVENT_CONCURRENT_RUNS to TRUE.
-PREVENT_CONCURRENT_RUNS = FALSE
-
-if(PREVENT_CONCURRENT_RUNS) {
-  # Prevent concurrent runs by creating a lockfile
-  # Lockfile management
-  lockfile <- "tmp/get_latest_data_expanded.lock"
-  # Check if lockfile exists
-  if (file.exists(lockfile)) {
-    cat("Another run is in progress. Exiting.\n")
-    quit(save = "no", status = 0)
-  }
-  # Create a temporary directory and lockfile
-  dir.create("tmp", showWarnings = FALSE)
-  file.create(lockfile)
-  # Ensure lockfile is removed on exit
-  on.exit(unlink(lockfile), add = TRUE)
-}
-
-
 # Load API keys
 source("auth/keys.R")
 
@@ -97,7 +77,10 @@ get_data = function(){
       # Do this if an error is caught...
       print(e)
       # waiting and then...
-      Sys.sleep(50)
+      cat("Rotating key...\n")
+      rotate_api_key()
+      handle_setheaders(h, 'api_key' = get_current_api_key())
+      Sys.sleep(6)
       # try again:
       wdia = get_data()
       return(NULL)
@@ -116,19 +99,22 @@ get_data = function(){
 }
 
 # Ensure data directory exists
-if(!dir.exists("data")) {
-  dir.create("data")
+if(!dir.exists("data/output")) {
+  dir.create("data/output")
 }
 
 # Set up cURL handle with API key
 h <- new_handle()
-handle_setheaders(h, 'api_key' = my_api_key)
+handle_setheaders(h, 'api_key' = get_current_api_key())
 
 # Download latest data with retry logic
 wdia = get_data()
 if(is.null(wdia)){
   # If data retrieval failed, wait and try again
-  Sys.sleep(60)
+  cat("Rotating key...\n")
+  rotate_api_key()
+  handle_setheaders(h, 'api_key' = get_current_api_key())
+  Sys.sleep(6)
   wdia = get_data()
 }
 
