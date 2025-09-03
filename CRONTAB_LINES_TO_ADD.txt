@@ -1,40 +1,36 @@
-# WEATHER DATA COLLECTION - HYBRID SYSTEM
-# Add these lines to your existing crontab with: crontab -e
+# WEATHER DATA COLLECTION - OPTIMIZED DAILY COLLECTION
+# Add this line to your crontab with: crontab -e
 
-# Main hybrid collection - Daily at 2:00 AM
-# Collects all three datasets (station daily, municipal forecasts, hourly)
-# Expected completion: 2-4 hours vs 33+ hours with old approach
-0 2 * * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch scripts/bash/update_weather_hybrid.sh
-
-# Daily README update (6 AM) - Updates README with current status after collection
-0 6 * * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch scripts/bash/update_readme_summary.sh
-
-# Weekly gap filling (Sundays at 1 AM) - Fills any missing data without redundancy  
-0 1 * * 0 cd /home/j.palmer/research/weather-data-collector-spain && sbatch scripts/bash/fill_gaps.sh
-
-# Daily README update (6 AM) - Updates README with current status after collection
-0 6 * * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch scripts/update_readme_summary.sh
-
-# Weekly gap filling (Sundays at 1 AM) - Fills any missing data without redundancy  
-0 1 * * 0 cd /home/j.palmer/research/weather-data-collector-spain && sbatch scripts/fill_gaps.sh
+# Daily weather collection at 10:00 AM (when AEMET forecast data is available)
+0 10 * * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch update_weather.sh
 
 # INSTRUCTIONS:
-# 1. Copy the three lines above (without the # comments)
+# 1. Copy the line above (without the # comment)
 # 2. Run: crontab -e
-# 3. Paste the lines at the end of your existing crontab
+# 3. Paste the line at the end of your existing crontab
 # 4. Save and exit
-#
-# This will:
-# - Collect all data daily (2 AM) - full SLURM job
-# - Update README daily (6 AM) - lightweight SLURM job (30 min, 2GB)
-# - Fill gaps weekly (1 AM Sundays) - medium SLURM job (2 hours, 4GB)
-#
-# Expected performance:
-# - Daily collection: 2-4 hours (vs 33+ hours previously)
-# - Daily README update: 1-2 minutes (but runs on compute node)
-# - Gap filling: 30 minutes - 2 hours depending on gaps
-#
-# Timeline:
-# - 1 AM Sunday: Gap filling (if needed)
-# - 2 AM daily: Main data collection
-# - 6 AM daily: README status update (after collection completes)
+
+# WHY 10:00 AM?
+# - AEMET updates forecast data in the morning
+# - Ensures current day's forecast is available
+# - Avoids peak API usage periods
+# - Allows time for manual intervention if needed during business hours
+
+# WHAT THIS COLLECTS:
+# - Current weather observations (hourly data)
+# - Daily historical data (station-level)
+# - Municipal forecasts (7-day outlook)
+# - All three core datasets updated daily
+
+# EXPECTED PERFORMANCE:
+# - Duration: 4-6 hours (depending on API responsiveness)
+# - Resources: 8GB memory, 2 CPUs
+# - Success rate: ~95% with automatic API key rotation
+# - Monitor integration: Real-time status updates
+
+# OPTIONAL ADDITIONS (if needed):
+# Historical backfill (monthly, first Sunday at 1 AM):
+# 0 1 1 * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch update_historical_weather.sh
+
+# Priority municipal data (if urgent model needs):
+# 0 8 * * * cd /home/j.palmer/research/weather-data-collector-spain && sbatch priority_municipal_forecast.sh

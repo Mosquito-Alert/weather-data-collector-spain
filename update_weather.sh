@@ -1,6 +1,4 @@
 #!/bin/bash
-# filepath: scripts/update_weather.sh
-
 #SBATCH --partition=ceab
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=8G
@@ -8,6 +6,16 @@
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=johnrbpalmer@gmail.com
 #SBATCH --job-name=update_weather
+#SBATCH --output=logs/update_weather_%j.out
+#SBATCH --error=logs/update_weather_%j.err
+
+# Initialize Lmod
+if [ -f /opt/ohpc/admin/lmod/lmod/init/bash ]; then
+    source /opt/ohpc/admin/lmod/lmod/init/bash
+    echo "Lmod initialized successfully"
+else
+    echo "Warning: Could not find Lmod initialization script"
+fi
 
 # Load required modules
 module load GDAL/3.10.0-foss-2024a
@@ -58,3 +66,6 @@ fi
 echo "=== Collection Summary ==="
 echo "Completed: $(date)"
 ls -la data/output/*.csv.gz
+
+# Run with
+# sbatch ~/research/weather-data-collector-spain/update_weather.sh
