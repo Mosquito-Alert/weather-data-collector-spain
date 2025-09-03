@@ -1,0 +1,29 @@
+/var/spool/slurmd/job18585/slurm_script: line 13: module: command not found
+/var/spool/slurmd/job18585/slurm_script: line 14: module: command not found
+cat: '=== Collecting Three Datasets ===': No such file or directory
+cat: 'Starting: Wed Sep  3 05:40:02 CEST 2025': No such file or directory
+Dataset 1: Historical daily stations...
+srun: error: node9: task 0: Exited with exit code 2
+slurmstepd-node9: error: execve(): Rscript: No such file or directory
+❌ Historical collection failed
+Dataset 2: Current daily stations...
+srun: error: node9: task 0: Exited with exit code 2
+slurmstepd-node9: error: execve(): Rscript: No such file or directory
+❌ Current daily collection failed
+Dataset 3: Hourly station ongoing...
+srun: error: node9: task 0: Exited with exit code 2
+slurmstepd-node9: error: execve(): Rscript: No such file or directory
+❌ Hourly collection failed
+Dataset 4: Municipal forecasts...
+srun: error: node9: task 0: Exited with exit code 2
+slurmstepd-node9: error: execve(): Rscript: No such file or directory
+❌ Forecast collection failed
+=== Collection Summary ===
+Completed: Wed Sep  3 05:40:02 CEST 2025
+-rw-r--r-- 1 j.palmer cblab 51104272 Sep  2 07:58 data/output/daily_station_historical.csv.gz
+-rw-r--r-- 1 j.palmer cblab   546189 Sep  2 07:58 data/output/hourly_station_ongoing.csv.gz
+-rw-r--r-- 1 j.palmer cblab   133782 Aug 30 23:31 data/output/municipal_forecasts_2025-08-30.csv.gz
+-rw-r--r-- 1 j.palmer cblab     4359 Sep  2 08:16 data/output/municipal_forecasts_2025-09-02.csv.gz
+-rw-r--r-- 1 j.palmer cblab    98942 Aug 30 22:50 data/output/municipal_forecasts_intermediate_2025-08-30_batch10.csv.gz
+-rw-r--r-- 1 j.palmer cblab   131229 Aug 30 23:26 data/output/municipal_forecasts_intermediate_2025-08-30_batch15.csv.gz
+-rw-r--r-- 1 j.palmer cblab    54104 Aug 30 21:58 data/output/municipal_forecasts_intermediate_2025-08-30_batch5.csv.gz

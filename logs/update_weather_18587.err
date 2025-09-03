@@ -1,0 +1,42 @@
+Lmod Warning: MODULEPATH is undefined.
+
+
+
+Lmod has detected the following error: The following module(s) are unknown:
+"GDAL/3.10.0-foss-2024a"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore_cache load "GDAL/3.10.0-foss-2024a"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+Lmod Warning: MODULEPATH is undefined.
+
+
+
+Lmod has detected the following error: The following module(s) are unknown:
+"R/4.4.2-gfbf-2024a"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore_cache load "R/4.4.2-gfbf-2024a"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+cat: '=== Collecting Three Datasets ===': No such file or directory
+cat: 'Starting: Wed Sep  3 05:55:02 CEST 2025': No such file or directory
+srun: error: node9: task 0: Exited with exit code 2
+slurmstepd-node9: error: execve(): Rscript: No such file or directory
+srun: error: node9: task 0: Exited with exit code 2
+slurmstepd-node9: error: execve(): Rscript: No such file or directory
+slurmstepd-node9: error: execve(): Rscript: No such file or directory
+srun: error: node9: task 0: Exited with exit code 2
+srun: error: node9: task 0: Exited with exit code 2
+slurmstepd-node9: error: execve(): Rscript: No such file or directory
