@@ -9,13 +9,9 @@
 #SBATCH --output=logs/update_weather_%j.out
 #SBATCH --error=logs/update_weather_%j.err
 
-# Initialize Lmod
-if [ -f /opt/ohpc/admin/lmod/lmod/init/bash ]; then
-    source /opt/ohpc/admin/lmod/lmod/init/bash
-    echo "Lmod initialized successfully"
-else
-    echo "Warning: Could not find Lmod initialization script"
-fi
+# Initialize Lmod with proper MODULEPATH
+source /opt/ohpc/admin/lmod/lmod/init/bash
+export MODULEPATH=/opt/ohpc/pub/modulefiles:/software/eb/modules/all:/software/eb/modules/toolchain
 
 # Load required modules
 module load GDAL/3.10.0-foss-2024a
@@ -24,8 +20,8 @@ module load R/4.4.2-gfbf-2024a
 # Change to project directory
 cd /home/j.palmer/research/weather-data-collector-spain
 
-cat "=== Collecting Three Datasets ==="
-cat "Starting: $(date)"
+echo "=== Collecting Three Datasets ==="
+echo "Starting: $(date)"
 
 # Dataset 1: Historical daily stations (original AEMET names)
 echo "Dataset 1: Historical daily stations..."
