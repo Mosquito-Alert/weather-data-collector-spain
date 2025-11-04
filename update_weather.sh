@@ -34,7 +34,7 @@ fi
 
 # Dataset 2: Current daily stations (gap between historical and present)
 echo "Dataset 2: Current daily stations..."
-srun Rscript scripts/r/aggregate_current_daily_stations.R
+srun Rscript scripts/r/aggregate_daily_stations_current.R
 if [ $? -eq 0 ]; then
     echo "✅ Current daily collection completed"
 else

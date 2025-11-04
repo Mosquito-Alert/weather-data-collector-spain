@@ -113,32 +113,30 @@ for(batch_num in seq_along(batches)) {
     # Check if we got any data from this batch
     if(is.null(batch_forecasts) || nrow(batch_forecasts) == 0) {
       cat("⚠️  No forecast data returned for batch", batch_num, "on first attempt.\n")
-      cat("Trying per-municipality fallback requests...\n")
+      cat("Trying fallback with smaller sub-batches...\n")
 
-      fallback_requests = lapply(current_batch, function(mun){
-        mun = str_pad(trimws(mun), width = 5, pad = "0")
-        tryCatch({
-          aemet_api_key(get_current_api_key(), install = TRUE, overwrite = TRUE)
-          resp = aemet_forecast_daily(x = mun, verbose = FALSE, progress = FALSE)
-          if(is.null(resp) || nrow(resp) == 0){
-            return(NULL)
-          }
-          resp
-        }, error = function(e){
-          cat("  Municipality", mun, "failed:", e$message, "\n")
-          NULL
-        })
+      SUB_BATCH_SIZE = 50
+      sub_batches = split(current_batch, ceiling(seq_along(current_batch) / SUB_BATCH_SIZE))
+      fallback_results = lapply(seq_along(sub_batches), function(sub_idx){
+        sub_batch = sub_batches[[sub_idx]]
+        cat("  Sub-batch", sub_idx, "of", length(sub_batches), "with", length(sub_batch), "municipalities...\n")
+        sub_result = collect_with_retry(sub_batch)
+        if(is.null(sub_result) || nrow(sub_result) == 0){
+          cat("    Sub-batch", sub_idx, "returned no data.\n")
+          return(NULL)
+        }
+        sub_result
       })
 
-      fallback_requests = fallback_requests[!vapply(fallback_requests, is.null, logical(1))]
+      fallback_results = fallback_results[!vapply(fallback_results, is.null, logical(1))]
 
-      if(length(fallback_requests) == 0){
+      if(length(fallback_results) == 0){
         cat("⚠️  No forecast data available for batch", batch_num, "even after fallback.\n")
         cat("Skipping data processing for this batch\n\n")
         next
       }
 
-      batch_forecasts = rbindlist(fallback_requests, fill = TRUE)
+      batch_forecasts = bind_rows(fallback_results)
       cat("Fallback collected", nrow(batch_forecasts), "rows for batch", batch_num, "\n")
     }
     
