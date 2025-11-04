@@ -11,6 +11,7 @@ cat("Started at:", format(Sys.time()), "\n")
 library(climaemet)
 library(dplyr)
 library(data.table)
+library(stringr)
 
 # Load API keys and set for climaemet
 source("auth/keys.R")
@@ -22,8 +23,16 @@ N_TEST_MUNICIPALITIES = 20  # Small test for full system
 
 # Load municipality data 
 cat("Loading municipality codes...\n")
-municipalities_data = fread("data/input/municipalities.csv.gz")
-all_municipios = municipalities_data$CUMUN
+municipalities_data = fread(
+  "data/input/municipalities.csv.gz",
+  colClasses = list(character = "CUMUN")
+)
+
+if(!"CUMUN" %in% names(municipalities_data)){
+  stop("CUMUN column not found in municipalities.csv.gz")
+}
+
+all_municipios = str_pad(trimws(municipalities_data$CUMUN), width = 5, pad = "0")
 cat("Loaded", length(all_municipios), "municipalities\n")
 
 if(TESTING_MODE) {
@@ -54,6 +63,7 @@ for(batch_num in seq_along(batches)) {
     
     # Function to attempt forecast collection with key rotation on failure
     collect_with_retry <- function(municipios, max_retries = 3) {
+      municipios = str_pad(trimws(municipios), width = 5, pad = "0")
       for(attempt in 1:max_retries) {
         tryCatch({
           # Set current API key
@@ -102,9 +112,34 @@ for(batch_num in seq_along(batches)) {
     
     # Check if we got any data from this batch
     if(is.null(batch_forecasts) || nrow(batch_forecasts) == 0) {
-      cat("⚠️  No forecast data available for batch", batch_num, "(all municipalities may be inactive)\n")
-      cat("Skipping data processing for this batch\n\n")
-      next  # Skip to next batch
+      cat("⚠️  No forecast data returned for batch", batch_num, "on first attempt.\n")
+      cat("Trying per-municipality fallback requests...\n")
+
+      fallback_requests = lapply(current_batch, function(mun){
+        mun = str_pad(trimws(mun), width = 5, pad = "0")
+        tryCatch({
+          aemet_api_key(get_current_api_key(), install = TRUE, overwrite = TRUE)
+          resp = aemet_forecast_daily(x = mun, verbose = FALSE, progress = FALSE)
+          if(is.null(resp) || nrow(resp) == 0){
+            return(NULL)
+          }
+          resp
+        }, error = function(e){
+          cat("  Municipality", mun, "failed:", e$message, "\n")
+          NULL
+        })
+      })
+
+      fallback_requests = fallback_requests[!vapply(fallback_requests, is.null, logical(1))]
+
+      if(length(fallback_requests) == 0){
+        cat("⚠️  No forecast data available for batch", batch_num, "even after fallback.\n")
+        cat("Skipping data processing for this batch\n\n")
+        next
+      }
+
+      batch_forecasts = rbindlist(fallback_requests, fill = TRUE)
+      cat("Fallback collected", nrow(batch_forecasts), "rows for batch", batch_num, "\n")
     }
     
     cat("Raw forecast collection completed for batch", batch_num, "\n")
@@ -126,7 +161,13 @@ for(batch_num in seq_along(batches)) {
           temp_max = temperatura_maxima,
           temp_min = temperatura_minima
         ) %>%
-        mutate(temp_avg = rowMeans(cbind(temp_max, temp_min), na.rm = TRUE))
+        mutate(
+          municipio_id = str_pad(as.character(municipio_id), width = 5, pad = "0")
+        ) %>%
+        mutate(
+          temp_avg = rowMeans(cbind(temp_max, temp_min), na.rm = TRUE),
+          temp_avg = ifelse(is.nan(temp_avg), NA_real_, temp_avg)
+        )
       
       # Get humidity data
       humidity_data = aemet_forecast_tidy(batch_forecasts, "humedadRelativa") %>%
@@ -135,6 +176,9 @@ for(batch_num in seq_along(batches)) {
           fecha,
           humid_max = humedadRelativa_maxima,
           humid_min = humedadRelativa_minima
+        ) %>%
+        mutate(
+          municipio = str_pad(as.character(municipio), width = 5, pad = "0")
         )
       
       # Get wind data
@@ -143,13 +187,20 @@ for(batch_num in seq_along(batches)) {
           municipio = municipio,
           fecha,
           wind_speed = viento_velocidad
+        ) %>%
+        mutate(
+          municipio = str_pad(as.character(municipio), width = 5, pad = "0")
         )
       
       # Combine all data
+      collection_time = Sys.time()
       batch_final = temp_data %>%
         left_join(humidity_data, by = c("municipio_id" = "municipio", "fecha")) %>%
         left_join(wind_data, by = c("municipio_id" = "municipio", "fecha")) %>%
-        mutate(collected_at = Sys.time())
+        mutate(
+          fecha = as.Date(fecha),
+          collected_at = collection_time
+        )
       
     }, error = function(e) {
       cat("Error processing forecast data for batch", batch_num, ":", e$message, "\n")
@@ -205,33 +256,52 @@ for(batch_num in seq_along(batches)) {
 cat("=== FINAL PROCESSING ===\n")
 if(length(all_forecasts) > 0) {
   final_data = do.call(rbind, all_forecasts)
+  final_data$fecha = as.Date(final_data$fecha)
+  final_data$collected_at = as.POSIXct(final_data$collected_at, tz = "UTC")
+
+  cat("Total forecast records (current run):", nrow(final_data), "\n")
+  cat("Municipalities with data (current run):", length(unique(final_data$municipio_id)), "out of", length(all_municipios), "\n")
+  cat("Current run date range:", as.character(min(final_data$fecha)), "to", as.character(max(final_data$fecha)), "\n")
   
-  cat("Total forecast records:", nrow(final_data), "\n")
-  cat("Municipalities with data:", length(unique(final_data$municipio_id)), "out of", length(all_municipios), "\n")
-  cat("Success rate:", round(100 * length(unique(final_data$municipio_id)) / length(all_municipios), 1), "%\n")
-  cat("Date range:", as.character(min(final_data$fecha)), "to", as.character(max(final_data$fecha)), "\n")
-  
-  # Save final results
   dir.create("data/output", recursive = TRUE, showWarnings = FALSE)
-  
-  # Standard CSV
-  output_file = paste0("data/output/municipal_forecasts_", Sys.Date(), ".csv")
-  write.csv(final_data, output_file, row.names = FALSE)
-  cat("Final data saved to:", output_file, "\n")
-  
-  # Compressed version  
-  output_file_gz = paste0(output_file, ".gz")
-  fwrite(final_data, output_file_gz)
-  cat("Compressed version saved to:", output_file_gz, "\n")
-  
+  cumulative_path = "data/output/daily_municipal_forecast.csv.gz"
+  existing_data = data.table()
+
+  if(file.exists(cumulative_path)){
+    cat("Loading existing cumulative forecast file...\n")
+    existing_data = suppressWarnings(fread(cumulative_path, showProgress = FALSE))
+    if(!"municipio_id" %in% names(existing_data)){
+      cat("Existing file is missing municipio_id column. It will be overwritten.\n")
+      existing_data = data.table()
+    } else {
+      if(!inherits(existing_data$fecha, "Date")){
+        existing_data[, fecha := as.Date(fecha)]
+      }
+      if(!inherits(existing_data$collected_at, "POSIXct")){
+        existing_data[, collected_at := as.POSIXct(collected_at, tz = "UTC")]
+      }
+    }
+  }
+
+  combined_data = rbind(existing_data, as.data.table(final_data), fill = TRUE)
+
+  if(nrow(combined_data) > 0){
+    # Keep the latest observation per municipality/date/elaborated combination
+    setorderv(combined_data, c("municipio_id", "fecha", "elaborado", "collected_at"), order = c(1, 1, 1, 1), na.last = TRUE)
+    combined_data = combined_data[!duplicated(combined_data, by = c("municipio_id", "fecha", "elaborado"), fromLast = TRUE)]
+  }
+
+  # Save cumulative dataset
+  fwrite(combined_data, cumulative_path)
+  cat("Cumulative forecast file updated:", cumulative_path, "\n")
+
   # Summary statistics
   cat("\n=== SUMMARY STATISTICS ===\n")
-  cat("Total municipalities processed:", length(unique(final_data$municipio_id)), "\n")
-  cat("Total forecast days:", nrow(final_data), "\n")
-  cat("Average forecasts per municipality:", round(nrow(final_data) / length(unique(final_data$municipio_id)), 1), "\n")
-  
-  # Show sample data
-  cat("\nSample of final data:\n")
+  cat("Total municipalities in cumulative file:", length(unique(combined_data$municipio_id)), "\n")
+  cat("Total forecast records stored:", nrow(combined_data), "\n")
+  cat("Date range stored:", as.character(min(combined_data$fecha)), "to", as.character(max(combined_data$fecha)), "\n")
+
+  cat("\nSample of current run data:\n")
   print(head(final_data, 3))
   
 } else {
