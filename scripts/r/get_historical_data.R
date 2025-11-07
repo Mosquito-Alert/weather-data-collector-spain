@@ -131,39 +131,48 @@
           
           # Parse JSON keeping original AEMET variable names
           wdia  = fromJSON(this_string) %>% 
-            as_tibble() %>% 
-            select(
-              fecha, 
-              indicativo, 
-              tmed,        # Mean temperature (original name)
-              tmax,        # Maximum temperature (original name)
-              tmin,        # Minimum temperature (original name)
-              hrMedia,     # Mean humidity (original name)
-              hrMax,       # Max humidity (original name)
-              hrMin,       # Min humidity (original name)
-              prec,        # Precipitation (original name)
-              velmedia,    # Wind speed (original name)
-              presMax      # Pressure (original name)
-            ) %>% 
+            as_tibble()
+
+          expected_cols <- c(
+            "fecha", 
+            "indicativo", 
+            "tmed",
+            "tmax",
+            "tmin",
+            "hrMedia",
+            "hrMax",
+            "hrMin",
+            "prec",
+            "velmedia",
+            "presMax"
+          )
+
+          missing_cols <- setdiff(expected_cols, names(wdia))
+          if (length(missing_cols)) {
+            wdia[missing_cols] <- NA_character_
+          }
+
+          wdia <- wdia %>%
+            select(all_of(expected_cols)) %>%
             mutate(
               fecha = as_date(fecha),
-              tmed = as.numeric(str_replace(tmed, ",", ".")),
-              tmax = as.numeric(str_replace(tmax, ",", ".")),
-              tmin = as.numeric(str_replace(tmin, ",", ".")),
-              hrMedia = as.numeric(str_replace(hrMedia, ",", ".")),
-              hrMax = as.numeric(str_replace(hrMax, ",", ".")),
-              hrMin = as.numeric(str_replace(hrMin, ",", ".")),
-              
-                          # Handle precipitation more carefully - it often contains "Ip" for trace amounts
-              prec = case_when(
-                is.na(prec) ~ NA_real_,
-                str_detect(prec, "Ip|ip") ~ 0.1,  # Trace precipitation = 0.1mm
-                prec == "" ~ NA_real_,
-                TRUE ~ suppressWarnings(as.numeric(str_replace(prec, ",", ".")))
+              across(
+                c(tmed, tmax, tmin, hrMedia, hrMax, hrMin, velmedia, presMax),
+                ~ {
+                  vals <- as.character(.x)
+                  vals[vals %in% c("", " ", "NA")] <- NA_character_
+                  suppressWarnings(as.numeric(str_replace(vals, ",", ".")))
+                }
               ),
-              velmedia = as.numeric(str_replace(velmedia, ",", ".")),
-              presMax = as.numeric(str_replace(presMax, ",", "."))
-            ) %>% 
+              prec = {
+                prec_vals <- as.character(prec)
+                case_when(
+                  is.na(prec_vals) | prec_vals %in% c("", " ", "NA") ~ NA_real_,
+                  str_detect(prec_vals, "Ip|ip") ~ 0.1,
+                  TRUE ~ suppressWarnings(as.numeric(str_replace(prec_vals, ",", ".")))
+                )
+              }
+            ) %>%
             as.data.table()
           return(wdia)
           
@@ -187,6 +196,11 @@
       
     }))
     
+    if (is.null(weather_daily) || !ncol(weather_daily)) {
+      print("No new records found in this chunk")
+      return(invisible(NULL))
+    }
+
     print(paste0("Just grabbed ", nrow(weather_daily), " new records"))
     
     if(file.exists(output_data_file_path)){

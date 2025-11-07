@@ -118,15 +118,19 @@ fetch_station_window <- function(station, start_date, end_date, attempt = 1L) {
     num_cols <- c("tmed", "tmax", "tmin", "hrMedia", "hrMax", "hrMin",
                   "velmedia", "racha", "presMax", "presMin")
     for (col in num_cols) {
-      daily_dt[[col]] <- as.numeric(str_replace(daily_dt[[col]], ",", "."))
+      col_values <- as.character(daily_dt[[col]])
+      col_values[col_values %in% c("", " ", "NA")] <- NA_character_
+      daily_dt[[col]] <- suppressWarnings(as.numeric(str_replace(col_values, ",", ".")))
     }
 
-    daily_dt[, prec := fcase(
-      is.na(prec), NA_real_,
-      str_detect(prec, "(?i)ip"), 0.1,
-      prec == "", NA_real_,
-      default = suppressWarnings(as.numeric(str_replace(prec, ",", ".")))
-    )]
+    daily_dt[, prec := {
+      prec_chr <- as.character(prec)
+      fcase(
+        is.na(prec_chr) | prec_chr %in% c("", " ", "NA"), NA_real_,
+        str_detect(prec_chr, "(?i)ip"), 0.1,
+        default = suppressWarnings(as.numeric(str_replace(prec_chr, ",", ".")))
+      )
+    }]
 
     return(daily_dt)
 
@@ -149,6 +153,11 @@ new_records <- rbindlist(lapply(barcelona_stations, function(station) {
     fetch_station_window(station, start_i, end_i)
   }), fill = TRUE)
 }), fill = TRUE)
+
+if (nrow(new_records) == 0L || ncol(new_records) == 0L) {
+  cat("No new Barcelona historical records downloaded.\n")
+  quit(status = 0)
+}
 
 new_records <- merge(
   new_records,

@@ -83,7 +83,7 @@ get_data = function(){
       Sys.sleep(6)
       # try again:
       wdia = get_data()
-      return(NULL)
+      return(wdia)
     },
     warning = function(w){
       print(w)
