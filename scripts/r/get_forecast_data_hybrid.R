@@ -13,6 +13,13 @@ library(dplyr)
 library(data.table)
 library(stringr)
 
+# Configuration
+RUN_DATE <- as.Date(Sys.time(), tz = "UTC")
+BATCH_SIZE <- 100
+BATCH_PAUSE_SECONDS <- 8
+cumulative_path <- "data/output/daily_municipal_forecast.csv.gz"
+dir.create("data/output", recursive = TRUE, showWarnings = FALSE)
+
 # Load API keys and set for climaemet
 source("auth/keys.R")
 aemet_api_key(get_current_api_key(), install = TRUE, overwrite = TRUE)
@@ -20,6 +27,52 @@ aemet_api_key(get_current_api_key(), install = TRUE, overwrite = TRUE)
 # Configuration
 TESTING_MODE = FALSE
 N_TEST_MUNICIPALITIES = 20  # Small test for full system
+
+load_cumulative_data <- function(path) {
+  if (!file.exists(path)) return(data.table())
+  dt <- suppressWarnings(fread(path, showProgress = FALSE))
+  if (!nrow(dt)) return(dt)
+  if (!"municipio_id" %in% names(dt)) {
+    dt[, municipio_id := NA_character_]
+  }
+  if (!inherits(dt$fecha, "Date")) {
+    dt[, fecha := as.Date(fecha)]
+  }
+  if (!"collected_at" %in% names(dt)) {
+    dt[, collected_at := as.POSIXct(NA)]
+  }
+  if (!inherits(dt$collected_at, "POSIXct")) {
+    dt[, collected_at := as.POSIXct(collected_at, tz = "UTC")]
+  }
+  dt
+}
+
+cumulative_data <- load_cumulative_data(cumulative_path)
+completed_today <- character()
+if (nrow(cumulative_data)) {
+  completed_today <- cumulative_data[
+    !is.na(municipio_id) & as.Date(collected_at, tz = "UTC") == RUN_DATE,
+    unique(municipio_id)
+  ]
+  if (length(completed_today)) {
+    cat("Already collected", length(completed_today), "municipalities for", RUN_DATE, "\n")
+  }
+}
+
+save_cumulative_data <- function(path, dt) {
+  tmp_path <- paste0(path, ".tmp")
+  fwrite(dt, tmp_path)
+  file.rename(tmp_path, path)
+}
+
+persist_batch <- function(batch_dt) {
+  if (!nrow(batch_dt)) return()
+  batch_dt[, collected_at := as.POSIXct(collected_at, tz = "UTC")]
+  cumulative_data <<- rbind(cumulative_data, batch_dt, fill = TRUE)
+  setorderv(cumulative_data, c("municipio_id", "fecha", "elaborado", "collected_at"))
+  cumulative_data <<- unique(cumulative_data, by = c("municipio_id", "fecha", "elaborado"), fromLast = TRUE)
+  save_cumulative_data(cumulative_path, cumulative_data)
+}
 
 # Load municipality data 
 cat("Loading municipality codes...\n")
@@ -40,20 +93,36 @@ if(TESTING_MODE) {
   cat("Testing mode: using", length(all_municipios), "municipalities\n")
 }
 
+remaining_municipios <- setdiff(all_municipios, completed_today)
+if (!length(remaining_municipios)) {
+  cat("All municipalities already collected for", RUN_DATE, "- exiting early.\n")
+  quit(save = "no", status = 0)
+}
+
 # Split into batches to handle potential API limits and allow progress tracking
-BATCH_SIZE = 500  # Process in smaller batches
-batches = split(all_municipios, ceiling(seq_along(all_municipios) / BATCH_SIZE))
+batch_size <- if (TESTING_MODE) min(BATCH_SIZE, length(remaining_municipios)) else BATCH_SIZE
+batches = split(remaining_municipios, ceiling(seq_along(remaining_municipios) / batch_size))
 total_batches = length(batches)
 
-cat("Processing", length(all_municipios), "municipalities in", total_batches, "batches\n")
+cat("Processing", length(remaining_municipios), "municipalities in", total_batches, "batches\n")
 cat("Note: Individual municipality API errors are normal - not all codes have active forecast data\n\n")
 
 all_forecasts = list()
 successful_municipalities = 0
+processed_in_run <- character()
 
 for(batch_num in seq_along(batches)) {
   cat("=== BATCH", batch_num, "of", total_batches, "===\n")
   current_batch = batches[[batch_num]]
+  if (!length(current_batch)) {
+    cat("Batch", batch_num, "has no municipalities remaining. Skipping.\n\n")
+    next
+  }
+  current_batch = intersect(current_batch, remaining_municipios)
+  if (!length(current_batch)) {
+    cat("All municipalities in this batch were already processed earlier today. Skipping.\n\n")
+    next
+  }
   
   batch_start_time = Sys.time()
   
@@ -74,7 +143,7 @@ for(batch_num in seq_along(batches)) {
           batch_forecasts = aemet_forecast_daily(
             x = municipios,
             verbose = FALSE,
-            progress = TRUE
+            progress = FALSE
           )
           
           # Check if we got any data back
@@ -206,105 +275,80 @@ for(batch_num in seq_along(batches)) {
       next
     })
     
-    # Store batch results
-    all_forecasts[[batch_num]] = batch_final
-    successful_municipalities = successful_municipalities + length(unique(batch_final$municipio_id))
-    
+    batch_final_dt <- as.data.table(batch_final)
+    if (!nrow(batch_final_dt)) {
+      cat("No records produced after processing batch", batch_num, "- skipping persistence.\n\n")
+      next
+    }
+
+    persist_batch(batch_final_dt)
+    all_forecasts[[length(all_forecasts) + 1]] <- batch_final_dt
+
+    processed_in_run <<- union(processed_in_run, unique(batch_final_dt$municipio_id))
+    successful_municipalities <<- length(processed_in_run)
+    remaining_municipios <<- setdiff(remaining_municipios, unique(batch_final_dt$municipio_id))
+
     batch_end_time = Sys.time()
     batch_duration = as.numeric(difftime(batch_end_time, batch_start_time, units = "mins"))
-    
+
     cat("✅ Batch", batch_num, "completed successfully\n")
     cat("Duration:", round(batch_duration, 2), "minutes\n")
-    cat("Records in batch:", nrow(batch_final), "\n")
-    cat("Total successful municipalities so far:", successful_municipalities, "\n")
-    
-    # Estimate remaining time
-    if(batch_num > 1) {
-      avg_time_per_batch = batch_duration
-      remaining_batches = total_batches - batch_num
-      estimated_remaining = remaining_batches * avg_time_per_batch
-      cat("Estimated remaining time:", round(estimated_remaining, 1), "minutes\n")
+    cat("Records in batch:", nrow(batch_final_dt), "\n")
+    cat("Municipalities completed in this run:", successful_municipalities, "\n")
+    cat("Municipalities remaining today:", length(remaining_municipios), "\n")
+
+    if (batch_num < total_batches && length(remaining_municipios) > 0 && BATCH_PAUSE_SECONDS > 0) {
+      cat("Pausing", BATCH_PAUSE_SECONDS, "seconds before next batch to respect API limits...\n")
+      Sys.sleep(BATCH_PAUSE_SECONDS)
     }
-    
-    # Save intermediate results every 5 batches
-    if(batch_num %% 5 == 0) {
-      cat("Saving intermediate results after batch", batch_num, "...\n")
-      intermediate_data = do.call(rbind, all_forecasts)
-      
-      dir.create("data/output", recursive = TRUE, showWarnings = FALSE)
-      intermediate_file = paste0("data/output/municipal_forecasts_intermediate_", Sys.Date(), "_batch", batch_num, ".csv.gz")
-      fwrite(intermediate_data, intermediate_file)
-      cat("Intermediate data saved to:", intermediate_file, "\n")
-    }
-    
+
     cat("\n")
     
   }, error = function(e) {
     cat("❌ Batch", batch_num, "failed:", e$message, "\n")
     cat("Continuing with next batch...\n\n")
   })
-  
-  # Small delay between batches to be respectful to API
-  if(batch_num < total_batches) {
-    Sys.sleep(2)
+
+  if (!length(remaining_municipios)) {
+    cat("All municipalities collected for today. Ending early.\n")
+    break
   }
 }
 
 # Combine all successful batches
 cat("=== FINAL PROCESSING ===\n")
 if(length(all_forecasts) > 0) {
-  final_data = do.call(rbind, all_forecasts)
-  final_data$fecha = as.Date(final_data$fecha)
-  final_data$collected_at = as.POSIXct(final_data$collected_at, tz = "UTC")
-
-  cat("Total forecast records (current run):", nrow(final_data), "\n")
-  cat("Municipalities with data (current run):", length(unique(final_data$municipio_id)), "out of", length(all_municipios), "\n")
-  cat("Current run date range:", as.character(min(final_data$fecha)), "to", as.character(max(final_data$fecha)), "\n")
-  
-  dir.create("data/output", recursive = TRUE, showWarnings = FALSE)
-  cumulative_path = "data/output/daily_municipal_forecast.csv.gz"
-  existing_data = data.table()
-
-  if(file.exists(cumulative_path)){
-    cat("Loading existing cumulative forecast file...\n")
-    existing_data = suppressWarnings(fread(cumulative_path, showProgress = FALSE))
-    if(!"municipio_id" %in% names(existing_data)){
-      cat("Existing file is missing municipio_id column. It will be overwritten.\n")
-      existing_data = data.table()
-    } else {
-      if(!inherits(existing_data$fecha, "Date")){
-        existing_data[, fecha := as.Date(fecha)]
-      }
-      if(!inherits(existing_data$collected_at, "POSIXct")){
-        existing_data[, collected_at := as.POSIXct(collected_at, tz = "UTC")]
-      }
-    }
+  final_data <- rbindlist(all_forecasts, use.names = TRUE, fill = TRUE)
+  if (nrow(final_data)) {
+    final_data[, fecha := as.Date(fecha)]
+    final_data[, collected_at := as.POSIXct(collected_at, tz = "UTC")]
   }
 
-  combined_data = rbind(existing_data, as.data.table(final_data), fill = TRUE)
-
-  if(nrow(combined_data) > 0){
-    # Keep the latest observation per municipality/date/elaborated combination
-    setorderv(combined_data, c("municipio_id", "fecha", "elaborado", "collected_at"), order = c(1, 1, 1, 1), na.last = TRUE)
-    combined_data = combined_data[!duplicated(combined_data, by = c("municipio_id", "fecha", "elaborado"), fromLast = TRUE)]
+  cat("Total forecast records saved this run:", nrow(final_data), "\n")
+  cat("Municipalities updated this run:", length(unique(final_data$municipio_id)), "out of", length(all_municipios), "\n")
+  if (nrow(final_data)) {
+    cat("Current run date range:", as.character(min(final_data$fecha)), "to", as.character(max(final_data$fecha)), "\n")
   }
 
-  # Save cumulative dataset
-  fwrite(combined_data, cumulative_path)
   cat("Cumulative forecast file updated:", cumulative_path, "\n")
-
-  # Summary statistics
-  cat("\n=== SUMMARY STATISTICS ===\n")
-  cat("Total municipalities in cumulative file:", length(unique(combined_data$municipio_id)), "\n")
-  cat("Total forecast records stored:", nrow(combined_data), "\n")
-  cat("Date range stored:", as.character(min(combined_data$fecha)), "to", as.character(max(combined_data$fecha)), "\n")
-
-  cat("\nSample of current run data:\n")
-  print(head(final_data, 3))
-  
 } else {
-  cat("❌ No data collected successfully\n")
-  quit(save = "no", status = 1)
+  cat("No new forecast data collected in this run (municipalities may already be up to date or all API calls failed).\n")
+}
+
+if (nrow(cumulative_data)) {
+  cat("\n=== SUMMARY STATISTICS ===\n")
+  cat("Total municipalities in cumulative file:", length(unique(cumulative_data$municipio_id)), "\n")
+  cat("Total forecast records stored:", nrow(cumulative_data), "\n")
+  cat("Date range stored:", as.character(min(cumulative_data$fecha, na.rm = TRUE)), "to", as.character(max(cumulative_data$fecha, na.rm = TRUE)), "\n")
+  todays_total <- cumulative_data[as.Date(collected_at, tz = "UTC") == RUN_DATE, uniqueN(municipio_id)]
+  cat("Municipalities collected today (", RUN_DATE, "): ", todays_total, "\n", sep = "")
+}
+
+if (length(remaining_municipios)) {
+  cat("\nMunicipalities still outstanding for", RUN_DATE, ":", length(remaining_municipios), "\n")
+  cat("Re-run later today to finish the remaining municipalities once API limits reset.\n")
+} else {
+  cat("\nAll municipalities collected for", RUN_DATE, "✅\n")
 }
 
 cat("\nCompleted at:", format(Sys.time()), "\n")
