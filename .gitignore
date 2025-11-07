@@ -20,3 +20,10 @@ data/*.csv*
 data/*.gz
 !data/input/
 !data/README.md
+
+# ignore log output and slurm artifacts
+logs/
+*.out
+*.err
+*.log
+.Rhistory

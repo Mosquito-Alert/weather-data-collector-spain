@@ -50,13 +50,13 @@ else
     echo "❌ Hourly collection failed"
 fi
 
-# Dataset 4: Municipal forecasts
+# Dataset 4: Municipal forecasts (run as a standalone SLURM job)
 echo "Dataset 4: Municipal forecasts..."
-srun Rscript scripts/r/get_forecast_data_hybrid.R
+FORECAST_JOB_ID=$(sbatch --parsable update_municipal_forecasts_only.sh)
 if [ $? -eq 0 ]; then
-    echo "✅ Forecast collection completed"
+    echo "✅ Forecast collection submitted as job ${FORECAST_JOB_ID}"
 else
-    echo "❌ Forecast collection failed"
+    echo "❌ Forecast collection submission failed"
 fi
 
 echo "=== Collection Summary ==="

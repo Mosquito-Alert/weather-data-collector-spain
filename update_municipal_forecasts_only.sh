@@ -2,12 +2,12 @@
 #SBATCH --partition=ceab
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=8G
-#SBATCH --time=06:00:00
+#SBATCH --time=12:00:00
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=johnrbpalmer@gmail.com
-#SBATCH --job-name=update_weather
-#SBATCH --output=logs/update_weather_%j.out
-#SBATCH --error=logs/update_weather_%j.err
+#SBATCH --job-name=update_municipal_forecasts
+#SBATCH --output=logs/update_municipal_forecasts_%j.out
+#SBATCH --error=logs/update_municipal_forecasts_%j.err
 
 # Initialize Lmod with proper MODULEPATH
 source /opt/ohpc/admin/lmod/lmod/init/bash
