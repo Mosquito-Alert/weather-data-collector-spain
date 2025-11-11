@@ -2,8 +2,8 @@
 
 # aggregate_daily_stations_current_barcelona.R
 # --------------------------------------------
-# Purpose: Aggregate the Barcelona hourly observation feed into daily metrics
-# (gap-filling the last ~4 days until the historical feed catches up).
+# Purpose: Aggregate the Barcelona-only hourly observation feed into daily
+# metrics for the recent window, mirroring the nationwide workflow.
 
 rm(list = ls())
 
@@ -15,12 +15,16 @@ suppressPackageStartupMessages({
 
 input_path <- "data/output/hourly_station_ongoing_barcelona.csv.gz"
 output_path <- "data/output/daily_station_current_barcelona.csv.gz"
+station_map_path <- "data/input/station_point_municipaities_table.csv"
+lock_path <- paste0(output_path, ".lock")
+LOCK_TIMEOUT_SECONDS <- 600
+LOCK_SLEEP_SECONDS <- 1
 
 if (!file.exists(input_path)) {
   stop("Hourly Barcelona dataset not found at ", input_path, ". Run get_latest_data_barcelona.R first.")
 }
 
-hourly <- fread(input_path)
+hourly <- fread(input_path, showProgress = FALSE)
 if (!nrow(hourly)) {
   cat("Hourly Barcelona dataset empty; nothing to aggregate.\n")
   quit(status = 0)
@@ -35,12 +39,23 @@ if (length(missing_cols)) {
 hourly[, fint := as_datetime(fint)]
 hourly[, date := as_date(fint)]
 
+if (file.exists(station_map_path)) {
+  station_map <- fread(
+    station_map_path,
+    colClasses = list(character = c("INDICATIVO", "NATCODE", "NAMEUNIT"))
+  )
+  station_map <- unique(station_map[, .(idema = INDICATIVO, municipio_natcode = NATCODE, municipio_name = NAMEUNIT)])
+  hourly <- merge(hourly, station_map, by = "idema", all.x = TRUE)
+} else {
+  hourly[, `:=`(municipio_natcode = NA_character_, municipio_name = NA_character_)]
+}
+
 # Pivot to wide per timestamp for easier aggregation
 wide <- dcast(
   hourly,
   idema + municipio_natcode + municipio_name + fint + date ~ measure,
   value.var = "value",
-  fun.aggregate = mean,
+  fun.aggregate = function(x) suppressWarnings(mean(as.numeric(x), na.rm = TRUE)),
   fill = NA_real_
 )
 
@@ -77,20 +92,56 @@ summary_daily <- wide[, .(
   presMax = agg_na(pres, max),
   presMin = agg_na(pres, min),
   n_obs = .N
-), by = .(fecha = date, indicativo = idema, municipio_natcode, municipio_name)]
+), by = .(
+  fecha = date,
+  indicativo = idema,
+  idema,
+  municipio_natcode,
+  municipio_name
+)]
 
 setorder(summary_daily, fecha, indicativo)
 
-if (file.exists(output_path)) {
-  existing <- fread(output_path)
-  combined <- rbindlist(list(existing, summary_daily), fill = TRUE)
-  setorder(combined, fecha, indicativo)
-  combined <- unique(combined, by = c("fecha", "indicativo"))
-} else {
-  combined <- summary_daily
+acquire_file_lock <- function(path, timeout = LOCK_TIMEOUT_SECONDS, sleep = LOCK_SLEEP_SECONDS) {
+  start_time <- Sys.time()
+  repeat {
+    if (!file.exists(path)) {
+      if (file.create(path)) {
+        return(TRUE)
+      }
+    }
+    if (difftime(Sys.time(), start_time, units = "secs") > timeout) {
+      stop("Unable to acquire file lock at ", path, " within timeout.")
+    }
+    Sys.sleep(sleep)
+  }
 }
 
-fwrite(combined, output_path)
+release_file_lock <- function(path) {
+  if (file.exists(path)) {
+    unlink(path)
+  }
+}
+
+load_existing_daily <- function(path) {
+  if (!file.exists(path)) return(data.table())
+  dt <- fread(path, showProgress = FALSE)
+  if ("fecha" %in% names(dt)) dt[, fecha := as_date(fecha)]
+  dt
+}
+
+persist_daily <- function(new_rows) {
+  acquire_file_lock(lock_path)
+  on.exit(release_file_lock(lock_path), add = TRUE)
+  existing <- load_existing_daily(output_path)
+  combined <- rbindlist(list(existing, new_rows), fill = TRUE)
+  setorder(combined, fecha, indicativo)
+  combined <- unique(combined, by = c("fecha", "indicativo"))
+  fwrite(combined, output_path)
+  combined
+}
+
+combined <- persist_daily(summary_daily)
 
 cat("Barcelona current-daily dataset updated:", output_path, "\n")
 cat("Rows added this run:", nrow(summary_daily), " | Total rows stored:", nrow(combined), "\n")

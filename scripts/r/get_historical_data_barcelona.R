@@ -26,6 +26,34 @@ bcn_natcode_suffix <- "08019"
 # Load API helpers
 source("auth/keys.R")
 
+parse_cli_args <- function(args) {
+  if (!length(args)) return(list())
+  parsed <- list()
+  for (arg in args) {
+    if (!startsWith(arg, "--")) next
+    stripped <- substr(arg, 3, nchar(arg))
+    parts <- strsplit(stripped, "=", fixed = TRUE)[[1]]
+    key <- parts[1]
+    value <- if (length(parts) > 1) parts[2] else TRUE
+    parsed[[key]] <- value
+  }
+  parsed
+}
+
+cli_args <- parse_cli_args(commandArgs(trailingOnly = TRUE))
+
+if (!is.null(cli_args[["key-pool"]])) {
+  pool_names <- strsplit(cli_args[["key-pool"]], ",", fixed = TRUE)[[1]]
+  pool_names <- trimws(pool_names)
+  pool_names <- pool_names[nzchar(pool_names)]
+  if (!length(pool_names)) {
+    stop("key-pool argument provided but no valid key identifiers were found.")
+  }
+  set_active_key_pool(pool_names)
+}
+
+cat("Active API key pool:", paste(get_active_key_pool(), collapse = ", "), "\n")
+
 # Identify Barcelona station codes using municipality mapping
 station_map <- fread(
   "data/input/station_point_municipaities_table.csv",
@@ -43,9 +71,17 @@ cat("Barcelona station codes (indicativo):", paste(barcelona_stations, collapse 
 
 # Determine missing date range
 all_dates <- seq.Date(from = start_date, to = today() - 4, by = "day")
-existing_data <- if (file.exists(output_data_file_path)) fread(output_data_file_path) else NULL
 
-if (!is.null(existing_data)) {
+load_existing_data <- function(path) {
+  if (!file.exists(path)) return(data.table())
+  dt <- fread(path)
+  if ("fecha" %in% names(dt)) dt[, fecha := as_date(fecha)]
+  dt
+}
+
+existing_data <- load_existing_data(output_data_file_path)
+
+if (nrow(existing_data)) {
   missing_dates <- setdiff(all_dates, unique(existing_data$fecha))
 } else {
   missing_dates <- all_dates
@@ -63,6 +99,8 @@ max_missing <- max(missing_dates)
 aemet_handle <- new_handle()
 handle_setheaders(aemet_handle, "api_key" = get_current_api_key())
 handle_setopt(aemet_handle, timeout = 60, connecttimeout = 30)
+initial_key_label <- get_active_key_pool()[1]
+cat("Using initial API key label:", initial_key_label, "\n")
 
 # Split date range into manageable windows per station
 days_per_chunk <- 30
@@ -171,15 +209,44 @@ if (!nrow(new_records)) {
   quit(status = 0)
 }
 
-if (!is.null(existing_data) && nrow(existing_data)) {
-  combined <- rbindlist(list(existing_data, new_records), fill = TRUE)
-  setorder(combined, fecha, indicativo)
-  combined <- unique(combined, by = c("fecha", "indicativo"))
-} else {
-  combined <- new_records[order(fecha, indicativo)]
+lock_path <- paste0(output_data_file_path, ".lock")
+LOCK_TIMEOUT_SECONDS <- 600
+LOCK_SLEEP_SECONDS <- 1
+
+acquire_file_lock <- function(path, timeout = LOCK_TIMEOUT_SECONDS, sleep = LOCK_SLEEP_SECONDS) {
+  start_time <- Sys.time()
+  repeat {
+    if (!file.exists(path)) {
+      if (file.create(path)) {
+        return(TRUE)
+      }
+    }
+    if (difftime(Sys.time(), start_time, units = "secs") > timeout) {
+      stop("Unable to acquire file lock at ", path, " within timeout.")
+    }
+    Sys.sleep(sleep)
+  }
 }
 
-fwrite(combined, output_data_file_path)
+release_file_lock <- function(path) {
+  if (file.exists(path)) {
+    unlink(path)
+  }
+}
+
+persist_records <- function(new_rows) {
+  acquire_file_lock(lock_path)
+  on.exit(release_file_lock(lock_path), add = TRUE)
+  current <- load_existing_data(output_data_file_path)
+  combined <- rbindlist(list(current, new_rows), fill = TRUE)
+  setorder(combined, fecha, indicativo)
+  combined <- unique(combined, by = c("fecha", "indicativo"))
+  fwrite(combined, output_data_file_path)
+  combined
+}
+
+combined <- persist_records(new_records)
+
 cat("Historical Barcelona dataset updated:", output_data_file_path, "\n")
 cat("Total records stored:", nrow(combined), "\n")
 cat("Date range:", as.character(min(combined$fecha)), "to", as.character(max(combined$fecha)), "\n")

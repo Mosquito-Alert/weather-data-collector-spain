@@ -21,6 +21,34 @@ source("auth/keys.R")
 output_path <- "data/output/hourly_station_ongoing_barcelona.csv.gz"
 bcn_natcode_suffix <- "08019"
 
+parse_cli_args <- function(args) {
+  if (!length(args)) return(list())
+  parsed <- list()
+  for (arg in args) {
+    if (!startsWith(arg, "--")) next
+    stripped <- substr(arg, 3, nchar(arg))
+    parts <- strsplit(stripped, "=", fixed = TRUE)[[1]]
+    key <- parts[1]
+    value <- if (length(parts) > 1) parts[2] else TRUE
+    parsed[[key]] <- value
+  }
+  parsed
+}
+
+cli_args <- parse_cli_args(commandArgs(trailingOnly = TRUE))
+
+if (!is.null(cli_args[["key-pool"]])) {
+  pool_names <- strsplit(cli_args[["key-pool"]], ",", fixed = TRUE)[[1]]
+  pool_names <- trimws(pool_names)
+  pool_names <- pool_names[nzchar(pool_names)]
+  if (!length(pool_names)) {
+    stop("key-pool argument provided but no valid key identifiers were found.")
+  }
+  set_active_key_pool(pool_names)
+}
+
+cat("Active API key pool:", paste(get_active_key_pool(), collapse = ", "), "\n")
+
 station_map <- fread(
   "data/input/station_point_municipaities_table.csv",
   colClasses = list(character = c("INDICATIVO", "NATCODE", "NAMEUNIT"))
@@ -39,8 +67,36 @@ if (!dir.exists("data/output")) {
   dir.create("data/output", recursive = TRUE)
 }
 
+lock_path <- paste0(output_path, ".lock")
+LOCK_TIMEOUT_SECONDS <- 600
+LOCK_SLEEP_SECONDS <- 1
+
+acquire_file_lock <- function(path, timeout = LOCK_TIMEOUT_SECONDS, sleep = LOCK_SLEEP_SECONDS) {
+  start_time <- Sys.time()
+  repeat {
+    if (!file.exists(path)) {
+      if (file.create(path)) {
+        return(TRUE)
+      }
+    }
+    if (difftime(Sys.time(), start_time, units = "secs") > timeout) {
+      stop("Unable to acquire file lock at ", path, " within timeout.")
+    }
+    Sys.sleep(sleep)
+  }
+}
+
+release_file_lock <- function(path) {
+  if (file.exists(path)) {
+    unlink(path)
+  }
+}
+
 handle <- new_handle()
 handle_setheaders(handle, "api_key" = get_current_api_key())
+
+initial_key_label <- get_active_key_pool()[1]
+cat("Using initial API key label:", initial_key_label, "\n")
 
 fetch_station_latest <- function(station, attempt = 1L) {
   tryCatch({
@@ -99,16 +155,18 @@ latest_long <- melt(
 
 latest_long[, fint := as_datetime(fint)]
 
-if (file.exists(output_path)) {
-  existing <- fread(output_path)
-  combined <- rbindlist(list(latest_long, existing), fill = TRUE)
+persist_latest <- function(new_rows) {
+  acquire_file_lock(lock_path)
+  on.exit(release_file_lock(lock_path), add = TRUE)
+  existing <- if (file.exists(output_path)) fread(output_path) else data.table()
+  combined <- rbindlist(list(new_rows, existing), fill = TRUE)
   setorder(combined, -as.numeric(fint))
   combined <- unique(combined, by = c("fint", "idema", "measure"))
-} else {
-  combined <- latest_long[order(-as.numeric(fint))]
+  fwrite(combined, output_path)
+  combined
 }
 
-fwrite(combined, output_path)
+combined <- persist_latest(latest_long)
 
 cat("Barcelona hourly dataset updated:", output_path, "\n")
 cat("New rows added:", nrow(latest_long), " | Total rows:", nrow(combined), "\n")

@@ -20,6 +20,13 @@ module load R/4.4.2-gfbf-2024a
 # Change to project directory
 cd /home/j.palmer/research/weather-data-collector-spain
 
+BARCELONA_SENTINEL="data/output/barcelona_last_success.txt"
+if [ -f "${BARCELONA_SENTINEL}" ]; then
+    echo "Barcelona sentinel timestamp: $(cat "${BARCELONA_SENTINEL}")"
+else
+    echo "Barcelona sentinel not found; ensure update_barcelona_only.sh has run recently."
+fi
+
 echo "=== Collecting Three Datasets ==="
 echo "Starting: $(date)"
 
