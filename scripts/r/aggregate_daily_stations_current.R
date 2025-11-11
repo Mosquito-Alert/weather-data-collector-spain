@@ -15,6 +15,7 @@ suppressPackageStartupMessages({
 
 input_path <- "data/output/hourly_station_ongoing.csv.gz"
 output_path <- "data/output/daily_station_current.csv.gz"
+station_map_path <- "data/input/station_point_municipaities_table.csv"
 
 if (!file.exists(input_path)) {
 	stop("Hourly dataset not found at ", input_path, ". Run get_latest_data.R first.")
@@ -35,10 +36,22 @@ if (length(missing_cols)) {
 hourly[, fint := as_datetime(fint)]
 hourly[, date := as_date(fint)]
 
+# Attach municipality metadata when available
+if (file.exists(station_map_path)) {
+	station_map <- fread(
+		station_map_path,
+		colClasses = list(character = c("INDICATIVO", "NATCODE", "NAMEUNIT"))
+	)
+	station_map <- unique(station_map[, .(idema = INDICATIVO, municipio_natcode = NATCODE, municipio_name = NAMEUNIT)])
+	hourly <- merge(hourly, station_map, by = "idema", all.x = TRUE)
+} else {
+	hourly[, `:=`(municipio_natcode = NA_character_, municipio_name = NA_character_)]
+}
+
 # Pivot to wide per timestamp for easier aggregation
 wide <- dcast(
 	hourly,
-	idema + indicativo + nombre + provincia + altitud + municipio_natcode + municipio_name + fint + date ~ measure,
+	idema + municipio_natcode + municipio_name + fint + date ~ measure,
 	value.var = "value",
 	fun.aggregate = function(x) suppressWarnings(mean(as.numeric(x), na.rm = TRUE)),
 	fill = NA_real_
@@ -78,11 +91,8 @@ summary_daily <- wide[, .(
 	n_obs = .N
 ), by = .(
 	fecha = date,
-	indicativo = fifelse(nchar(indicativo), indicativo, idema),
+	indicativo = idema,
 	idema,
-	nombre,
-	provincia,
-	altitud,
 	municipio_natcode,
 	municipio_name
 )]
