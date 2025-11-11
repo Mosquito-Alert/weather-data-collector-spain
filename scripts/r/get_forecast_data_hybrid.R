@@ -13,16 +13,73 @@ library(dplyr)
 library(data.table)
 library(stringr)
 
+`%||%` <- function(x, y) {
+  if (is.null(x) || isTRUE(is.na(x)) || (is.character(x) && identical(x, ""))) return(y)
+  x
+}
+
+parse_cli_args <- function(args) {
+  if (!length(args)) return(list())
+  parsed <- list()
+  for (arg in args) {
+    if (!startsWith(arg, "--")) next
+    stripped <- substr(arg, 3, nchar(arg))
+    parts <- strsplit(stripped, "=", fixed = TRUE)[[1]]
+    key <- parts[1]
+    value <- if (length(parts) > 1) parts[2] else TRUE
+    parsed[[key]] <- value
+  }
+  parsed
+}
+
 # Configuration
 RUN_DATE <- as.Date(Sys.time(), tz = "UTC")
 BATCH_SIZE <- 100
 BATCH_PAUSE_SECONDS <- 8
 cumulative_path <- "data/output/daily_municipal_forecast.csv.gz"
 dir.create("data/output", recursive = TRUE, showWarnings = FALSE)
+lock_path <- paste0(cumulative_path, ".lock")
+LOCK_TIMEOUT_SECONDS <- 600
+LOCK_SLEEP_SECONDS <- 1
 
 # Load API keys and set for climaemet
 source("auth/keys.R")
+
+cli_args <- parse_cli_args(commandArgs(trailingOnly = TRUE))
+
+as_int_or_default <- function(value, default) {
+  if (is.null(value)) return(default)
+  parsed <- suppressWarnings(as.integer(value))
+  if (length(parsed) != 1L || is.na(parsed)) return(default)
+  parsed
+}
+
+if (!is.null(cli_args[["key-pool"]])) {
+  pool_names <- strsplit(cli_args[["key-pool"]], ",", fixed = TRUE)[[1]]
+  pool_names <- trimws(pool_names)
+  pool_names <- pool_names[nzchar(pool_names)]
+  if (!length(pool_names)) {
+    stop("key-pool argument provided but no valid key identifiers were found.")
+  }
+  set_active_key_pool(pool_names)
+}
+
+shard_index <- as_int_or_default(cli_args[["shard-index"]], 1L)
+shard_count <- as_int_or_default(cli_args[["shard-count"]], 1L)
+
+if (shard_index < 1L) {
+  stop("shard-index must be a positive integer.")
+}
+if (shard_count < 1L) {
+  stop("shard-count must be a positive integer.")
+}
+if (shard_index > shard_count) {
+  stop("shard-index cannot exceed shard-count.")
+}
+
 aemet_api_key(get_current_api_key(), install = TRUE, overwrite = TRUE)
+cat("Active API key pool:", paste(get_active_key_pool(), collapse = ", "), "\n")
+cat("Shard assignment: index", shard_index, "of", shard_count, "\n")
 
 # Configuration
 TESTING_MODE = FALSE
@@ -65,12 +122,37 @@ save_cumulative_data <- function(path, dt) {
   file.rename(tmp_path, path)
 }
 
+acquire_file_lock <- function(path, timeout = LOCK_TIMEOUT_SECONDS, sleep = LOCK_SLEEP_SECONDS) {
+  start_time <- Sys.time()
+  repeat {
+    if (!file.exists(path)) {
+      if (file.create(path)) {
+        return(TRUE)
+      }
+    }
+    if (difftime(Sys.time(), start_time, units = "secs") > timeout) {
+      stop("Unable to acquire file lock at ", path, " within timeout.")
+    }
+    Sys.sleep(sleep)
+  }
+}
+
+release_file_lock <- function(path) {
+  if (file.exists(path)) {
+    unlink(path)
+  }
+}
+
 persist_batch <- function(batch_dt) {
   if (!nrow(batch_dt)) return()
   batch_dt[, collected_at := as.POSIXct(collected_at, tz = "UTC")]
-  cumulative_data <<- rbind(cumulative_data, batch_dt, fill = TRUE)
-  setorderv(cumulative_data, c("municipio_id", "fecha", "elaborado", "collected_at"))
-  cumulative_data <<- unique(cumulative_data, by = c("municipio_id", "fecha", "elaborado"), fromLast = TRUE)
+  acquire_file_lock(lock_path)
+  on.exit(release_file_lock(lock_path), add = TRUE)
+  latest_disk <- load_cumulative_data(cumulative_path)
+  combined <- rbind(latest_disk, batch_dt, fill = TRUE)
+  setorderv(combined, c("municipio_id", "fecha", "elaborado", "collected_at"))
+  combined <- unique(combined, by = c("municipio_id", "fecha", "elaborado"), fromLast = TRUE)
+  cumulative_data <<- combined
   save_cumulative_data(cumulative_path, cumulative_data)
 }
 
@@ -92,6 +174,19 @@ if(TESTING_MODE) {
   all_municipios = head(all_municipios, N_TEST_MUNICIPALITIES)
   cat("Testing mode: using", length(all_municipios), "municipalities\n")
 }
+
+if (shard_count > 1L) {
+  shard_groups <- split(all_municipios, ((seq_along(all_municipios) - 1L) %% shard_count) + 1L)
+  all_municipios <- shard_groups[[shard_index]]
+  cat("Shard", shard_index, "assigned", length(all_municipios), "municipalities\n")
+}
+
+if (!length(all_municipios)) {
+  cat("No municipalities assigned to this shard. Exiting.\n")
+  quit(save = "no", status = 0)
+}
+
+assigned_municipios_total <- length(all_municipios)
 
 remaining_municipios <- setdiff(all_municipios, completed_today)
 if (!length(remaining_municipios)) {
@@ -325,7 +420,7 @@ if(length(all_forecasts) > 0) {
   }
 
   cat("Total forecast records saved this run:", nrow(final_data), "\n")
-  cat("Municipalities updated this run:", length(unique(final_data$municipio_id)), "out of", length(all_municipios), "\n")
+  cat("Municipalities updated this run:", length(unique(final_data$municipio_id)), "out of", assigned_municipios_total, "\n")
   if (nrow(final_data)) {
     cat("Current run date range:", as.character(min(final_data$fecha)), "to", as.character(max(final_data$fecha)), "\n")
   }
