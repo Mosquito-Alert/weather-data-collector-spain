@@ -155,12 +155,27 @@ latest_long <- melt(
 
 latest_long[, fint := as_datetime(fint)]
 
+ensure_columns <- function(dt) {
+  if (!"municipio_natcode" %in% names(dt)) dt[, municipio_natcode := NA_character_]
+  if (!"municipio_name" %in% names(dt)) dt[, municipio_name := NA_character_]
+  if (!"measure" %in% names(dt)) dt[, measure := NA_character_]
+  if (!"value" %in% names(dt)) dt[, value := NA_real_]
+  dt
+}
+
 persist_latest <- function(new_rows) {
+  new_rows <- ensure_columns(copy(new_rows))
   acquire_file_lock(lock_path)
   on.exit(release_file_lock(lock_path), add = TRUE)
   existing <- if (file.exists(output_path)) fread(output_path) else data.table()
+  if (nrow(existing)) {
+    if (!inherits(existing$fint, "POSIXct")) {
+      existing[, fint := as_datetime(fint)]
+    }
+    existing <- ensure_columns(existing)
+  }
   combined <- rbindlist(list(new_rows, existing), fill = TRUE)
-  setorder(combined, -as.numeric(fint))
+  setorder(combined, -fint, idema, measure)
   combined <- unique(combined, by = c("fint", "idema", "measure"))
   fwrite(combined, output_path)
   combined

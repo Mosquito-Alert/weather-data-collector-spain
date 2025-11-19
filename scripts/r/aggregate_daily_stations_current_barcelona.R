@@ -39,6 +39,9 @@ if (length(missing_cols)) {
 hourly[, fint := as_datetime(fint)]
 hourly[, date := as_date(fint)]
 
+if (!"municipio_natcode" %in% names(hourly)) hourly[, municipio_natcode := NA_character_]
+if (!"municipio_name" %in% names(hourly)) hourly[, municipio_name := NA_character_]
+
 if (file.exists(station_map_path)) {
   station_map <- fread(
     station_map_path,
@@ -46,6 +49,14 @@ if (file.exists(station_map_path)) {
   )
   station_map <- unique(station_map[, .(idema = INDICATIVO, municipio_natcode = NATCODE, municipio_name = NAMEUNIT)])
   hourly <- merge(hourly, station_map, by = "idema", all.x = TRUE)
+  if ("i.municipio_natcode" %in% names(hourly)) {
+    hourly[is.na(municipio_natcode) & !is.na(`i.municipio_natcode`), municipio_natcode := `i.municipio_natcode`]
+    hourly[, `i.municipio_natcode` := NULL]
+  }
+  if ("i.municipio_name" %in% names(hourly)) {
+    hourly[is.na(municipio_name) & !is.na(`i.municipio_name`), municipio_name := `i.municipio_name`]
+    hourly[, `i.municipio_name` := NULL]
+  }
 } else {
   hourly[, `:=`(municipio_natcode = NA_character_, municipio_name = NA_character_)]
 }

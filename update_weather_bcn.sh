@@ -21,16 +21,18 @@ cd /home/j.palmer/research/weather-data-collector-spain || exit 1
 echo "=== Collecting Barcelona-Only Weather Datasets ==="
 echo "Starting: $(date)"
 
+PIPELINE_FAILED=0
+
 run_step() {
     local label="$1"
     local script_path="$2"
 
     echo "${label}..."
-    srun Rscript "${script_path}"
-    if [ $? -eq 0 ]; then
+    if srun Rscript "${script_path}"; then
         echo "✅ ${label} completed"
     else
         echo "❌ ${label} failed"
+        PIPELINE_FAILED=1
     fi
     echo
 }
@@ -46,3 +48,8 @@ ls -la data/output/*barcelona*.csv.gz 2>/dev/null
 
 echo "Run with"
 echo "sbatch ~/research/weather-data-collector-spain/update_weather_bcn.sh"
+
+if [ ${PIPELINE_FAILED} -ne 0 ]; then
+    echo "One or more Barcelona dataset steps failed." >&2
+    exit 1
+fi
