@@ -21,6 +21,14 @@ source("auth/keys.R")
 output_path <- "data/output/hourly_station_ongoing_barcelona.csv.gz"
 bcn_natcode_suffix <- "08019"
 
+safe_chr <- function(x, fallback = NA_character_) {
+  if (is.null(x) || !length(x)) return(fallback)
+  val <- x[1]
+  if (is.na(val)) return(fallback)
+  val <- trimws(as.character(val))
+  if (!nzchar(val) || identical(val, "NA")) fallback else val
+}
+
 parse_cli_args <- function(args) {
   if (!length(args)) return(list())
   parsed <- list()
@@ -108,7 +116,20 @@ fetch_station_latest <- function(station, attempt = 1L) {
     if (req$status_code != 200) {
       stop("Status ", req$status_code)
     }
-    data_url <- fromJSON(rawToChar(req$content))$datos
+    payload <- tryCatch(fromJSON(rawToChar(req$content)), error = identity)
+    if (inherits(payload, "error")) {
+      stop("Unable to parse AEMET response JSON: ", conditionMessage(payload))
+    }
+    data_url <- safe_chr(payload$datos)
+    if (is.na(data_url) || !nzchar(data_url)) {
+      status_code <- safe_chr(payload$estado, "?")
+      descr <- safe_chr(payload$descripcion, "missing datos URL")
+      if (status_code == "404") {
+        cat("Station", station, "returned 404 (", descr, "); skipping recent data.\n")
+        return(data.table())
+      }
+      stop("AEMET response missing datos URL (estado ", status_code, ": ", descr, ")")
+    }
     raw <- curl_fetch_memory(data_url)
     txt <- rawToChar(raw$content)
     Encoding(txt) <- "latin1"

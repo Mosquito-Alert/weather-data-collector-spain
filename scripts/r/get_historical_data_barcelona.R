@@ -51,7 +51,6 @@ if (!is.null(cli_args[["key-pool"]])) {
   }
   set_active_key_pool(pool_names)
 }
-
 cat("Active API key pool:", paste(get_active_key_pool(), collapse = ", "), "\n")
 
 # Identify Barcelona station codes using municipality mapping
@@ -78,7 +77,6 @@ load_existing_data <- function(path) {
   if ("fecha" %in% names(dt)) dt[, fecha := as_date(fecha)]
   dt
 }
-
 existing_data <- load_existing_data(output_data_file_path)
 
 if (nrow(existing_data)) {
@@ -101,6 +99,14 @@ handle_setheaders(aemet_handle, "api_key" = get_current_api_key())
 handle_setopt(aemet_handle, timeout = 60, connecttimeout = 30)
 initial_key_label <- get_active_key_pool()[1]
 cat("Using initial API key label:", initial_key_label, "\n")
+
+safe_chr <- function(x, fallback = NA_character_) {
+  if (is.null(x) || !length(x)) return(fallback)
+  val <- x[1]
+  if (is.na(val)) return(fallback)
+  val <- trimws(as.character(val))
+  if (!nzchar(val) || identical(val, "NA")) fallback else val
+}
 
 # Split date range into manageable windows per station
 days_per_chunk <- 30
@@ -130,7 +136,21 @@ fetch_station_window <- function(station, start_date, end_date, attempt = 1L) {
       stop("API request failed with status ", resp$status_code)
     }
 
-    data_url <- fromJSON(rawToChar(resp$content))$datos
+    payload <- tryCatch(fromJSON(rawToChar(resp$content)), error = identity)
+    if (inherits(payload, "error")) {
+      stop("Unable to parse AEMET response JSON: ", conditionMessage(payload))
+    }
+    data_url <- safe_chr(payload$datos)
+    if (is.na(data_url) || !nzchar(data_url)) {
+      status_code <- safe_chr(payload$estado, "?")
+      descr <- safe_chr(payload$descripcion, "missing datos URL")
+      if (status_code == "404") {
+        cat("No historical data available for", station, "between", start_date, "and", end_date, "(", descr, ").\n")
+        return(data.table())
+      }
+      stop("AEMET response missing datos URL (estado ", status_code, ": ", descr, ")")
+    }
+
     raw_resp <- curl_fetch_memory(data_url)
     raw_txt <- rawToChar(raw_resp$content)
     Encoding(raw_txt) <- "latin1"
