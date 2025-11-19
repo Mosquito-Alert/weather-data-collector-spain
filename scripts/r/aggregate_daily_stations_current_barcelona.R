@@ -10,7 +10,6 @@ rm(list = ls())
 suppressPackageStartupMessages({
   library(data.table)
   library(lubridate)
-  library(stringr)
 })
 
 input_path <- "data/output/hourly_station_ongoing_barcelona.csv.gz"
@@ -19,6 +18,34 @@ station_map_path <- "data/input/station_point_municipaities_table.csv"
 lock_path <- paste0(output_path, ".lock")
 LOCK_TIMEOUT_SECONDS <- 600
 LOCK_SLEEP_SECONDS <- 1
+
+coalesce_merge_column <- function(dt, base_col, candidates) {
+  if (!base_col %in% names(dt)) {
+    dt[, (base_col) := NA_character_]
+  }
+
+  for (candidate in candidates) {
+    if (!candidate %in% names(dt)) next
+
+    candidate_vals <- trimws(as.character(dt[[candidate]]))
+    base_vals <- dt[[base_col]]
+    base_char <- trimws(as.character(base_vals))
+
+    replace_idx <- which(
+      (is.na(base_vals) | base_char == "" | base_char == "NA") &
+        !is.na(candidate_vals) & candidate_vals != ""
+    )
+    if (length(replace_idx)) {
+      set(dt, i = replace_idx, j = base_col, value = candidate_vals[replace_idx])
+    }
+
+    dt[, (candidate) := NULL]
+  }
+
+  final_vals <- trimws(as.character(dt[[base_col]]))
+  final_vals[final_vals == "" | final_vals == "NA"] <- NA_character_
+  set(dt, j = base_col, value = final_vals)
+}
 
 if (!file.exists(input_path)) {
   stop("Hourly Barcelona dataset not found at ", input_path, ". Run get_latest_data_barcelona.R first.")
@@ -48,17 +75,27 @@ if (file.exists(station_map_path)) {
     colClasses = list(character = c("INDICATIVO", "NATCODE", "NAMEUNIT"))
   )
   station_map <- unique(station_map[, .(idema = INDICATIVO, municipio_natcode = NATCODE, municipio_name = NAMEUNIT)])
-  hourly <- merge(hourly, station_map, by = "idema", all.x = TRUE)
-  if ("i.municipio_natcode" %in% names(hourly)) {
-    hourly[is.na(municipio_natcode) & !is.na(`i.municipio_natcode`), municipio_natcode := `i.municipio_natcode`]
-    hourly[, `i.municipio_natcode` := NULL]
-  }
-  if ("i.municipio_name" %in% names(hourly)) {
-    hourly[is.na(municipio_name) & !is.na(`i.municipio_name`), municipio_name := `i.municipio_name`]
-    hourly[, `i.municipio_name` := NULL]
-  }
+  hourly <- merge(hourly, station_map, by = "idema", all.x = TRUE, sort = FALSE)
+
+  coalesce_merge_column(hourly, "municipio_natcode", c(
+    "municipio_natcode.map", "i.municipio_natcode", "municipio_natcode.x", "municipio_natcode.y"
+  ))
+  coalesce_merge_column(hourly, "municipio_name", c(
+    "municipio_name.map", "i.municipio_name", "municipio_name.x", "municipio_name.y"
+  ))
 } else {
   hourly[, `:=`(municipio_natcode = NA_character_, municipio_name = NA_character_)]
+}
+
+if ("municipio_natcode" %in% names(hourly)) {
+  hourly[, municipio_natcode := trimws(as.character(municipio_natcode))]
+}
+if ("municipio_name" %in% names(hourly)) {
+  hourly[, municipio_name := trimws(as.character(municipio_name))]
+}
+
+if (!"municipio_natcode" %in% names(hourly)) {
+  stop("municipio_natcode missing before reshape; available columns: ", paste(names(hourly), collapse = ", "))
 }
 
 # Pivot to wide per timestamp for easier aggregation
@@ -84,13 +121,11 @@ if (!nrow(wide)) {
   quit(status = 0)
 }
 
-# Aggregation helpers
 agg_na <- function(x, fun) {
   res <- suppressWarnings(fun(x, na.rm = TRUE))
   if (is.infinite(res)) NA_real_ else res
 }
 
-# Daily summaries per station
 summary_daily <- wide[, .(
   tmed = agg_na(ta, mean),
   tmax = agg_na(c(tamax, ta), max),
