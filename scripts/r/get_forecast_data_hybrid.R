@@ -54,6 +54,12 @@ as_int_or_default <- function(value, default) {
   parsed
 }
 
+MAX_COLLECTION_PASSES <- as_int_or_default(cli_args[["max-passes"]], 4L)
+COOLDOWN_BETWEEN_PASSES_SECONDS <- as_int_or_default(cli_args[["cooldown-seconds"]], 240L)
+MAX_BATCH_RETRIES <- as_int_or_default(cli_args[["max-batch-retries"]], 6L)
+RATE_LIMIT_SLEEP_BASE <- as_int_or_default(cli_args[["rate-limit-sleep"]], 30L)
+GENERAL_ERROR_SLEEP_BASE <- as_int_or_default(cli_args[["general-error-sleep"]], 10L)
+
 if (!is.null(cli_args[["key-pool"]])) {
   pool_names <- strsplit(cli_args[["key-pool"]], ",", fixed = TRUE)[[1]]
   pool_names <- trimws(pool_names)
@@ -196,116 +202,126 @@ if (!length(remaining_municipios)) {
 
 # Split into batches to handle potential API limits and allow progress tracking
 batch_size <- if (TESTING_MODE) min(BATCH_SIZE, length(remaining_municipios)) else BATCH_SIZE
-batches = split(remaining_municipios, ceiling(seq_along(remaining_municipios) / batch_size))
-total_batches = length(batches)
-
-cat("Processing", length(remaining_municipios), "municipalities in", total_batches, "batches\n")
-cat("Note: Individual municipality API errors are normal - not all codes have active forecast data\n\n")
 
 all_forecasts = list()
 successful_municipalities = 0
 processed_in_run <- character()
 
-for(batch_num in seq_along(batches)) {
-  cat("=== BATCH", batch_num, "of", total_batches, "===\n")
-  current_batch = batches[[batch_num]]
-  if (!length(current_batch)) {
-    cat("Batch", batch_num, "has no municipalities remaining. Skipping.\n\n")
-    next
-  }
-  current_batch = intersect(current_batch, remaining_municipios)
-  if (!length(current_batch)) {
-    cat("All municipalities in this batch were already processed earlier today. Skipping.\n\n")
-    next
-  }
-  
-  batch_start_time = Sys.time()
-  
-  tryCatch({
-    # Use climaemet for this batch
-    cat("Collecting forecasts for", length(current_batch), "municipalities...\n")
+pass_number <- 1L
+global_batch_counter <- 0L
+
+while (length(remaining_municipios) > 0 && pass_number <= MAX_COLLECTION_PASSES) {
+  current_target <- remaining_municipios
+  batches <- split(current_target, ceiling(seq_along(current_target) / batch_size))
+  total_batches <- length(batches)
+
+  cat("Processing pass", pass_number, "with", length(current_target), "municipalities in", total_batches, "batches\n")
+  cat("Note: Individual municipality API errors are normal - not all codes have active forecast data\n\n")
+
+  for (batch_idx in seq_along(batches)) {
+    global_batch_counter <- global_batch_counter + 1L
+    cat(sprintf("=== PASS %d | BATCH %d of %d (global #%d) ===\n", pass_number, batch_idx, total_batches, global_batch_counter))
+    current_batch <- batches[[batch_idx]]
+    if (!length(current_batch)) {
+      cat("Batch", batch_idx, "has no municipalities remaining. Skipping.\n\n")
+      next
+    }
+    current_batch <- intersect(current_batch, remaining_municipios)
+    if (!length(current_batch)) {
+      cat("All municipalities in this batch were already processed earlier today. Skipping.\n\n")
+      next
+    }
+    
+    batch_start_time = Sys.time()
+    
+    tryCatch({
+      # Use climaemet for this batch
+      cat("Collecting forecasts for", length(current_batch), "municipalities...\n")
     
     # Function to attempt forecast collection with key rotation on failure
-    collect_with_retry <- function(municipios, max_retries = 3) {
-      municipios = str_pad(trimws(municipios), width = 5, pad = "0")
-      for(attempt in 1:max_retries) {
-        tryCatch({
-          # Set current API key
+    collect_with_retry <- function(municipios, max_retries = MAX_BATCH_RETRIES) {
+      municipios <- str_pad(trimws(municipios), width = 5, pad = "0")
+      for (attempt in seq_len(max_retries)) {
+        result <- tryCatch({
           aemet_api_key(get_current_api_key(), install = TRUE, overwrite = TRUE)
-          
-          # Attempt to collect forecasts
-          # Note: Individual municipality errors are normal - not all codes have active forecast data
-          batch_forecasts = aemet_forecast_daily(
+          batch_forecasts <- aemet_forecast_daily(
             x = municipios,
             verbose = FALSE,
             progress = FALSE
           )
-          
-          # Check if we got any data back
-          if(is.null(batch_forecasts) || nrow(batch_forecasts) == 0) {
+
+          if (is.null(batch_forecasts) || nrow(batch_forecasts) == 0) {
             cat("No forecast data returned for this batch (all municipalities may be inactive)\n")
-            return(data.frame())  # Return empty data frame instead of failing
-          }
-          
-          return(batch_forecasts)  # Success - return data
-          
-        }, error = function(e) {
-          error_msg = as.character(e$message)
-          cat("Attempt", attempt, "failed:", error_msg, "\n")
-          
-          # Check if error suggests rate limiting or API key issues (not individual municipality errors)
-          if(grepl("429|rate limit|quota|forbidden|unauthorized|timeout|too many requests", error_msg, ignore.case = TRUE) && 
-             attempt < max_retries) {
-            
-            cat("Detected potential rate limiting or API error. Rotating API key...\n")
-            rotate_api_key()
-            cat("Waiting 30 seconds before retry...\n")
-            Sys.sleep(30)
-            
-          } else if(attempt == max_retries) {
-            cat("All retry attempts failed for this batch\n")
-            # Return empty data frame instead of stopping completely
             return(data.frame())
           }
+
+          batch_forecasts
+
+        }, error = function(e) {
+          error_msg <- as.character(e$message)
+          cat("Attempt", attempt, "failed:", error_msg, "\n")
+
+          is_rate_limited <- grepl("429|rate limit|quota|too many requests|hit api limits", error_msg, ignore.case = TRUE)
+          is_auth_issue <- grepl("forbidden|unauthorized", error_msg, ignore.case = TRUE)
+          sleep_base <- if (is_rate_limited || is_auth_issue) RATE_LIMIT_SLEEP_BASE else GENERAL_ERROR_SLEEP_BASE
+          sleep_seconds <- min(300, sleep_base * attempt)
+
+          if (attempt < max_retries) {
+            if (is_rate_limited || is_auth_issue) {
+              cat("Detected API throttling or auth rejection. Rotating API key...\n")
+              rotate_api_key()
+            }
+            cat("Waiting", sleep_seconds, "seconds before retry...\n")
+            Sys.sleep(sleep_seconds)
+          }
+
+          NULL
         })
+
+        if (!is.null(result)) {
+          return(result)
+        }
       }
+
+      cat("All retry attempts failed for this batch\n")
+      data.frame()
     }
     
     # Collect forecasts with retry logic
-    batch_forecasts = collect_with_retry(current_batch)
+      batch_forecasts = collect_with_retry(current_batch)
     
     # Check if we got any data from this batch
-    if(is.null(batch_forecasts) || nrow(batch_forecasts) == 0) {
-      cat("⚠️  No forecast data returned for batch", batch_num, "on first attempt.\n")
-      cat("Trying fallback with smaller sub-batches...\n")
+      if(is.null(batch_forecasts) || nrow(batch_forecasts) == 0) {
+        cat("⚠️  No forecast data returned for batch", batch_idx, "on first attempt.\n")
+        cat("Trying fallback with smaller sub-batches...\n")
 
-      SUB_BATCH_SIZE = 50
-      sub_batches = split(current_batch, ceiling(seq_along(current_batch) / SUB_BATCH_SIZE))
-      fallback_results = lapply(seq_along(sub_batches), function(sub_idx){
-        sub_batch = sub_batches[[sub_idx]]
-        cat("  Sub-batch", sub_idx, "of", length(sub_batches), "with", length(sub_batch), "municipalities...\n")
-        sub_result = collect_with_retry(sub_batch)
-        if(is.null(sub_result) || nrow(sub_result) == 0){
-          cat("    Sub-batch", sub_idx, "returned no data.\n")
-          return(NULL)
+        SUB_BATCH_SIZE = 50
+        sub_batches = split(current_batch, ceiling(seq_along(current_batch) / SUB_BATCH_SIZE))
+        fallback_results = lapply(seq_along(sub_batches), function(sub_idx){
+          sub_batch = sub_batches[[sub_idx]]
+          cat("  Sub-batch", sub_idx, "of", length(sub_batches), "with", length(sub_batch), "municipalities...\n")
+          sub_result = collect_with_retry(sub_batch)
+          if(is.null(sub_result) || nrow(sub_result) == 0){
+            cat("    Sub-batch", sub_idx, "returned no data.\n")
+            return(NULL)
+          }
+          sub_result
+        })
+
+        fallback_results = fallback_results[!vapply(fallback_results, is.null, logical(1))]
+
+        if(length(fallback_results) == 0){
+          cat("⚠️  No forecast data available for batch", batch_idx, "even after fallback.\n")
+          cat("Skipping data processing for this batch\n\n")
+          next
         }
-        sub_result
-      })
 
-      fallback_results = fallback_results[!vapply(fallback_results, is.null, logical(1))]
-
-      if(length(fallback_results) == 0){
-        cat("⚠️  No forecast data available for batch", batch_num, "even after fallback.\n")
-        cat("Skipping data processing for this batch\n\n")
-        next
+        batch_forecasts = bind_rows(fallback_results)
+        cat("Fallback collected", nrow(batch_forecasts), "rows for batch", batch_idx, "\n")
       }
-
-      batch_forecasts = bind_rows(fallback_results)
-      cat("Fallback collected", nrow(batch_forecasts), "rows for batch", batch_num, "\n")
-    }
-    
-    cat("Raw forecast collection completed for batch", batch_num, "\n")
-    cat("Retrieved", nrow(batch_forecasts), "municipality-day records\n")
+      
+      cat("Raw forecast collection completed for batch", batch_idx, "\n")
+      cat("Retrieved", nrow(batch_forecasts), "municipality-day records\n")
     
     # Extract and process data in our standard format
     cat("Processing forecast data...\n")
@@ -364,50 +380,59 @@ for(batch_num in seq_along(batches)) {
           collected_at = collection_time
         )
       
+      }, error = function(e) {
+        cat("Error processing forecast data for batch", batch_idx, ":", e$message, "\n")
+        cat("Skipping this batch\n\n")
+        next
+      })
+      
+      batch_final_dt <- as.data.table(batch_final)
+      if (!nrow(batch_final_dt)) {
+        cat("No records produced after processing batch", batch_idx, "- skipping persistence.\n\n")
+        next
+      }
+
+      persist_batch(batch_final_dt)
+      all_forecasts[[length(all_forecasts) + 1]] <- batch_final_dt
+
+      processed_in_run <<- union(processed_in_run, unique(batch_final_dt$municipio_id))
+      successful_municipalities <<- length(processed_in_run)
+      remaining_municipios <<- setdiff(remaining_municipios, unique(batch_final_dt$municipio_id))
+
+      batch_end_time = Sys.time()
+      batch_duration = as.numeric(difftime(batch_end_time, batch_start_time, units = "mins"))
+
+      cat("✅ Batch", batch_idx, "completed successfully\n")
+      cat("Duration:", round(batch_duration, 2), "minutes\n")
+      cat("Records in batch:", nrow(batch_final_dt), "\n")
+      cat("Municipalities completed in this run:", successful_municipalities, "\n")
+      cat("Municipalities remaining today:", length(remaining_municipios), "\n")
+
+      if (batch_idx < total_batches && length(remaining_municipios) > 0 && BATCH_PAUSE_SECONDS > 0) {
+        cat("Pausing", BATCH_PAUSE_SECONDS, "seconds before next batch to respect API limits...\n")
+        Sys.sleep(BATCH_PAUSE_SECONDS)
+      }
+
+      cat("\n")
+      
     }, error = function(e) {
-      cat("Error processing forecast data for batch", batch_num, ":", e$message, "\n")
-      cat("Skipping this batch\n\n")
-      next
+      cat("❌ Batch", batch_idx, "failed:", e$message, "\n")
+      cat("Continuing with next batch...\n\n")
     })
-    
-    batch_final_dt <- as.data.table(batch_final)
-    if (!nrow(batch_final_dt)) {
-      cat("No records produced after processing batch", batch_num, "- skipping persistence.\n\n")
-      next
+
+    if (!length(remaining_municipios)) {
+      cat("All municipalities collected for today. Ending early.\n")
+      break
     }
-
-    persist_batch(batch_final_dt)
-    all_forecasts[[length(all_forecasts) + 1]] <- batch_final_dt
-
-    processed_in_run <<- union(processed_in_run, unique(batch_final_dt$municipio_id))
-    successful_municipalities <<- length(processed_in_run)
-    remaining_municipios <<- setdiff(remaining_municipios, unique(batch_final_dt$municipio_id))
-
-    batch_end_time = Sys.time()
-    batch_duration = as.numeric(difftime(batch_end_time, batch_start_time, units = "mins"))
-
-    cat("✅ Batch", batch_num, "completed successfully\n")
-    cat("Duration:", round(batch_duration, 2), "minutes\n")
-    cat("Records in batch:", nrow(batch_final_dt), "\n")
-    cat("Municipalities completed in this run:", successful_municipalities, "\n")
-    cat("Municipalities remaining today:", length(remaining_municipios), "\n")
-
-    if (batch_num < total_batches && length(remaining_municipios) > 0 && BATCH_PAUSE_SECONDS > 0) {
-      cat("Pausing", BATCH_PAUSE_SECONDS, "seconds before next batch to respect API limits...\n")
-      Sys.sleep(BATCH_PAUSE_SECONDS)
-    }
-
-    cat("\n")
-    
-  }, error = function(e) {
-    cat("❌ Batch", batch_num, "failed:", e$message, "\n")
-    cat("Continuing with next batch...\n\n")
-  })
-
-  if (!length(remaining_municipios)) {
-    cat("All municipalities collected for today. Ending early.\n")
-    break
   }
+
+  if (length(remaining_municipios) > 0 && pass_number < MAX_COLLECTION_PASSES) {
+    cat("Municipalities still outstanding after pass", pass_number, ":", length(remaining_municipios), "\n")
+    cat("Cooling down for", COOLDOWN_BETWEEN_PASSES_SECONDS, "seconds before next pass to let API quotas reset...\n\n")
+    Sys.sleep(COOLDOWN_BETWEEN_PASSES_SECONDS)
+  }
+
+  pass_number <- pass_number + 1L
 }
 
 # Combine all successful batches
