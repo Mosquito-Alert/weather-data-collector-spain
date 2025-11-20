@@ -18,6 +18,20 @@ library(stringr)
   x
 }
 
+normalize_municipio_id <- function(x) {
+  if (is.null(x)) return(character())
+  if (!length(x)) return(character())
+  na_mask <- is.na(x)
+  x_chr <- as.character(x)
+  x_chr[na_mask] <- NA_character_
+  trimmed <- str_trim(x_chr)
+  if (!length(trimmed)) return(trimmed)
+  trimmed[!is.na(trimmed) & trimmed == ""] <- NA_character_
+  padded <- str_pad(trimmed, width = 5, pad = "0")
+  padded[is.na(trimmed)] <- NA_character_
+  padded
+}
+
 parse_cli_args <- function(args) {
   if (!length(args)) return(list())
   parsed <- list()
@@ -98,6 +112,7 @@ load_cumulative_data <- function(path) {
   if (!"municipio_id" %in% names(dt)) {
     dt[, municipio_id := NA_character_]
   }
+  dt[, municipio_id := normalize_municipio_id(municipio_id)]
   if (!inherits(dt$fecha, "Date")) {
     dt[, fecha := as.Date(fecha)]
   }
@@ -117,6 +132,7 @@ if (nrow(cumulative_data)) {
     !is.na(municipio_id) & as.Date(collected_at, tz = "UTC") == RUN_DATE,
     unique(municipio_id)
   ]
+  completed_today <- completed_today[!is.na(completed_today)]
   if (length(completed_today)) {
     cat("Already collected", length(completed_today), "municipalities for", RUN_DATE, "\n")
   }
@@ -152,19 +168,23 @@ release_file_lock <- function(path) {
 persist_batch <- function(batch_dt) {
   if (!nrow(batch_dt)) return()
   batch_dt[, collected_at := as.POSIXct(collected_at, tz = "UTC")]
+  batch_dt[, municipio_id := normalize_municipio_id(municipio_id)]
   acquire_file_lock(lock_path)
   on.exit(release_file_lock(lock_path), add = TRUE)
   latest_disk <- load_cumulative_data(cumulative_path)
   combined <- rbind(latest_disk, batch_dt, fill = TRUE)
+  if (nrow(combined)) {
+    combined[, municipio_id := normalize_municipio_id(municipio_id)]
+  }
   setorderv(combined, c("municipio_id", "fecha", "elaborado", "collected_at"))
   combined <- unique(combined, by = c("municipio_id", "fecha", "elaborado"), fromLast = TRUE)
   cumulative_data <<- combined
   save_cumulative_data(cumulative_path, cumulative_data)
 }
 
-# Load municipality data 
+# Load municipality data
 cat("Loading municipality codes...\n")
-municipalities_data = fread(
+municipalities_data <- fread(
   "data/input/municipalities.csv.gz",
   colClasses = list(character = "CUMUN")
 )
@@ -173,7 +193,8 @@ if(!"CUMUN" %in% names(municipalities_data)){
   stop("CUMUN column not found in municipalities.csv.gz")
 }
 
-all_municipios = str_pad(trimws(municipalities_data$CUMUN), width = 5, pad = "0")
+all_municipios = normalize_municipio_id(municipalities_data$CUMUN)
+all_municipios = all_municipios[!is.na(all_municipios)]
 cat("Loaded", length(all_municipios), "municipalities\n")
 
 if(TESTING_MODE) {
@@ -240,7 +261,12 @@ while (length(remaining_municipios) > 0 && pass_number <= MAX_COLLECTION_PASSES)
     
     # Function to attempt forecast collection with key rotation on failure
     collect_with_retry <- function(municipios, max_retries = MAX_BATCH_RETRIES) {
-      municipios <- str_pad(trimws(municipios), width = 5, pad = "0")
+      municipios <- normalize_municipio_id(municipios)
+      municipios <- municipios[!is.na(municipios)]
+      if (!length(municipios)) {
+        cat("No valid municipality IDs remain after normalization; skipping batch.\n")
+        return(data.frame())
+      }
       for (attempt in seq_len(max_retries)) {
         result <- tryCatch({
           aemet_api_key(get_current_api_key(), install = TRUE, overwrite = TRUE)
@@ -340,7 +366,7 @@ while (length(remaining_municipios) > 0 && pass_number <= MAX_COLLECTION_PASSES)
           temp_min = temperatura_minima
         ) %>%
         mutate(
-          municipio_id = str_pad(as.character(municipio_id), width = 5, pad = "0")
+          municipio_id = normalize_municipio_id(municipio_id)
         ) %>%
         mutate(
           temp_avg = rowMeans(cbind(temp_max, temp_min), na.rm = TRUE),
@@ -356,7 +382,7 @@ while (length(remaining_municipios) > 0 && pass_number <= MAX_COLLECTION_PASSES)
           humid_min = humedadRelativa_minima
         ) %>%
         mutate(
-          municipio = str_pad(as.character(municipio), width = 5, pad = "0")
+          municipio = normalize_municipio_id(municipio)
         )
       
       # Get wind data
@@ -367,7 +393,7 @@ while (length(remaining_municipios) > 0 && pass_number <= MAX_COLLECTION_PASSES)
           wind_speed = viento_velocidad
         ) %>%
         mutate(
-          municipio = str_pad(as.character(municipio), width = 5, pad = "0")
+          municipio = normalize_municipio_id(municipio)
         )
       
       # Combine all data
@@ -387,6 +413,9 @@ while (length(remaining_municipios) > 0 && pass_number <= MAX_COLLECTION_PASSES)
       })
       
       batch_final_dt <- as.data.table(batch_final)
+      if (nrow(batch_final_dt)) {
+        batch_final_dt[, municipio_id := normalize_municipio_id(municipio_id)]
+      }
       if (!nrow(batch_final_dt)) {
         cat("No records produced after processing batch", batch_idx, "- skipping persistence.\n\n")
         next
@@ -440,6 +469,7 @@ cat("=== FINAL PROCESSING ===\n")
 if(length(all_forecasts) > 0) {
   final_data <- rbindlist(all_forecasts, use.names = TRUE, fill = TRUE)
   if (nrow(final_data)) {
+    final_data[, municipio_id := normalize_municipio_id(municipio_id)]
     final_data[, fecha := as.Date(fecha)]
     final_data[, collected_at := as.POSIXct(collected_at, tz = "UTC")]
   }
@@ -454,6 +484,8 @@ if(length(all_forecasts) > 0) {
 } else {
   cat("No new forecast data collected in this run (municipalities may already be up to date or all API calls failed).\n")
 }
+
+cumulative_data <- load_cumulative_data(cumulative_path)
 
 if (nrow(cumulative_data)) {
   cat("\n=== SUMMARY STATISTICS ===\n")

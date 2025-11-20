@@ -35,6 +35,7 @@ fi
 KEY_POOL=${KEY_POOLS[$((SHARD_INDEX-1))]}
 
 # Dataset 4: Municipal forecasts
+EXIT_CODE=0
 echo "Dataset 4: Municipal forecasts shard ${SHARD_INDEX}/${SHARD_COUNT} using key pool '${KEY_POOL}'..."
 srun Rscript scripts/r/get_forecast_data_hybrid.R \
     --shard-index=${SHARD_INDEX} \
@@ -44,11 +45,24 @@ if [ $? -eq 0 ]; then
     echo "✅ Forecast collection completed"
 else
     echo "❌ Forecast collection failed"
+    EXIT_CODE=1
 fi
 
 echo "=== Collection Summary ==="
 echo "Completed: $(date)"
 ls -la data/output/*.csv.gz
+
+if [ "${SLURM_ARRAY_TASK_ID:-1}" -eq 1 ]; then
+    echo "Running municipal forecast coverage audit..."
+    if python3 scripts/python/audit_municipal_forecast_coverage.py; then
+        echo "✅ Municipal forecast coverage audit passed"
+    else
+        echo "❌ Municipal forecast coverage audit failed"
+        EXIT_CODE=1
+    fi
+fi
+
+exit ${EXIT_CODE}
 
 # Run with
 # sbatch ~/research/weather-data-collector-spain/update_municipal_forecasts_only.sh
