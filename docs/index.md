@@ -1,249 +1,120 @@
 ---
-title: Spanish Weather Data Collection System
+title: Weather Data Collector (Spain)
 layout: toc
 ---
 
-# Spanish Weather Data Collection System
+# Weather Data Collector (Spain)
 
-Automated collection and processing of Spanish meteorological data from AEMET OpenData API.
+Internal documentation for the Mosquito-Alert weather ingestion pipelines. These notes target maintainers running the workloads on the CEAB cluster.
 
-## System Overview
+## Architecture Overview
 
-This system collects three standardized weather datasets covering all Spanish weather stations and municipalities. Data is automatically processed, quality-controlled, and delivered as analysis-ready CSV files.
+Two independent SLURM pipelines share the same codebase and AEMET API keys:
 
-**Performance**: Complete data collection in 2-4 hours (48x improvement over previous methods)  
-**Coverage**: 4,000+ weather stations, 8,000+ municipalities across Spain  
-**Automation**: Daily collection with automatic gap filling and quality control
+| Pipeline | Entrypoint | Goal | Key outputs |
+|----------|------------|------|-------------|
+| **Spain-wide** | `update_weather.sh` (submits `update_municipal_forecasts_only.sh`) | Refresh national historical, current, hourly and municipal forecast datasets | `data/output/daily_station_historical.csv.gz`, `daily_station_current.csv.gz`, `hourly_station_ongoing.csv.gz`, `daily_municipal_forecast.csv.gz` |
+| **Barcelona fast-path** | `update_weather_bcn.sh` | Guarantee fresh Barcelona observations and forecasts early each morning | `data/output/daily_station_historical_barcelona.csv.gz`, `daily_station_current_barcelona.csv.gz`, `hourly_station_ongoing_barcelona.csv.gz`, `daily_municipal_forecast_barcelona.csv.gz`, `data/output/barcelona_last_success.txt` |
 
-## Data Products
+Both pipelines assume the CEAB modules `GDAL/3.10.0-foss-2024a` and `R/4.4.2-gfbf-2024a` plus a configured key pool in `auth/keys.R`.
 
-### Daily Station Historical Data
-**File**: `daily_station_historical.csv`
+## Spain-wide Pipeline
 
-Daily meteorological measurements from Spanish weather stations.
+- Launch with `sbatch update_weather.sh` from the project root.
+- Sequential steps: `scripts/r/get_historical_data.R`, `aggregate_daily_stations_current.R`, `get_latest_data.R` and SLURM submission of `update_municipal_forecasts_only.sh` (job array for shards).
+- Allow ~6 h wall-clock; the municipal array dominates runtime.
+- Logs: `logs/update_weather_<jobid>.out|err` for the parent job and `logs/update_municipal_forecasts_<jobid>_<array>.out|err` per shard.
+- Outputs land in `data/output/` (nationwide coverage, including Barcelona rows).
+- Recommended schedule: overnight once Barcelona fast-path has finished.
 
-| Variable | Description | Units |
-|----------|-------------|-------|
-| date | Observation date | YYYY-MM-DD |
-| station_id | AEMET station identifier | string |
-| temp_mean | Daily mean temperature | °C |
-| temp_max | Daily maximum temperature | °C |
-| temp_min | Daily minimum temperature | °C |
-| precipitation | Daily precipitation | mm |
-| humidity_mean | Daily mean relative humidity | % |
-| wind_speed | Daily mean wind speed | km/h |
-| pressure_max | Daily maximum pressure | hPa |
+## Barcelona Fast-path Pipeline
 
-**Coverage**: 4,000+ stations across Spain  
-**Update Frequency**: Daily at 2:00 AM
+- Launch with `sbatch update_weather_bcn.sh` (cron currently fires 08:00 CET daily).
+- Steps: historical refresh, hourly pull, daily aggregation, municipal forecast (`scripts/r/get_historical_data_barcelona.R`, `get_latest_data_barcelona.R`, `aggregate_daily_stations_current_barcelona.R`, `get_forecast_barcelona.R`).
+- Typical runtime ~5 min (historical backfill can extend to ~50 min if the API finally releases new rows).
+- Outputs live alongside the nationwide files but carry the `_barcelona` suffix; the hourly script also writes a sentinel timestamp to `data/output/barcelona_last_success.txt`.
+- Logs: `logs/update_weather_bcn_<jobid>.out|err`.
+- Quick health check: `python3 scripts/python/summarize_barcelona_datasets.py`.
 
-### Daily Municipal Extended Data  
-**File**: `daily_municipal_extended.csv`
+## Data Outputs Summary
 
-Municipal-level weather data combining forecasts with station aggregations.
+| File | Description | Produced by |
+|------|-------------|-------------|
+| `daily_station_historical.csv.gz` | National historical daily stations (AEMET climatological API, up to ~T-4 days). | Spain-wide |
+| `daily_station_current.csv.gz` | Daily aggregates derived from the recent hourly feed (bridges the historical lag). | Spain-wide |
+| `hourly_station_ongoing.csv.gz` | Nationwide hourly observations in long format (`fint`, `idema`, `measure`, `value`). | Spain-wide |
+| `daily_municipal_forecast.csv.gz` | Municipal forecasts for all CUMUN codes; each elaborado snapshot retained. | Spain-wide |
+| `daily_station_*_barcelona.csv.gz` | Barcelona-only mirrors of the station datasets. | Barcelona fast-path |
+| `hourly_station_ongoing_barcelona.csv.gz` | Barcelona hourly feed (same schema as nationwide file). | Barcelona fast-path |
+| `daily_municipal_forecast_barcelona.csv.gz` | Barcelona municipal forecast, multiple elaborados stored. | Barcelona fast-path |
+| `barcelona_last_success.txt` | UTC timestamp of the last successful Barcelona hourly run. | Barcelona fast-path |
 
-| Variable | Description | Units |
-|----------|-------------|-------|
-| date | Date of observation/forecast | YYYY-MM-DD |
-| municipality_id | CUMUN municipality code | string |
-| temp_mean | Daily mean temperature | °C |
-| temp_max | Daily maximum temperature | °C |
-| temp_min | Daily minimum temperature | °C |
-| humidity_mean | Daily mean relative humidity | % |
-| wind_speed | Daily mean wind speed | km/h |
-| data_source | Source type | 'station_aggregated' or 'forecast' |
+Legacy municipal forecast dumps (`municipal_forecasts_*.csv[.gz]` and intermediates) remain for audit but are not regenerated.
 
-**Coverage**: 8,000+ Spanish municipalities  
-**Data Priority**: Station aggregations replace forecasts when available  
-**Update Frequency**: Daily at 2:00 AM
+## Operations
 
-### Hourly Station Ongoing Data
-**File**: `hourly_station_ongoing.csv`
+### Modules and Environment
 
-High-frequency station measurements for detailed temporal analysis.
-
-| Variable | Description | Units |
-|----------|-------------|-------|
-| datetime | Observation timestamp | ISO datetime |
-| station_id | AEMET station identifier | string |
-| variable_type | Measurement type | string |
-| value | Measured value | varies |
-
-**Coverage**: Selected weather stations  
-**Update Frequency**: Daily at 2:00 AM
-
-## Data Flow Architecture
-
-```
-┌─────────────────┐
-│ AEMET OpenData  │
-│     API         │
-└─────────┬───────┘
-          │
-          ▼
-┌─────────────────┐
-│ Data Collection │
-│  (R scripts)    │
-└─────────┬───────┘
-          │
-          ▼
-┌─────────────────┐
-│ Quality Control │
-│ & Validation    │
-└─────────┬───────┘
-          │
-          ▼
-┌─────────────────┐
-│ Standardization │
-│ & Aggregation   │
-└─────────┬───────┘
-          │
-          ▼
-┌─────────────────┐
-│ Final Datasets  │
-│   (CSV files)   │
-└─────────────────┘
-```
-
-## Technical Implementation
-
-### Performance Optimization
-- **climaemet Package**: Provides 48x speedup for municipal forecast collection
-- **Parallel Processing**: Batch processing for station data collection
-- **Rate Limiting**: Automatic API throttling to respect AEMET limits
-- **Incremental Updates**: Only collect new data to minimize processing time
-
-### Quality Control
-- **Temperature Validation**: Realistic range checks for Spanish climate
-- **Precipitation Filtering**: Remove impossible precipitation values  
-- **Completeness Checks**: Flag incomplete observation periods
-- **Duplicate Detection**: Prevent data duplication across collection runs
-
-### Data Standardization
-- **Variable Names**: Consistent English names across all datasets
-- **Units**: Standardized metric units throughout
-- **Date Formats**: ISO 8601 date formatting
-- **Municipality Codes**: CUMUN format with documented conversion mappings
-
-### Gap Management
-- **Automatic Detection**: Weekly analysis identifies missing data periods
-- **Intelligent Filling**: Targeted collection without redundant downloads
-- **Priority System**: Recent data prioritized over historical gaps
-- **Tracking**: Prevent repeated attempts for permanently unavailable data
-
-## Installation and Setup
-
-### Prerequisites
-- SLURM HPC environment
-- R 4.4.2 with GDAL 3.10.0
-- AEMET OpenData API key
-
-### Required R Packages
-```r
-install.packages(c("tidyverse", "climaemet", "meteospain", "data.table", "lubridate"))
-```
-
-### Configuration
-1. **API Key Setup**: Store AEMET API key in `auth/keys.R`
-2. **Module Loading**: Ensure SLURM environment loads required modules
-3. **Directory Structure**: Verify `data/output/` and `logs/` directories exist
-
-### Automation Setup
-Add to crontab for automated operation:
 ```bash
-# Daily data collection (2:00 AM)
-0 2 * * * cd /path/to/project && sbatch scripts/bash/update_weather_hybrid.sh
-
-# Daily documentation updates (6:00 AM)  
-0 6 * * * cd /path/to/project && sbatch scripts/bash/update_readme_summary.sh
-
-# Weekly gap filling (Sunday 1:00 AM)
-0 1 * * 0 cd /path/to/project && sbatch scripts/bash/fill_gaps.sh
+module load GDAL/3.10.0-foss-2024a
+module load R/4.4.2-gfbf-2024a
 ```
 
-## Usage
+`auth/keys.R` exposes helper functions (`set_active_key_pool`, `get_current_api_key`, `rotate_api_key`) that both pipelines rely on. Keep that file off git.
 
-### Manual Data Collection
+### Running Jobs Manually
+
 ```bash
-# Full data collection
-sbatch scripts/bash/update_weather_hybrid.sh
+cd /home/j.palmer/research/weather-data-collector-spain
 
-# Gap analysis and filling
-sbatch scripts/bash/fill_gaps.sh
+# Barcelona fast-path
+sbatch update_weather_bcn.sh
 
-# Documentation update
-sbatch scripts/bash/update_readme_summary.sh
+# Optional Barcelona historical backfill when climatological API releases new days
+sbatch scripts/bash/get_historical_barcelona.sh
+
+# Spain-wide refresh
+sbatch update_weather.sh
 ```
+
+To debug interactively, load the modules above on a compute node and call the relevant `Rscript` directly.
 
 ### Monitoring
-- **Log Files**: Check `logs/` directory for SLURM job outputs
-- **Data Summary**: Automatic README updates show current collection status
-- **Error Handling**: Failed jobs logged with detailed error messages
 
-## File Organization
+- **Logs**: all SLURM output resides in `logs/`. Review both `.out` and `.err` files—collectors log warnings inline, so empty `.err` files usually indicate success.
+- **Barcelona snapshot**: `python3 scripts/python/summarize_barcelona_datasets.py` prints row counts and date ranges for the four Barcelona datasets.
+- **Nationwide municipal coverage**: evaluate `logs/update_municipal_forecasts_<jobid>_<array>.out` to see remaining municipality IDs per shard; persistent failures are tracked in `docs/pending_municipal_id_fix.md`.
+- **Sentinel**: `cat data/output/barcelona_last_success.txt` should show the latest hourly collection timestamp.
+
+## Known Behaviours
+
+- **Climatological lag**: `get_historical_data*_barcelona.R` may print `No hay datos que satisfagan esos criterios`—AEMET normally publishes daily records 4–7 days late. The script logs the gap and exits cleanly.
+- **Hourly 404 vs 429**: 404 means the station has nothing new; we skip without key rotation. 429 triggers rotation with exponential backoff.
+- **Forecast elaborados**: Multiple elaborados per day are persisted so we can reconstruct forecast evolution. Downstream consumers that only need the freshest view should filter to the maximum `elaborado` per `fecha`.
+- **Municipality IDs**: Zero-padding of nationwide `municipio_id` values is being normalised (see `docs/pending_municipal_id_fix.md`). Expect legacy rows without padding until the remediation backfill runs.
+
+## File Layout
 
 ```
-weather-data-collector-spain/
-├── scripts/
-│   ├── r/              # R collection and analysis scripts
-│   ├── bash/           # SLURM job scripts
-│   └── archive/        # Archived scripts
-├── data/
-│   ├── output/         # Final standardized datasets
-│   ├── backup/         # Data backups
-│   └── input/          # Reference data
-├── docs/               # Documentation (this site)
-├── auth/               # API credentials (git-ignored)
-└── logs/               # SLURM job logs
+auth/                      # AEMET credential helpers (ignored by git)
+code/                      # Legacy scripts (kept for reference)
+data/
+    ├─ input/                # Station + municipality reference tables
+    └─ output/               # Generated datasets (nationwide + Barcelona)
+docs/                      # Internal documentation (this site)
+logs/                      # SLURM stdout/err
+scripts/
+    ├─ r/                    # Active collectors and utilities
+    ├─ bash/                 # SLURM wrappers
+    └─ archive/              # Retired entrypoints
 ```
 
-## Variable Reference
+## Maintenance Checklist
 
-### Original AEMET to Standardized Mapping
+- Ensure both pipelines stay green in SLURM after any code change or key rotation.
+- Keep the Barcelona cron entry at 08:00 CET (plus any earlier manual run when dashboards require it).
+- Monitor API quotas; rotate or add keys in `auth/keys.R` as needed.
+- Periodically purge old `municipal_forecasts_*` dumps if disk pressure rises.
+- Update this documentation and the root README when operational procedures change.
 
-| AEMET Variable | Standard Name | Description |
-|----------------|---------------|-------------|
-| tmed | temp_mean | Daily mean temperature |
-| tmax | temp_max | Daily maximum temperature |
-| tmin | temp_min | Daily minimum temperature |
-| prec | precipitation | Daily precipitation |
-| hrMedia | humidity_mean | Daily mean relative humidity |
-| velmedia | wind_speed | Daily mean wind speed |
-| indicativo | station_id | Station identifier |
-| municipio_id | municipality_id | Municipality identifier (CUMUN) |
-
-### Municipality Code Information
-**Format**: CUMUN codes from AEMET municipal forecast system  
-**Structure**: 5-digit numeric codes  
-**Coverage**: All Spanish municipalities (~8,000)  
-**Note**: Different from INE codes - conversion required for administrative data merges
-
-## Performance Metrics
-
-### Collection Times
-- **Station Daily Data**: ~15 minutes for full collection
-- **Municipal Forecasts**: ~5 minutes (vs 5+ hours previously)
-- **Hourly Data**: ~10 minutes for recent period
-- **Total Runtime**: 2-4 hours (vs 33+ hours with original approach)
-
-### Data Volumes
-- **Daily Station**: ~700KB, 4,500+ records daily
-- **Municipal Extended**: ~2.5MB, 18,000+ records daily
-- **Hourly Ongoing**: Variable based on collection period
-
-## Support
-
-For technical questions or issues:
-1. Check log files in `logs/` directory
-2. Review error messages in SLURM job outputs
-3. Verify API key configuration in `auth/keys.R`
-4. Ensure all required R packages are installed
-
-## License
-
-GPLv3 License - see LICENSE file for complete terms.
-- [Variable Reference](variables.html) - Complete variable definitions
-
-## Recent Updates
-
-**August 2025**: Major expansion from 5 to 7 core variables with comprehensive forecast integration.
+For outstanding remediation items (e.g., municipality ID padding) consult the notes in `docs/`.
