@@ -85,6 +85,8 @@ if (nrow(existing_data)) {
   missing_dates <- all_dates
 }
 
+missing_dates <- as_date(missing_dates)
+
 if (length(missing_dates) == 0L) {
   cat("Historical Barcelona dataset already up to date.\n")
   quit(status = 0)
@@ -112,15 +114,22 @@ safe_chr <- function(x, fallback = NA_character_) {
 days_per_chunk <- 30
 range_starts <- seq(from = min_missing, to = max_missing, by = days_per_chunk)
 range_bounds <- data.table(
-  start = range_starts,
-  end = pmin(range_starts + (days_per_chunk - 1), max_missing)
+  start = as_date(range_starts),
+  end = as_date(pmin(range_starts + (days_per_chunk - 1), max_missing))
 )
 
 fetch_station_window <- function(station, start_date, end_date, attempt = 1L) {
+  start_date <- as_date(start_date)
+  end_date <- as_date(end_date)
+  if (is.na(start_date) || is.na(end_date)) {
+    stop("fetch_station_window received non-date inputs (start:", start_date, ", end:", end_date, ")")
+  }
+  start_str <- format(start_date, "%Y-%m-%d")
+  end_str <- format(end_date, "%Y-%m-%d")
   tryCatch({
     url <- sprintf(
       "https://opendata.aemet.es/opendata/api/valores/climatologicos/diarios/datos/fechaini/%sT00%%3A00%%3A00UTC/fechafin/%sT23%%3A59%%3A59UTC/estacion/%s",
-      start_date, end_date, station
+      start_str, end_str, station
     )
 
     resp <- curl_fetch_memory(url, handle = aemet_handle)
@@ -145,7 +154,7 @@ fetch_station_window <- function(station, start_date, end_date, attempt = 1L) {
       status_code <- safe_chr(payload$estado, "?")
       descr <- safe_chr(payload$descripcion, "missing datos URL")
       if (status_code == "404") {
-        cat("No historical data available for", station, "between", start_date, "and", end_date, "(", descr, ").\n")
+        cat("No historical data available for", station, "between", start_str, "and", end_str, "(", descr, ").\n")
         return(data.table())
       }
       stop("AEMET response missing datos URL (estado ", status_code, ": ", descr, ")")
@@ -205,9 +214,9 @@ fetch_station_window <- function(station, start_date, end_date, attempt = 1L) {
 new_records <- rbindlist(lapply(barcelona_stations, function(station) {
   cat("Station", station, ":", nrow(range_bounds), "windows to fetch\n")
   rbindlist(lapply(seq_len(nrow(range_bounds)), function(idx) {
-    start_i <- range_bounds$start[idx]
-    end_i <- range_bounds$end[idx]
-    cat("  Window", idx, "-", as.character(start_i), "to", as.character(end_i), "\n")
+    start_i <- as_date(range_bounds$start[idx])
+    end_i <- as_date(range_bounds$end[idx])
+    cat("  Window", idx, "-", format(start_i, "%Y-%m-%d"), "to", format(end_i, "%Y-%m-%d"), "\n")
     fetch_station_window(station, start_i, end_i)
   }), fill = TRUE)
 }), fill = TRUE)

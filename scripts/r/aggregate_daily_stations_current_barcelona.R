@@ -94,8 +94,14 @@ if ("municipio_name" %in% names(hourly)) {
   hourly[, municipio_name := trimws(as.character(municipio_name))]
 }
 
-if (!"municipio_natcode" %in% names(hourly)) {
-  stop("municipio_natcode missing before reshape; available columns: ", paste(names(hourly), collapse = ", "))
+critical_cols <- c("fint", "idema", "municipio_natcode", "municipio_name", "measure")
+missing_critical <- setdiff(critical_cols, names(hourly))
+if (length(missing_critical)) {
+  stop(
+    "Hourly Barcelona dataset missing columns required for aggregation: ",
+    paste(missing_critical, collapse = ", "),
+    ". This usually means get_latest_data_barcelona.R failed to emit the expected schema."
+  )
 }
 
 # Pivot to wide per timestamp for easier aggregation
